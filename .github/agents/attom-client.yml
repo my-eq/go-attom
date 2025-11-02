@@ -1,0 +1,1059 @@
+# GitHub Copilot Agent Definition
+# Purpose: Build and maintain a production-ready Golang client for the ATTOM Property API
+# Author: Kevin Mesiab
+# Date: 2025-11-01
+# Version: 2.0
+
+name: "attom-client"
+description: |
+  A production-ready Go client for the ATTOM Data API featuring:
+  - Idiomatic Go design with context support and error handling
+  - Complete endpoint coverage for all 5 ATTOM API groups:
+    * PropertyAPI - Property details, sales, assessments, AVM
+    * AreaAPI - Neighborhood and area statistics
+    * POIAPI - Points of Interest (schools, parks, etc.)
+    * CommunityAPI - Community and neighborhood data
+    * ParcelTilesAPI - Parcel boundary and mapping data
+  - Automatic constant generation from ATTOM Data Dictionary
+  - Type-safe request/response models with optional field handling
+  - Comprehensive testing with mocks and integration tests
+  - Full documentation and usage examples
+
+goals:
+  - "Build an idiomatic Go client package with proper error handling"
+  - "Generate type-safe constants for all ATTOM enumerated vocabularies"
+  - "Implement all 5 ATTOM API groups: PropertyAPI, AreaAPI, POIAPI, CommunityAPI, ParcelTilesAPI"
+  - "Handle API quirks: optional fields, inconsistent casing, missing fields in JSON responses"
+  - "Provide comprehensive testing with >80% code coverage"
+  - "Maintain clean, well-documented, lint-free code"
+  - "Enable automated vocabulary updates via web scraping"
+
+triggers:
+  - user_request: "create or update Go client for ATTOM API"
+  - user_request: "generate constants from ATTOM vocabularies"
+  - file_created: "*.go"
+  - file_updated: "*.go"
+  - comment: "@copilot build attom client"
+  - comment: "@copilot update attom constants"
+
+context:
+  api_documentation:
+    - "https://api.developer.attomdata.com/docs"
+    - "https://cloud-help.attomdata.com/article/600-data-dictionary"
+    - "https://developer.attomdata.com/documentation"
+  
+  api_groups:
+    PropertyAPI: "Property details, sales history, assessments, valuations (AVM)"
+    AreaAPI: "Neighborhood statistics, area demographics, market trends"
+    POIAPI: "Points of Interest - schools, parks, amenities, distances"
+    CommunityAPI: "Community profiles, neighborhood characteristics"
+    ParcelTilesAPI: "Parcel boundaries, property mapping, tile data"
+  
+  api_endpoints:
+    PropertyAPI_v1_0_0:
+      property_resources:
+        - "/property/id - Retrieve property ATTOM ID"
+        - "/property/detail - Get detailed property information with lots, beds, baths, construction details"
+        - "/property/address - Retrieve property address data"
+        - "/property/snapshot - Property summary snapshot (limited fields for display)"
+        - "/property/basicprofile - Basic property profile"
+        - "/property/expandedprofile - Expanded property profile with full property characteristics"
+        - "/property/detailwithschools - Property details with school attendance zones"
+        - "/property/detailmortgage - Property with mortgage details and loan information"
+        - "/property/detailowner - Property with owner information and absentee status"
+        - "/property/detailmortgageowner - Property with both mortgage and owner data"
+        - "/property/buildingpermits - Property building permit records"
+      
+      sale_resources:
+        - "/sale/detail - Sale transaction details with dates, amounts, and transfer types"
+        - "/sale/snapshot - Sales snapshot summary"
+      
+      assessment_resources:
+        - "/assessment/detail - Assessment/tax details with appraised, assessed, and market values"
+        - "/assessment/snapshot - Assessment summary snapshot"
+        - "/assessmenthistory/detail - Assessment history records over time"
+      
+      avm_resources:
+        - "/avm/snapshot - AVM value snapshot with confidence scores"
+        - "/attomavm/detail - Detailed ATTOM AVM data with value ranges and comparables"
+        - "/avmhistory/detail - AVM historical values showing value changes over time"
+        - "/valuation/rentalavm - Rental AVM valuation for rental property estimates"
+      
+      sales_history_resources:
+        - "/saleshistory/detail - Detailed sales history with full transaction records"
+        - "/saleshistory/snapshot - Sales history snapshot summary"
+        - "/saleshistory/basichistory - Basic sales history with essential fields only"
+        - "/saleshistory/expandedhistory - Expanded sales history with all available data"
+      
+      sales_trend_resources:
+        - "/salestrend/snapshot - Sales trends by geography (monthly/quarterly/yearly intervals)"
+        - "/transaction/salestrend - Transaction-based sales trends with property type filters"
+      
+      school_resources:
+        - "/school/search - Search for schools near property within radius"
+        - "/school/profile - School profile information with ratings and enrollment"
+        - "/school/district - School district information"
+        - "/school/detailwithschools - Property details including school attendance zones"
+      
+      all_events:
+        - "/allevents/detail - All property events combined (assessments, AVM, sales transactions)"
+      
+      key_parameters:
+        - "attomId - ATTOM-assigned unique property identifier"
+        - "id - ATTOM property ID (same as attomId)"
+        - "address - Full property address string"
+        - "address1/address2 - Split address (street / city,state,zip)"
+        - "fips + APN - County FIPS code + Assessor's Parcel Number"
+        - "latitude/longitude + radius - Geospatial search (radius in miles)"
+        - "postalCode - ZIP code search"
+        - "geoIdV4 - ATTOM's new geographic identifier"
+        - "geoId - Legacy ATTOM geographic identifier"
+        - "propertyType - Standardized property type (apartment, single family, etc.)"
+        - "propertyIndicator - Numeric property type code (0-90)"
+        - "minBeds/maxBeds, minBathsTotal/maxBathsTotal - Property size filters"
+        - "minYearBuilt/maxYearBuilt - Construction year range"
+        - "minSaleAmt/maxSaleAmt - Sale price range"
+        - "startCalendarDate/endCalendarDate - Record update date range"
+        - "startAddedDate/endAddedDate - Record addition date range"
+        - "startSaleSearchDate/endSaleSearchDate - Sale transaction date range"
+        - "absenteeOwner - Owner occupancy status (absentee/occupied)"
+        - "orderBy - Result sorting field"
+      
+    AreaAPI_v2_0_0:
+      endpoints:
+        - "/county/lookup - County lookup by state; Parameters: StateId"
+        - "/area/hierarchy/lookup - Geographic hierarchy lookup; Parameters: wktstring, geotype (PZ/SB/DB/ZI/N1/N2/N3/N4/ST/CO/PL/CB), latitude, longitude"
+        - "/area/state/lookup - State area lookup; Parameters: geoIdV4, AreaId"
+        - "/area/boundary/detail - Area boundary details in GeoJSON or WKT format; Parameters: geoIdV4, AreaId, format (geojson/wkt)"
+        - "/area/geoId/legacyLookup - Legacy geocode lookup for old geoId format"
+        - "/area/geoId/Lookup - Geocode lookup; Parameters: geoId, geotype"
+      
+      geotypes:
+        - "PZ - Parcel Zone"
+        - "SB - School Attendance Boundary"
+        - "DB - School District Boundary"
+        - "ZI - ZIP Code Tabulation Area"
+        - "N1 - Macro Neighborhood"
+        - "N2 - Neighborhood"
+        - "N3 - Sub-Neighborhood"
+        - "N4 - Residential Subdivision"
+        - "ST - State"
+        - "CO - County"
+        - "PL - Census Place"
+        - "CB - Census Block"
+      
+      key_parameters:
+        - "geoIdV4 - ATTOM's new geographic identifier (SHA hash)"
+        - "AreaId - Legacy area identifier"
+        - "StateId - Two-letter state code"
+        - "wktstring - Well-Known Text geometry string"
+        - "geotype - Geographic boundary type code"
+        - "format - Output format (geojson or wkt)"
+    
+    POIAPI:
+      v2_endpoints:
+        - "/poisearch/v2.0.0/poi/Street+Address/ - POI search by street address; Parameters: streetaddress, recordlimit, searchdistance"
+        - "/poisearch/v2.0.0/poi/Geography/ - POI search by zip code centroid; Parameters: zipcode, recordlimit, searchdistance"
+        - "/poisearch/v2.0.0/poi/Point/ - POI search by lat/long; Parameters: point (POINT format), radius, recordlimit"
+      
+      v4_neighborhood_endpoints:
+        - "/neighborhood/poi - Search POI by location; Parameters: point, radius, address, categoryName, LineOfBusinessName, IndustryName, categoryId, zipCode"
+        - "/neighborhood/poi/categorylookup - Lookup POI categories; Parameters: industry, category, lineofbusiness"
+      
+      business_categories:
+        - "ATTRACTIONS-RECREATION - Tourist attractions, entertainment venues, recreation facilities"
+        - "AUTOMOTIVE SERVICES - Auto repair, gas stations, car washes, dealerships"
+        - "BANKS-FINANCIAL - Banks, credit unions, ATMs, financial services"
+        - "EATING-DRINKING - Restaurants, bars, cafes, food services"
+        - "EDUCATION - Schools, colleges, libraries, tutoring"
+        - "FARM-RANCH - Agricultural services, farms, ranches"
+        - "GOVERNMENT-PUBLIC - Government offices, post offices, public services"
+        - "HEALTH CARE SERVICES - Hospitals, clinics, doctors, dentists"
+        - "HOSPITALITY - Hotels, motels, lodging"
+        - "ORGANIZATIONS-ASSOCIATIONS - Non-profits, clubs, associations"
+        - "PERSONAL SERVICES - Salons, dry cleaners, personal care"
+        - "PET SERVICES - Veterinarians, pet stores, grooming"
+        - "SHOPPING - Retail stores, malls, shopping centers"
+        - "TRAVEL - Travel agencies, airlines, transportation"
+      
+      key_parameters:
+        - "point - Geospatial point in WKT format: POINT(longitude latitude)"
+        - "radius - Search radius in miles"
+        - "address - Street address for geocoding"
+        - "categoryName - POI business category name"
+        - "zipCode - ZIP code for geographic filtering"
+        - "recordlimit - Maximum number of results to return"
+        - "searchdistance - Maximum distance for search (miles)"
+    
+    CommunityAPI_v2_0_0:
+      endpoints:
+        - "/communityapi/v2.0.0/area/full - Full community demographics and data; Parameters: AreaId"
+        - "/neighborhood/community - Community profile data; Parameters: geoIdV4, AreaId"
+      
+      data_categories:
+        - "Demographics - Population, households, age distribution, race, ethnicity"
+        - "Climate - Average temperature, precipitation, seasonal weather patterns"
+        - "Economics - Median income, employment rates, job growth, industry breakdown"
+        - "Education - School performance, graduation rates, education levels"
+        - "Housing - Home values, rental rates, vacancy rates, housing types"
+        - "Transportation - Commute times, transportation modes, walkability scores"
+      
+      key_parameters:
+        - "AreaId - Legacy area identifier for geographic region"
+        - "geoIdV4 - ATTOM's new geographic identifier (SHA hash)"
+    
+    ParcelTilesAPI:
+      endpoints:
+        - "/parceltiles/{z}/{x}/{y}.png - Parcel boundary raster tiles in PNG format; Parameters: apikey, z (zoom level), x (tile column), y (tile row)"
+      
+      usage:
+        - "Zoom levels: 14-18 (14=neighborhood view, 18=individual property view)"
+        - "Compatible with: Leaflet, Mapbox GL JS, ArcGIS Online, Google Maps API"
+        - "Tile format: Standard XYZ tile scheme"
+        - "Coordinate system: Web Mercator (EPSG:3857)"
+      
+      integration_examples:
+        - "Leaflet: L.tileLayer('https://api.gateway.attomdata.com/parceltiles/{z}/{x}/{y}.png?apikey=YOUR_KEY')"
+        - "Mapbox: Use with custom source type 'raster'"
+        - "ArcGIS: Use tile URL pattern with {level}/{col}/{row}"
+  
+  project_structure:
+    pkg_client: "Core HTTP client with authentication and rate limiting"
+    pkg_property: "PropertyAPI - property details, sales, assessments, AVM"
+    pkg_area: "AreaAPI - neighborhood and area statistics"
+    pkg_poi: "POIAPI - points of interest data"
+    pkg_community: "CommunityAPI - community and neighborhood profiles"
+    pkg_parcel: "ParcelTilesAPI - parcel boundaries and mapping"
+    pkg_models: "Shared data models and type definitions (with omitempty tags for optional fields)"
+    pkg_constants: "Generated type-safe constants from ATTOM vocabularies (auto-generated, do not edit)"
+    internal_scraper: "Web scraper to fetch vocabulary data from ATTOM Data Dictionary HTML pages"
+    internal_generator: "Code generator that transforms scraped vocabularies into Go constants"
+    cmd_refresh_vocab: "CLI tool that orchestrates scraping + generation to refresh constants file"
+    examples: "Usage examples for common scenarios"
+  
+  api_requirements:
+    authentication: "API key via X-API-Key header or query parameter"
+    rate_limiting: "Respect 429 responses with exponential backoff"
+    base_url: "https://api.gateway.attomdata.com/propertyapi/v1.0.0"
+    response_format: "JSON"
+  
+  data_model_quirks:
+    optional_fields: "JSON responses frequently have missing fields - use omitempty tags and pointers for optional fields"
+    inconsistent_casing: "Field names may have different casing across API groups - use json tags explicitly"
+    duplicate_models: "Similar models appear across API groups but may differ slightly - create separate types per API group"
+    field_presence: "Never assume a field will be present - always check for nil/zero values"
+
+tasks:
+  - name: "Initialize Go module and dependencies"
+    priority: 1
+    prompt: |
+      Create the Go module structure:
+      1. Run: go mod init github.com/my-eq/go-attom
+      2. Add initial dependencies:
+         - No external HTTP library needed (use stdlib net/http)
+         - Add testing dependencies: github.com/stretchr/testify
+      3. Create .gitignore with Go-specific entries
+      4. Set up basic project structure for all 5 API groups:
+         - pkg/client/
+         - pkg/models/
+         - pkg/property/    (PropertyAPI)
+         - pkg/area/        (AreaAPI)
+         - pkg/poi/         (POIAPI)
+         - pkg/community/   (CommunityAPI)
+         - pkg/parcel/      (ParcelTilesAPI)
+         - internal/scraper/
+         - internal/generator/
+         - examples/
+         - cmd/refresh-vocab/
+         - pkg/property/
+         - pkg/sale/
+         - pkg/assessment/
+         - pkg/avm/
+         - internal/scraper/
+         - examples/
+         - cmd/
+
+  - name: "Build core HTTP client"
+    priority: 2
+    prompt: |
+      Implement pkg/client/client.go with:
+      - Client struct with APIKey, BaseURL, HTTPClient fields
+      - NewClient constructor with functional options pattern
+      - DoRequest method with context support
+      - Exponential backoff for 429 responses (max 3 retries)
+      - X-API-Key header on all requests
+      - Typed error returns (RateLimitError, AuthError, etc.)
+      - Context cancellation support
+      - Optional request/response logging
+
+  - name: "Define base models and error types"
+    priority: 3
+    prompt: |
+      Create pkg/models/common.go with shared types:
+      
+      ```go
+      package models
+      
+      // APIResponse wraps all ATTOM API responses
+      type APIResponse struct {
+        Status  ResponseStatus `json:"status"`
+        Message string         `json:"message,omitempty"`
+      }
+      
+      type ResponseStatus struct {
+        Version   string `json:"version,omitempty"`
+        Code      int    `json:"code"`
+        Message   string `json:"msg,omitempty"`
+        Total     int    `json:"total,omitempty"`
+        RequestID string `json:"request_id,omitempty"`
+      }
+      
+      // ErrorResponse for API errors
+      type ErrorResponse struct {
+        Status  int    `json:"status"`
+        Message string `json:"message"`
+        Code    string `json:"code,omitempty"`
+      }
+      ```
+      
+      IMPORTANT - ATTOM API Data Model Quirks:
+      - Fields are frequently missing in JSON responses - use `omitempty` tags
+      - Use pointers (*string, *int, *float64) for optional fields
+      - Field casing may vary between API groups - always specify json tags explicitly
+      - Never assume a field will be present - validate before accessing
+      
+      Create pkg/client/errors.go with custom error types:
+      - ErrRateLimited
+      - ErrUnauthorized
+      - ErrNotFound
+      - ErrInvalidRequest
+      - ErrServerError
+
+  - name: "Implement PropertyAPI endpoints"
+    priority: 4
+    prompt: |
+      Build pkg/property/property.go for the PropertyAPI group (36+ endpoints across 9 categories):
+      
+      ```go
+      type Service struct {
+        client *client.Client
+      }
+      
+      func NewService(c *client.Client) *Service
+      
+      // ===== PROPERTY RESOURCES (11 endpoints) =====
+      func (s *Service) GetPropertyByID(ctx context.Context, attomID string) (*PropertyDetail, error)
+      func (s *Service) GetPropertyDetail(ctx context.Context, address string) (*PropertyDetail, error)
+      func (s *Service) GetPropertyAddress(ctx context.Context, params AddressParams) (*PropertyAddress, error)
+      func (s *Service) GetPropertySnapshot(ctx context.Context, address string) (*PropertySnapshot, error)
+      func (s *Service) GetBasicProfile(ctx context.Context, address string) (*BasicProfile, error)
+      func (s *Service) GetExpandedProfile(ctx context.Context, address string) (*ExpandedProfile, error)
+      func (s *Service) GetDetailWithSchools(ctx context.Context, address string) (*PropertyWithSchools, error)
+      func (s *Service) GetDetailMortgage(ctx context.Context, address string) (*PropertyMortgage, error)
+      func (s *Service) GetDetailOwner(ctx context.Context, address string) (*PropertyOwner, error)
+      func (s *Service) GetDetailMortgageOwner(ctx context.Context, address string) (*PropertyMortgageOwner, error)
+      func (s *Service) GetBuildingPermits(ctx context.Context, address string) (*BuildingPermits, error)
+      
+      // ===== SALE RESOURCES (2 endpoints) =====
+      func (s *Service) GetSaleDetail(ctx context.Context, address string) (*SaleDetail, error)
+      func (s *Service) GetSaleSnapshot(ctx context.Context, address string) (*SaleSnapshot, error)
+      
+      // ===== ASSESSMENT RESOURCES (3 endpoints) =====
+      func (s *Service) GetAssessmentDetail(ctx context.Context, address string) (*AssessmentDetail, error)
+      func (s *Service) GetAssessmentSnapshot(ctx context.Context, address string) (*AssessmentSnapshot, error)
+      func (s *Service) GetAssessmentHistory(ctx context.Context, address string) (*AssessmentHistory, error)
+      
+      // ===== AVM RESOURCES (4 endpoints) =====
+      func (s *Service) GetAVMSnapshot(ctx context.Context, address string) (*AVMSnapshot, error)
+      func (s *Service) GetAttomAVMDetail(ctx context.Context, address string) (*AttomAVMDetail, error)
+      func (s *Service) GetAVMHistory(ctx context.Context, address string) (*AVMHistory, error)
+      func (s *Service) GetRentalAVM(ctx context.Context, address string) (*RentalAVM, error)
+      
+      // ===== SALES HISTORY RESOURCES (4 endpoints) =====
+      func (s *Service) GetSalesHistoryDetail(ctx context.Context, address string) (*SalesHistoryDetail, error)
+      func (s *Service) GetSalesHistorySnapshot(ctx context.Context, address string) (*SalesHistorySnapshot, error)
+      func (s *Service) GetBasicHistory(ctx context.Context, address string) (*BasicHistory, error)
+      func (s *Service) GetExpandedHistory(ctx context.Context, address string) (*ExpandedHistory, error)
+      
+      // ===== SALES TREND RESOURCES (2 endpoints) =====
+      func (s *Service) GetSalesTrendSnapshot(ctx context.Context, params TrendParams) (*SalesTrendSnapshot, error)
+      func (s *Service) GetTransactionSalesTrend(ctx context.Context, params TransactionTrendParams) (*TransactionSalesTrend, error)
+      
+      // ===== SCHOOL RESOURCES (4 endpoints) =====
+      func (s *Service) SearchSchools(ctx context.Context, address string, radius float64) (*SchoolSearch, error)
+      func (s *Service) GetSchoolProfile(ctx context.Context, schoolID string) (*SchoolProfile, error)
+      func (s *Service) GetSchoolDistrict(ctx context.Context, address string) (*SchoolDistrict, error)
+      func (s *Service) GetPropertyDetailWithSchools(ctx context.Context, address string) (*PropertyWithSchools, error)
+      
+      // ===== ALL EVENTS (1 endpoint) =====
+      func (s *Service) GetAllEvents(ctx context.Context, address string) (*AllEvents, error)
+      ```
+      
+      KEY PARAMETERS to support:
+      - attomId, id - ATTOM property identifiers
+      - address, address1/address2 - Full or split address strings
+      - fips + APN - County FIPS + Assessor's Parcel Number
+      - latitude/longitude + radius - Geospatial search
+      - postalCode - ZIP code search
+      - geoIdV4 - ATTOM's new geographic identifier
+      - propertyType, propertyIndicator - Property type filters
+      - minBeds/maxBeds, minBathsTotal/maxBathsTotal - Property size
+      - minYearBuilt/maxYearBuilt - Construction year range
+      - minSaleAmt/maxSaleAmt - Sale price range
+      - startCalendarDate/endCalendarDate - Date ranges
+      - orderBy - Result sorting
+      
+      Define models in pkg/models/property.go with ALL fields as pointers or omitempty:
+      - PropertyDetail, PropertySnapshot, BasicProfile, ExpandedProfile
+      - PropertyWithSchools, PropertyMortgage, PropertyOwner, PropertyMortgageOwner
+      - BuildingPermits, SaleDetail, SaleSnapshot
+      - AssessmentDetail, AssessmentSnapshot, AssessmentHistory
+      - AVMSnapshot, AttomAVMDetail, AVMHistory, RentalAVM
+      - SalesHistoryDetail, SalesHistorySnapshot, BasicHistory, ExpandedHistory
+      - SalesTrendSnapshot, TransactionSalesTrend
+      - SchoolSearch, SchoolProfile, SchoolDistrict
+      - AllEvents
+      
+      Remember: Use pointers for all optional fields! Fields are frequently missing.
+
+  - name: "Implement AreaAPI endpoints"
+    priority: 5
+    prompt: |
+      Build pkg/area/area.go for the AreaAPI group (6 endpoints for geographic data):
+      
+      ```go
+      type Service struct {
+        client *client.Client
+      }
+      
+      func NewService(c *client.Client) *Service
+      
+      // ===== AREA LOOKUP ENDPOINTS (6 total) =====
+      func (s *Service) CountyLookup(ctx context.Context, stateID string) (*CountyLookup, error)
+      func (s *Service) AreaHierarchyLookup(ctx context.Context, params HierarchyParams) (*AreaHierarchy, error)
+      func (s *Service) StateLookup(ctx context.Context, params StateParams) (*StateLookup, error)
+      func (s *Service) BoundaryDetail(ctx context.Context, params BoundaryParams) (*BoundaryDetail, error)
+      func (s *Service) LegacyGeoIDLookup(ctx context.Context, geoID string) (*GeoIDLookup, error)
+      func (s *Service) GeoIDLookup(ctx context.Context, params GeoIDParams) (*GeoIDLookup, error)
+      ```
+      
+      KEY PARAMETERS to support:
+      - StateId - Two-letter state code
+      - wktstring - Well-Known Text geometry string
+      - geotype - Geographic boundary type (PZ/SB/DB/ZI/N1/N2/N3/N4/ST/CO/PL/CB)
+      - latitude/longitude - Coordinate pair for point-in-polygon lookup
+      - geoIdV4 - ATTOM's new geographic identifier (SHA hash)
+      - AreaId - Legacy area identifier
+      - format - Output format (geojson or wkt for boundary data)
+      
+      GEOTYPE VALUES:
+      - PZ: Parcel Zone
+      - SB: School Attendance Boundary
+      - DB: School District Boundary
+      - ZI: ZIP Code Tabulation Area
+      - N1: Macro Neighborhood
+      - N2: Neighborhood
+      - N3: Sub-Neighborhood
+      - N4: Residential Subdivision
+      - ST: State
+      - CO: County
+      - PL: Census Place
+      - CB: Census Block
+      
+      Create models in pkg/models/area.go with omitempty tags:
+      - CountyLookup, AreaHierarchy, StateLookup, BoundaryDetail, GeoIDLookup
+      - HierarchyParams, StateParams, BoundaryParams, GeoIDParams
+      
+      Note: Some fields may overlap with PropertyAPI models but have different casing - keep them separate!
+      Boundary endpoints return GeoJSON or WKT - handle geometry fields carefully.
+
+  - name: "Implement POIAPI endpoints"
+    priority: 6
+    prompt: |
+      Build pkg/poi/poi.go for the POIAPI group - Points of Interest (5 endpoints: 3 legacy v2.0.0 + 2 v4 neighborhood):
+      
+      ```go
+      type Service struct {
+        client *client.Client
+      }
+      
+      func NewService(c *client.Client) *Service
+      
+      // ===== LEGACY v2.0.0 ENDPOINTS (3 total) =====
+      func (s *Service) SearchByAddress(ctx context.Context, address string, params SearchParams) (*POIResults, error)
+      func (s *Service) SearchByGeography(ctx context.Context, zipCode string, params SearchParams) (*POIResults, error)
+      func (s *Service) SearchByPoint(ctx context.Context, lat, lon float64, radius float64, params SearchParams) (*POIResults, error)
+      
+      // ===== v4 NEIGHBORHOOD ENDPOINTS (2 total) =====
+      func (s *Service) SearchNeighborhoodPOI(ctx context.Context, params NeighborhoodSearchParams) (*NeighborhoodPOI, error)
+      func (s *Service) CategoryLookup(ctx context.Context, params CategoryParams) (*CategoryLookup, error)
+      ```
+      
+      KEY PARAMETERS to support:
+      - streetaddress - Full street address string
+      - zipcode - ZIP code for geographic centroid search
+      - point - Geospatial point in WKT format: POINT(longitude latitude)
+      - radius - Search radius in miles
+      - recordlimit - Maximum number of results to return
+      - searchdistance - Maximum distance for search (miles)
+      - address - Street address for geocoding
+      - categoryName - POI business category name
+      - LineOfBusinessName - Specific business line within category
+      - IndustryName - Industry classification
+      - categoryId - Numeric category identifier
+      
+      14 BUSINESS CATEGORIES:
+      1. ATTRACTIONS-RECREATION - Tourist attractions, entertainment venues, recreation facilities
+      2. AUTOMOTIVE SERVICES - Auto repair, gas stations, car washes, dealerships
+      3. BANKS-FINANCIAL - Banks, credit unions, ATMs, financial services
+      4. EATING-DRINKING - Restaurants, bars, cafes, food services
+      5. EDUCATION - Schools, colleges, libraries, tutoring
+      6. FARM-RANCH - Agricultural services, farms, ranches
+      7. GOVERNMENT-PUBLIC - Government offices, post offices, public services
+      8. HEALTH CARE SERVICES - Hospitals, clinics, doctors, dentists
+      9. HOSPITALITY - Hotels, motels, lodging
+      10. ORGANIZATIONS-ASSOCIATIONS - Non-profits, clubs, associations
+      11. PERSONAL SERVICES - Salons, dry cleaners, personal care
+      12. PET SERVICES - Veterinarians, pet stores, grooming
+      13. SHOPPING - Retail stores, malls, shopping centers
+      14. TRAVEL - Travel agencies, airlines, transportation
+      
+      Create models in pkg/models/poi.go with omitempty tags:
+      - POIResults, NeighborhoodPOI, CategoryLookup
+      - SearchParams, NeighborhoodSearchParams, CategoryParams
+      - POI (individual point of interest with name, address, category, distance)
+      
+      POI data is especially prone to missing fields - use pointers liberally!
+      Consider creating constants for the 14 business categories.
+
+  - name: "Implement CommunityAPI endpoints"
+    priority: 7
+    prompt: |
+      Build pkg/community/community.go for the CommunityAPI group (2 endpoints for community demographics and data):
+      
+      ```go
+      type Service struct {
+        client *client.Client
+      }
+      
+      func NewService(c *client.Client) *Service
+      
+      // ===== COMMUNITY ENDPOINTS (2 total) =====
+      func (s *Service) GetFullCommunityData(ctx context.Context, areaID string) (*FullCommunityData, error)
+      func (s *Service) GetNeighborhoodCommunity(ctx context.Context, params CommunityParams) (*NeighborhoodCommunity, error)
+      ```
+      
+      KEY PARAMETERS to support:
+      - AreaId - Legacy area identifier for geographic region
+      - geoIdV4 - ATTOM's new geographic identifier (SHA hash)
+      
+      6 DATA CATEGORIES provided by Community API:
+      1. Demographics - Population, households, age distribution, race, ethnicity
+      2. Climate - Average temperature, precipitation, seasonal weather patterns
+      3. Economics - Median income, employment rates, job growth, industry breakdown
+      4. Education - School performance, graduation rates, education levels
+      5. Housing - Home values, rental rates, vacancy rates, housing types
+      6. Transportation - Commute times, transportation modes, walkability scores
+      
+      Create models in pkg/models/community.go with omitempty tags:
+      - FullCommunityData (contains all 6 categories)
+      - NeighborhoodCommunity
+      - CommunityParams
+      - Demographics, Climate, Economics, Education, Housing, Transportation (sub-models)
+      
+      NOTE: Community data is highly nested with many optional statistical fields.
+      Use pointers for all numeric statistics and nested structs.
+
+  - name: "Implement ParcelTilesAPI endpoints"
+    priority: 8
+    prompt: |
+      Build pkg/parcel/parcel.go for the ParcelTilesAPI group (1 endpoint for raster tile visualization):
+      
+      ```go
+      type Service struct {
+        client *client.Client
+      }
+      
+      func NewService(c *client.Client) *Service
+      
+      // ===== PARCEL TILES ENDPOINT (1 total) =====
+      func (s *Service) GetParcelTile(ctx context.Context, z, x, y int) ([]byte, error)
+      func (s *Service) GetTileURL(z, x, y int) string
+      ```
+      
+      TILE SPECIFICATIONS:
+      - Endpoint: /parceltiles/{z}/{x}/{y}.png
+      - Format: PNG raster tiles (image/png)
+      - Zoom levels: 14-18
+        * 14 = Neighborhood view
+        * 18 = Individual property view
+      - Coordinate system: Web Mercator (EPSG:3857)
+      - Tile scheme: Standard XYZ tile scheme
+      
+      INTEGRATION EXAMPLES:
+      - Leaflet: L.tileLayer('https://api.gateway.attomdata.com/parceltiles/{z}/{x}/{y}.png?apikey=YOUR_KEY')
+      - Mapbox GL JS: Use with custom source type 'raster'
+      - ArcGIS Online: Use tile URL pattern with {level}/{col}/{row}
+      - Google Maps API: Use custom tile overlay
+      
+      Create models in pkg/models/parcel.go with omitempty tags:
+      - TileParams (with z, x, y coordinates and validation for zoom levels 14-18)
+      - TileCoordinates (helper for converting lat/lon to tile coordinates)
+      
+      NOTE: This endpoint returns raw PNG bytes, not JSON.
+      GetParcelTile should return []byte and error (not a struct).
+      Consider adding helper methods for coordinate conversion and tile URL generation.
+
+  - name: "Build vocabulary scraper"
+    priority: 9
+    prompt: |
+      Implement internal/scraper/scraper.go to scrape controlled vocabularies from ATTOM:
+      
+      ```go
+      package scraper
+      
+      type Scraper struct {
+        username   string
+        password   string
+        httpClient *http.Client
+      }
+      
+      type Vocabulary struct {
+        FieldName   string
+        Description string
+        Values      []VocabValue
+      }
+      
+      type VocabValue struct {
+        Code        string
+        Description string
+      }
+      
+      func NewScraper(username, password string) *Scraper
+      func (s *Scraper) Login(ctx context.Context) error
+      func (s *Scraper) FetchVocabularies(ctx context.Context) ([]Vocabulary, error)
+      ```
+      
+      The scraper should:
+      1. Authenticate with ATTOM developer portal using provided credentials
+      2. Navigate to the Data Dictionary page
+      3. Parse HTML tables containing field definitions and enumerated values
+      4. Extract controlled vocabulary values (e.g., property types, occupancy status)
+      5. Return structured vocabulary data (NOT generate code - that's the generator's job)
+      
+      Use a headless browser or HTML parser as needed.
+
+  - name: "Create constant generator"
+    priority: 9
+    prompt: |
+      Implement internal/generator/generator.go to transform vocabularies into Go code:
+      
+      ```go
+      package generator
+      
+      type Generator struct {
+        packageName string
+      }
+      
+      func NewGenerator(packageName string) *Generator
+      func (g *Generator) GenerateConstants(vocabs []scraper.Vocabulary, outputPath string) error
+      ```
+      
+      The generator should:
+      1. Accept scraped vocabulary data
+      2. Generate type-safe Go constants file at outputPath
+      3. Use text/template for code generation
+      
+      Template output format:
+      ```go
+      // Code generated by go-attom vocabulary refresh; DO NOT EDIT.
+      // Source: https://cloud-help.attomdata.com/article/600-data-dictionary
+      // Generated: 2025-11-01 14:30:00 UTC
+      
+      package constants
+      
+      // OccupancyStatus represents property occupancy status values
+      type OccupancyStatus string
+      
+      const (
+        OccupancyOwner  OccupancyStatus = "OWNER OCCUPIED"   // Owner occupied
+        OccupancyTenant OccupancyStatus = "TENANT OCCUPIED"  // Tenant occupied
+        OccupancyVacant OccupancyStatus = "VACANT"           // Vacant
+      )
+      
+      // AllOccupancyStatusValues returns all valid OccupancyStatus values
+      func AllOccupancyStatusValues() []OccupancyStatus {
+        return []OccupancyStatus{
+          OccupancyOwner,
+          OccupancyTenant,
+          OccupancyVacant,
+        }
+      }
+      
+      // IsValid checks if the OccupancyStatus value is valid
+      func (o OccupancyStatus) IsValid() bool {
+        for _, v := range AllOccupancyStatusValues() {
+          if v == o {
+            return true
+          }
+        }
+        return false
+      }
+      ```
+
+  - name: "Create vocabulary refresh CLI tool"
+    priority: 10
+    prompt: |
+      Implement cmd/refresh-vocab/main.go as the orchestration script:
+      
+      ```go
+      package main
+      
+      import (
+        "context"
+        "flag"
+        "fmt"
+        "log"
+        "os"
+        
+        "github.com/my-eq/go-attom/internal/generator"
+        "github.com/my-eq/go-attom/internal/scraper"
+      )
+      
+      func main() {
+        username := flag.String("username", "", "ATTOM developer portal username")
+        password := flag.String("password", "", "ATTOM developer portal password")
+        output := flag.String("output", "pkg/constants/vocabularies.go", "Output file path")
+        flag.Parse()
+        
+        // Get credentials from env if not provided
+        if *username == "" {
+          *username = os.Getenv("ATTOM_USERNAME")
+        }
+        if *password == "" {
+          *password = os.Getenv("ATTOM_PASSWORD")
+        }
+        
+        ctx := context.Background()
+        
+        // Step 1: Scrape vocabularies from ATTOM
+        log.Println("Scraping vocabularies from ATTOM Data Dictionary...")
+        s := scraper.NewScraper(*username, *password)
+        if err := s.Login(ctx); err != nil {
+          log.Fatalf("Failed to login: %v", err)
+        }
+        
+        vocabs, err := s.FetchVocabularies(ctx)
+        if err != nil {
+          log.Fatalf("Failed to fetch vocabularies: %v", err)
+        }
+        log.Printf("Scraped %d vocabularies", len(vocabs))
+        
+        // Step 2: Generate Go constants file
+        log.Println("Generating constants file...")
+        g := generator.NewGenerator("constants")
+        if err := g.GenerateConstants(vocabs, *output); err != nil {
+          log.Fatalf("Failed to generate constants: %v", err)
+        }
+        
+        log.Printf("Successfully generated %s", *output)
+        log.Println("Run 'go fmt' and 'go test' to validate the generated code")
+      }
+      ```
+      
+      This CLI tool:
+      - Reads ATTOM credentials from flags or environment variables
+      - Calls the scraper to fetch vocabulary data
+      - Calls the generator to create the constants file
+      - Provides clear logging and error messages
+      
+      Usage examples:
+      - go run cmd/refresh-vocab/main.go
+      - ATTOM_USERNAME=user ATTOM_PASSWORD=pass go run cmd/refresh-vocab/main.go
+      - make refresh-vocab
+
+  - name: "Write comprehensive tests"
+    priority: 11
+    prompt: |
+      Create test files for each package:
+      
+      1. pkg/client/client_test.go - test request building, mocks, retry logic, errors
+      2. pkg/property/property_test.go - test PropertyAPI endpoints with mocked responses
+      3. pkg/area/area_test.go - test AreaAPI endpoints
+      4. pkg/poi/poi_test.go - test POIAPI endpoints
+      5. pkg/community/community_test.go - test CommunityAPI endpoints
+      6. pkg/parcel/parcel_test.go - test ParcelTilesAPI endpoints
+      7. internal/scraper/scraper_test.go - test HTML parsing with mock responses
+      8. internal/generator/generator_test.go - test code generation with sample vocabularies
+      9. tests/integration_test.go - integration tests requiring ATTOM_API_KEY
+      
+      IMPORTANT: Test optional field handling - responses with missing fields should not panic!
+      
+      Use table-driven tests and testify assertions.
+      Target >80% code coverage.
+
+  - name: "Create usage examples"
+    priority: 12
+    prompt: |
+      Build example programs in examples/ covering all 5 API groups:
+      
+      PropertyAPI examples:
+      1. examples/property_lookup/main.go - basic property detail lookup
+      2. examples/sales_history/main.go - fetch sale history
+      3. examples/property_avm/main.go - get automated valuations
+      
+      AreaAPI examples:
+      4. examples/area_stats/main.go - neighborhood statistics
+      
+      POIAPI examples:
+      5. examples/nearby_schools/main.go - find schools near address
+      
+      CommunityAPI examples:
+      6. examples/community_profile/main.go - community demographics
+      
+      ParcelTilesAPI examples:
+      7. examples/parcel_boundary/main.go - get parcel boundaries
+      
+      Other:
+      8. examples/refresh_vocabularies/main.go - demonstrate manual vocabulary refresh
+      
+      Each example should:
+      - Read API key from environment
+      - Show proper error handling
+      - Handle missing/optional fields gracefully
+      - Print results in readable format
+      - Include comments explaining the code
+      - Print results in readable format
+      - Include helpful comments
+
+  - name: "Write comprehensive documentation"
+    priority: 13
+    prompt: |
+      Update README.md with:
+      - Features section listing all endpoints and capabilities
+      - Installation instructions
+      - Quick start guide with basic example
+      - Usage documentation for each service
+      - Configuration options
+      - Error handling guide
+      - Vocabulary refresh instructions (how to update constants)
+      - Testing instructions
+      - Contributing guidelines
+      - License information
+      
+      Add a section explaining the vocabulary refresh workflow:
+      ```markdown
+      ## Refreshing Vocabularies
+      
+      The constants in `pkg/constants/vocabularies.go` are auto-generated from 
+      ATTOM's Data Dictionary. To refresh them:
+      
+      ### Manual Refresh
+      ```bash
+      export ATTOM_USERNAME=your-username
+      export ATTOM_PASSWORD=your-password
+      go run cmd/refresh-vocab/main.go
+      ```
+      
+      ### Automated Weekly Refresh
+      The GitHub Actions workflow automatically scrapes and updates vocabularies 
+      every Monday at 2 AM UTC, creating a pull request with changes.
+      ```
+      
+      Also create CONTRIBUTING.md, CHANGELOG.md, and godoc comments
+
+  - name: "Setup CI/CD pipeline"
+    priority: 14
+    prompt: |
+      Create .github/workflows/ci.yml for:
+      - Running tests on Go 1.21, 1.22, 1.23
+      - go vet, go fmt checks
+      - golangci-lint
+      - Coverage reporting
+      
+      Create .github/workflows/vocab-update.yml for automated vocabulary refresh:
+      ```yaml
+      name: Update Vocabularies
+      
+      on:
+        schedule:
+          - cron: '0 2 * * 1'  # Weekly on Monday at 2 AM UTC
+        workflow_dispatch:      # Allow manual trigger
+      
+      jobs:
+        update-vocabularies:
+          runs-on: ubuntu-latest
+          steps:
+            - uses: actions/checkout@v4
+            - uses: actions/setup-go@v5
+              with:
+                go-version: '1.23'
+            
+            - name: Run vocabulary refresh script
+              env:
+                ATTOM_USERNAME: ${{ secrets.ATTOM_USERNAME }}
+                ATTOM_PASSWORD: ${{ secrets.ATTOM_PASSWORD }}
+              run: go run cmd/refresh-vocab/main.go
+            
+            - name: Format generated code
+              run: go fmt ./pkg/constants/...
+            
+            - name: Verify generated code compiles
+              run: go build ./...
+            
+            - name: Create Pull Request
+              uses: peter-evans/create-pull-request@v5
+              with:
+                commit-message: 'chore: update ATTOM vocabulary constants'
+                title: 'Update ATTOM Vocabularies'
+                body: |
+                  Automated vocabulary update from ATTOM Data Dictionary
+                  
+                  This PR updates the generated constants in pkg/constants/vocabularies.go
+                  based on the latest controlled vocabularies from ATTOM's Data Dictionary.
+                  
+                  Please review the changes and merge if they look correct.
+                branch: 'vocab-update'
+                delete-branch: true
+      ```
+
+  - name: "Add developer tooling"
+    priority: 15
+    prompt: |
+      Create Makefile with useful targets:
+      
+      ```makefile
+      .PHONY: test lint fmt build install clean refresh-vocab examples
+      
+      test:
+      	go test -v -race ./...
+      
+      test-coverage:
+      	go test -v -race -coverprofile=coverage.out ./...
+      	go tool cover -html=coverage.out
+      
+      lint:
+      	golangci-lint run
+      
+      fmt:
+      	gofmt -s -w .
+      	go mod tidy
+      
+      build:
+      	go build ./...
+      
+      install:
+      	go install ./cmd/...
+      
+      refresh-vocab:
+      	@echo "Refreshing ATTOM vocabularies..."
+      	go run cmd/refresh-vocab/main.go
+      	go fmt ./pkg/constants/...
+      	@echo "Done! Don't forget to commit the changes."
+      
+      examples:
+      	go build -o bin/basic-lookup examples/basic_lookup/main.go
+      	go build -o bin/sales-history examples/sales_history/main.go
+      
+      clean:
+      	rm -rf bin/ coverage.out
+      
+      .DEFAULT_GOAL := test
+      ```
+      
+      Also create:
+      - .golangci.yml with linter configuration
+      - .editorconfig for consistent formatting
+      - tools.go for tool dependencies
+
+config:
+  language: go
+  framework: "stdlib (net/http)"
+  testing: "go test with testify"
+  versioning: semver
+  license: MIT
+  ci: github-actions
+  browser_tools: enabled
+  authenticated_web_access: true
+  go_version: "1.21+"
+  code_style: "gofmt + golangci-lint"
+
+quality_standards:
+  code_coverage: ">80%"
+  linting: "golangci-lint with all recommended linters"
+  formatting: "gofmt -s"
+  documentation: "godoc for all exported types"
+  testing: "unit tests + integration tests"
+  error_handling: "typed errors with context"
+
+examples:
+  - "PropertyAPI: Lookup property details, sales history, assessments, AVM valuations"
+  - "AreaAPI: Get neighborhood statistics and market trends"
+  - "POIAPI: Find nearby schools, parks, and amenities"
+  - "CommunityAPI: Retrieve community profiles and demographics"
+  - "ParcelTilesAPI: Fetch parcel boundaries and GeoJSON data"
+  - "Handle missing/optional fields in JSON responses safely"
+  - "Handle rate limiting with automatic retries"
+  - "Refresh vocabulary constants: scrape ATTOM Data Dictionary → generate Go constants file"
+
+automation:
+  vocabulary_sync:
+    schedule: "Weekly on Monday at 2 AM UTC"
+    workflow: ".github/workflows/vocab-update.yml"
+    process: |
+      1. Scraper authenticates to ATTOM developer portal
+      2. Scraper fetches vocabulary tables from Data Dictionary HTML
+      3. Generator transforms scraped data into Go constants
+      4. Script (cmd/refresh-vocab) orchestrates scraper + generator
+      5. GitHub Action runs script and creates PR with changes
+    output: "pkg/constants/vocabularies.go (auto-generated, do not edit manually)"
+  
+  testing:
+    on: "push, pull_request"
+    go_versions:
+      - "1.21"
+      - "1.22"
+      - "1.23"
+  
+  linting:
+    on: "push, pull_request"
+    tools:
+      - golangci-lint
+      - go vet
+      - go fmt
+
+best_practices:
+  handling_optional_fields: |
+    ATTOM API responses frequently have missing fields. Follow these patterns:
+    
+    1. Use pointers for optional fields:
+       type Property struct {
+         Address  string   `json:"address"`           // Required
+         ZipCode  *string  `json:"zipCode,omitempty"` // Optional
+         YearBuilt *int    `json:"yearBuilt,omitempty"` // Optional
+       }
+    
+    2. Always check before accessing:
+       if prop.YearBuilt != nil {
+         year := *prop.YearBuilt
+       }
+    
+    3. Use omitempty for all JSON tags:
+       `json:"fieldName,omitempty"`
+    
+    4. Never assume a field exists - validate first
+  
+  handling_model_variations: |
+    Similar models across API groups may have subtle differences:
+    
+    1. Keep models separate per API group (property.Property vs area.Property)
+    2. Don't try to share models between API groups
+    3. Explicitly specify all json tags with exact casing from API docs
+    4. Document differences in comments when models look similar
+  
+  api_specific_notes:
+    PropertyAPI: "Most comprehensive - includes sales, assessments, AVM"
+    AreaAPI: "Aggregate data - fewer optional fields but still check for nil"
+    POIAPI: "Highly variable - POI availability differs by location"
+    CommunityAPI: "Demographic data - may be sparse for some areas"
+    ParcelTilesAPI: "GeoJSON responses - handle geometry types carefully"

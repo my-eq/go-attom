@@ -1,0 +1,596 @@
+# GitHub Copilot Agent Definition
+# Purpose: Build and maintain a production-ready Golang client for the ATTOM Property API
+# Author: Kevin Mesiab
+# Date: 2025-11-01
+# Version: 2.0
+
+name: "attom-client"
+description: |
+  A production-ready Go client for the ATTOM Property Data API featuring:
+  - Idiomatic Go design with context support and error handling
+  - Complete endpoint coverage for Property, Sale, Assessment, and AVM APIs
+  - Automatic constant generation from ATTOM Data Dictionary
+  - Type-safe request/response models with validation
+  - Comprehensive testing with mocks and integration tests
+  - Full documentation and usage examples
+
+goals:
+  - "Build an idiomatic Go client package with proper error handling"
+  - "Generate type-safe constants for all ATTOM enumerated vocabularies"
+  - "Implement all major ATTOM API endpoints (Property, Sale, Assessment, AVM)"
+  - "Provide comprehensive testing with >80% code coverage"
+  - "Maintain clean, well-documented, lint-free code"
+  - "Enable automated vocabulary updates via web scraping"
+
+triggers:
+  - user_request: "create or update Go client for ATTOM API"
+  - user_request: "generate constants from ATTOM vocabularies"
+  - file_created: "*.go"
+  - file_updated: "*.go"
+  - comment: "@copilot build attom client"
+  - comment: "@copilot update attom constants"
+
+context:
+  api_documentation:
+    - "https://api.developer.attomdata.com/docs"
+    - "https://cloud-help.attomdata.com/article/600-data-dictionary"
+    - "https://developer.attomdata.com/documentation"
+  
+  project_structure:
+    pkg_client: "Core HTTP client with authentication and rate limiting"
+    pkg_property: "Property API endpoints and methods"
+    pkg_sale: "Sale/transaction API endpoints"
+    pkg_assessment: "Assessment and tax data endpoints"
+    pkg_avm: "Automated Valuation Model endpoints"
+    pkg_models: "Shared data models and type definitions"
+    pkg_constants: "Generated constants from ATTOM vocabularies"
+    internal_scraper: "Web scraper for vocabulary extraction"
+    examples: "Usage examples for common scenarios"
+  
+  api_requirements:
+    authentication: "API key via X-API-Key header or query parameter"
+    rate_limiting: "Respect 429 responses with exponential backoff"
+    base_url: "https://api.gateway.attomdata.com/propertyapi/v1.0.0"
+    response_format: "JSON"
+
+tasks:
+
+  - name: "Initialize Go module and dependencies"
+    priority: 1
+    prompt: |
+      Create the Go module structure:
+      1. Run `go mod init github.com/my-eq/go-attom`
+      2. Add initial dependencies:
+         - No external HTTP library needed (use stdlib net/http)
+         - Add testing dependencies: github.com/stretchr/testify
+      3. Create `.gitignore` with Go-specific entries
+      4. Set up basic project structure:
+         - pkg/client/
+         - pkg/models/
+         - pkg/property/
+         - pkg/sale/
+         - pkg/assessment/
+         - pkg/avm/
+         - internal/scraper/
+         - examples/
+         - cmd/
+
+  - name: "Build core HTTP client"
+    priority: 2
+    prompt: |
+      Implement `pkg/client/client.go` with the following structure:
+      
+      ```go
+      package client
+      
+      import (
+        "context"
+        "encoding/json"
+        "fmt"
+        "io"
+        "net/http"
+        "net/url"
+        "time"
+      )
+      
+      const (
+        DefaultBaseURL = "https://api.gateway.attomdata.com/propertyapi/v1.0.0"
+        DefaultTimeout = 30 * time.Second
+      )
+      
+      type Client struct {
+        APIKey     string
+        BaseURL    string
+        HTTPClient *http.Client
+      }
+      
+      type Option func(*Client)
+      
+      func NewClient(apiKey string, opts ...Option) *Client
+      func WithBaseURL(url string) Option
+      func WithHTTPClient(client *http.Client) Option
+      func (c *Client) DoRequest(ctx context.Context, method, path string, params url.Values, result interface{}) error
+      ```
+      
+      Requirements:
+      - Add X-API-Key header to all requests
+      - Implement exponential backoff for 429 responses (max 3 retries)
+      - Return typed errors (RateLimitError, AuthError, etc.)
+      - Support context cancellation
+      - Add request/response logging (debug mode)
+
+  - name: "Define base models and error types"
+    priority: 3
+    prompt: |
+      Create `pkg/models/common.go` with shared types:
+      
+      ```go
+      package models
+      
+      // APIResponse wraps all ATTOM API responses
+      type APIResponse struct {
+        Status  ResponseStatus `json:"status"`
+        Message string         `json:"message,omitempty"`
+      }
+      
+      type ResponseStatus struct {
+        Version     string `json:"version"`
+        Code        int    `json:"code"`
+        Message     string `json:"msg"`
+        Total       int    `json:"total"`
+        RequestID   string `json:"request_id,omitempty"`
+      }
+      
+      // Common error types
+      type ErrorResponse struct {
+        Status  int    `json:"status"`
+        Message string `json:"message"`
+        Code    string `json:"code,omitempty"`
+      }
+      ```
+      
+      Create `pkg/client/errors.go` with custom error types:
+      - ErrRateLimited
+      - ErrUnauthorized
+      - ErrNotFound
+      - ErrInvalidRequest
+      - ErrServerError
+
+  - name: "Implement Property API endpoints"
+    priority: 4
+    prompt: |
+      Build `pkg/property/property.go` with these methods:
+      
+      ```go
+      type Service struct {
+        client *client.Client
+      }
+      
+      func NewService(c *client.Client) *Service
+      
+      // GetDetail retrieves detailed property information
+      func (s *Service) GetDetail(ctx context.Context, address string) (*PropertyDetail, error)
+      
+      // GetDetailByID retrieves property by ATTOM ID
+      func (s *Service) GetDetailByID(ctx context.Context, attomID string) (*PropertyDetail, error)
+      
+      // Search performs a property search with filters
+      func (s *Service) Search(ctx context.Context, params SearchParams) (*SearchResults, error)
+      
+      // GetSnapshot returns property snapshot data
+      func (s *Service) GetSnapshot(ctx context.Context, address string) (*PropertySnapshot, error)
+      ```
+      
+      Define corresponding request/response models in `pkg/models/property.go`:
+      - PropertyDetail
+      - PropertySnapshot
+      - SearchParams (with builder pattern)
+      - SearchResults
+
+  - name: "Implement Sale/Transaction endpoints"
+    priority: 5
+    prompt: |
+      Build `pkg/sale/sale.go` following the same pattern as property service:
+      
+      ```go
+      type Service struct {
+        client *client.Client
+      }
+      
+      func NewService(c *client.Client) *Service
+      func (s *Service) GetSaleDetail(ctx context.Context, address string) (*SaleDetail, error)
+      func (s *Service) GetSaleHistory(ctx context.Context, address string) (*SaleHistory, error)
+      func (s *Service) SearchSales(ctx context.Context, params SearchParams) (*SaleResults, error)
+      ```
+      
+      Create models in `pkg/models/sale.go`
+
+  - name: "Implement Assessment/Tax endpoints"
+    priority: 6
+    prompt: |
+      Build `pkg/assessment/assessment.go`:
+      
+      ```go
+      type Service struct {
+        client *client.Client
+      }
+      
+      func NewService(c *client.Client) *Service
+      func (s *Service) GetAssessment(ctx context.Context, address string) (*Assessment, error)
+      func (s *Service) GetTaxHistory(ctx context.Context, address string) (*TaxHistory, error)
+      ```
+      
+      Create models in `pkg/models/assessment.go`
+
+  - name: "Implement AVM (Automated Valuation) endpoints"
+    priority: 7
+    prompt: |
+      Build `pkg/avm/avm.go`:
+      
+      ```go
+      type Service struct {
+        client *client.Client
+      }
+      
+      func NewService(c *client.Client) *Service
+      func (s *Service) GetValuation(ctx context.Context, address string) (*Valuation, error)
+      func (s *Service) GetValueRange(ctx context.Context, address string) (*ValueRange, error)
+      ```
+      
+      Create models in `pkg/models/avm.go`
+
+  - name: "Build vocabulary scraper"
+    priority: 8
+    prompt: |
+      Implement `internal/scraper/scraper.go` to extract controlled vocabularies:
+      
+      ```go
+      package scraper
+      
+      type VocabScraper struct {
+        username string
+        password string
+        client   *http.Client
+      }
+      
+      type Vocabulary struct {
+        FieldName   string
+        Description string
+        Values      []VocabValue
+      }
+      
+      type VocabValue struct {
+        Code        string
+        Description string
+      }
+      
+      func NewScraper(username, password string) *VocabScraper
+      func (s *VocabScraper) Login(ctx context.Context) error
+      func (s *VocabScraper) FetchVocabularies(ctx context.Context) ([]Vocabulary, error)
+      func (s *VocabScraper) GenerateConstants(vocabs []Vocabulary, outputPath string) error
+      ```
+      
+      The scraper should:
+      1. Authenticate with ATTOM developer portal
+      2. Navigate to data dictionary page
+      3. Parse HTML tables containing field definitions
+      4. Extract enumerated values
+      5. Generate Go constants file
+
+  - name: "Create constant generator"
+    priority: 9
+    prompt: |
+      Implement `internal/scraper/generator.go` to generate type-safe constants:
+      
+      Template for generated code:
+      ```go
+      // Code generated by go-attom scraper; DO NOT EDIT.
+      // Source: https://cloud-help.attomdata.com/article/600-data-dictionary
+      // Generated: {{ .Timestamp }}
+      
+      package constants
+      
+      // {{ .FieldDescription }}
+      type {{ .TypeName }} string
+      
+      const (
+        {{ range .Values }}
+        {{ .ConstName }} {{ $.TypeName }} = "{{ .Code }}"  // {{ .Description }}
+        {{ end }}
+      )
+      
+      // All{{ .TypeName }}Values returns all valid values
+      func All{{ .TypeName }}Values() []{{ .TypeName }} {
+        return []{{ .TypeName }}{
+          {{ range .Values }}{{ .ConstName }},{{ end }}
+        }
+      }
+      ```
+      
+      Add validation method for each type
+
+  - name: "Write comprehensive tests"
+    priority: 10
+    prompt: |
+      Create test files for each package:
+      
+      1. `pkg/client/client_test.go`:
+         - Test request building
+         - Mock HTTP responses
+         - Test retry logic with httptest.Server
+         - Test error handling
+      
+      2. `pkg/property/property_test.go`:
+         - Test each endpoint method
+         - Mock API responses
+         - Test parameter validation
+      
+      3. Integration tests in `tests/integration_test.go`:
+         - Requires ATTOM_API_KEY env var
+         - Skip if not present
+         - Test real API calls (limited set)
+      
+      Use table-driven tests and testify assertions.
+      Target >80% code coverage.
+
+  - name: "Create usage examples"
+    priority: 11
+    prompt: |
+      Build example programs in `examples/`:
+      
+      1. `examples/basic_lookup/main.go`:
+         ```go
+         // Demonstrates basic property lookup
+         ```
+      
+      2. `examples/sales_history/main.go`:
+         ```go
+         // Shows how to fetch and display sale history
+         ```
+      
+      3. `examples/batch_valuation/main.go`:
+         ```go
+         // Batch AVM valuations for multiple properties
+         ```
+      
+      4. `examples/custom_search/main.go`:
+         ```go
+         // Advanced search with multiple filters
+         ```
+      
+      Each example should:
+      - Read API key from environment
+      - Show error handling
+      - Print results in readable format
+      - Include comments explaining the code
+
+  - name: "Write comprehensive documentation"
+    priority: 12
+    prompt: |
+      Update `README.md` with:
+      
+      ## Features
+      - List all supported endpoints
+      - Highlight key features (retry logic, context support, etc.)
+      
+      ## Installation
+      ```bash
+      go get github.com/my-eq/go-attom
+      ```
+      
+      ## Quick Start
+      - Basic usage example
+      - API key setup instructions
+      
+      ## Usage
+      - Document each service (Property, Sale, Assessment, AVM)
+      - Show common use cases
+      - Link to examples/
+      
+      ## Configuration
+      - Environment variables
+      - Client options
+      - Custom HTTP client
+      
+      ## Error Handling
+      - Document error types
+      - Show retry behavior
+      - Best practices
+      
+      ## Testing
+      - How to run tests
+      - Integration test setup
+      
+      ## Contributing
+      - Code style guidelines
+      - How to add new endpoints
+      
+      ## License
+      
+      Also create:
+      - `CONTRIBUTING.md`
+      - `CHANGELOG.md`
+      - Package documentation (godoc) for all exported types
+
+  - name: "Setup CI/CD pipeline"
+    priority: 13
+    prompt: |
+      Create `.github/workflows/ci.yml`:
+      
+      ```yaml
+      name: CI
+      
+      on: [push, pull_request]
+      
+      jobs:
+        test:
+          runs-on: ubuntu-latest
+          strategy:
+            matrix:
+              go-version: ['1.21', '1.22', '1.23']
+          
+          steps:
+            - uses: actions/checkout@v4
+            - uses: actions/setup-go@v5
+              with:
+                go-version: ${{ matrix.go-version }}
+            
+            - name: Install dependencies
+              run: go mod download
+            
+            - name: Run go vet
+              run: go vet ./...
+            
+            - name: Run go fmt
+              run: |
+                if [ -n "$(gofmt -s -l .)" ]; then
+                  echo "Go code is not formatted:"
+                  gofmt -s -d .
+                  exit 1
+                fi
+            
+            - name: Run tests
+              run: go test -v -race -coverprofile=coverage.txt -covermode=atomic ./...
+            
+            - name: Upload coverage
+              uses: codecov/codecov-action@v3
+              with:
+                file: ./coverage.txt
+        
+        lint:
+          runs-on: ubuntu-latest
+          steps:
+            - uses: actions/checkout@v4
+            - uses: golangci/golangci-lint-action@v3
+              with:
+                version: latest
+      ```
+      
+      Create `.github/workflows/vocab-update.yml` for weekly scraping:
+      ```yaml
+      name: Update Vocabularies
+      
+      on:
+        schedule:
+          - cron: '0 2 * * 1'  # Weekly on Monday at 2 AM
+        workflow_dispatch:  # Allow manual trigger
+      
+      jobs:
+        update:
+          runs-on: ubuntu-latest
+          steps:
+            - uses: actions/checkout@v4
+            - uses: actions/setup-go@v5
+            
+            - name: Run scraper
+              env:
+                ATTOM_USERNAME: ${{ secrets.ATTOM_USERNAME }}
+                ATTOM_PASSWORD: ${{ secrets.ATTOM_PASSWORD }}
+              run: go run cmd/scraper/main.go
+            
+            - name: Create Pull Request
+              uses: peter-evans/create-pull-request@v5
+              with:
+                commit-message: 'chore: update ATTOM vocabulary constants'
+                title: 'Update ATTOM Vocabularies'
+                body: 'Automated vocabulary update from ATTOM Data Dictionary'
+                branch: 'vocab-update'
+      ```
+
+  - name: "Add developer tooling"
+    priority: 14
+    prompt: |
+      Create useful Make targets in `Makefile`:
+      
+      ```makefile
+      .PHONY: test lint fmt build install clean scrape examples
+      
+      test:
+      	go test -v -race ./...
+      
+      test-coverage:
+      	go test -v -race -coverprofile=coverage.out ./...
+      	go tool cover -html=coverage.out
+      
+      lint:
+      	golangci-lint run
+      
+      fmt:
+      	gofmt -s -w .
+      	go mod tidy
+      
+      build:
+      	go build ./...
+      
+      install:
+      	go install ./cmd/...
+      
+      scrape:
+      	go run cmd/scraper/main.go
+      
+      examples:
+      	go build -o bin/basic-lookup examples/basic_lookup/main.go
+      	go build -o bin/sales-history examples/sales_history/main.go
+      
+      clean:
+      	rm -rf bin/ coverage.out
+      
+      .DEFAULT_GOAL := test
+      ```
+      
+      Also create:
+      - `.golangci.yml` with linter configuration
+      - `.editorconfig` for consistent formatting
+      - `tools.go` for tool dependencies
+
+config:
+  language: go
+  framework: stdlib (net/http)
+  testing: "go test with testify"
+  versioning: semver
+  license: MIT
+  ci: github-actions
+  browser_tools: enabled
+  authenticated_web_access: true
+  go_version: "1.21+"
+  code_style: "gofmt + golangci-lint"
+
+quality_standards:
+  code_coverage: ">80%"
+  linting: "golangci-lint with all recommended linters"
+  formatting: "gofmt -s"
+  documentation: "godoc for all exported types"
+  testing: "unit tests + integration tests"
+  error_handling: "typed errors with context"
+
+examples:
+  - "Initialize client and fetch property details by address"
+  - "Search properties with custom filters"
+  - "Retrieve sale history for a property"
+  - "Get AVM valuation with confidence scores"
+  - "Batch process multiple properties"
+  - "Handle rate limiting and retries"
+  - "Update vocabulary constants from ATTOM data dictionary"
+
+automation:
+  vocabulary_sync:
+    schedule: "Weekly on Monday at 2 AM UTC"
+    action: "Scrape ATTOM Data Dictionary and create PR with updated constants"
+  
+  testing:
+    on: "push, pull_request"
+    matrix:
+      - "Go 1.21"
+      - "Go 1.22"
+      - "Go 1.23"
+  
+  - "Go 1.23"
+  
+  linting:
+    on: "push, pull_request"
+    tools:
+      - golangci-lint
+      - go vet
+      - go fmt
+````
+
