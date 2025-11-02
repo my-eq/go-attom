@@ -102,4 +102,8 @@ jobs:
       - name: Verify dependencies
         run: |
           go mod tidy
-          git diff --exit-code go.mod go.sum
+          if [ -f go.sum ]; then
+            git diff --exit-code go.mod go.sum
+          else
+            git diff --exit-code go.mod
+          fi
