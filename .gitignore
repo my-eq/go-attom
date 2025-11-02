@@ -1,3 +1,26 @@
 .env
 .DS_Store
 .vscode
+
+# Go artifacts
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+coverage.out
+coverage.html
+go.work
+go.work.sum
+
+# Build artifacts
+/bin/
+/dist/
+
+# IDE
+.idea/
+*.swp
+*.swo
+*~
