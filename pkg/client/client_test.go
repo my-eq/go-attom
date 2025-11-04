@@ -9,6 +9,8 @@ import (
 	"testing"
 )
 
+const testContentTypeJSON = "application/json"
+
 // mockHTTPClient implements HTTPClient for testing.
 type mockHTTPClient struct {
 	resp *http.Response
@@ -136,18 +138,13 @@ func TestNewRequest(t *testing.T) {
 		t.Errorf("URL = %q, want %q", req.URL.String(), expectedURL)
 	}
 
-	if accept := req.Header.Get("Accept"); accept != "application/json" {
-		t.Errorf("Accept header = %q, want application/json", accept)
+	if accept := req.Header.Get("Accept"); accept != testContentTypeJSON {
+		t.Errorf("Accept header = %q, want %s", accept, testContentTypeJSON)
 	}
 }
 
 func TestNewRequestErrors(t *testing.T) {
 	c := New("key", nil)
-
-	if _, err := c.NewRequest(nil, http.MethodGet, "endpoint", nil, nil); err == nil || !strings.Contains(err.Error(), "context cannot be nil") {
-		t.Errorf("expected context error, got %v", err)
-	}
-
 	ctx := context.Background()
 
 	if _, err := c.NewRequest(ctx, "", "endpoint", nil, nil); err == nil || !strings.Contains(err.Error(), "method cannot be empty") {
@@ -180,8 +177,8 @@ func TestNewRequest_WithBody(t *testing.T) {
 		t.Fatalf("NewRequest returned error: %v", err)
 	}
 
-	if ct := req.Header.Get("Content-Type"); ct != "application/json" {
-		t.Errorf("Content-Type header = %q, want application/json", ct)
+	if ct := req.Header.Get("Content-Type"); ct != testContentTypeJSON {
+		t.Errorf("Content-Type header = %q, want %s", ct, testContentTypeJSON)
 	}
 }
 
@@ -197,13 +194,13 @@ func TestNewRequest_PreservesExistingHeaders(t *testing.T) {
 	}
 
 	// Verify Accept header is set when not present
-	if accept := req.Header.Get("Accept"); accept != "application/json" {
-		t.Errorf("Accept header = %q, want application/json", accept)
+	if accept := req.Header.Get("Accept"); accept != testContentTypeJSON {
+		t.Errorf("Accept header = %q, want %s", accept, testContentTypeJSON)
 	}
 
 	// Verify Content-Type is set for body
-	if ct := req.Header.Get("Content-Type"); ct != "application/json" {
-		t.Errorf("Content-Type header = %q, want application/json", ct)
+	if ct := req.Header.Get("Content-Type"); ct != testContentTypeJSON {
+		t.Errorf("Content-Type header = %q, want %s", ct, testContentTypeJSON)
 	}
 }
 

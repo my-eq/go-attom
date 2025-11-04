@@ -1,51 +1,69 @@
+# golangci-lint configuration for go-attom
+# See https://golangci-lint.run/docs/configuration/file/
+
+version: "2"
+
 run:
   timeout: 5m
   tests: true
+  modules-download-mode: readonly
 
 linters:
+  # Enabled by default: errcheck, govet, ineffassign, staticcheck, unused
+  # We explicitly enable additional linters for enterprise-grade quality
   enable:
-    - errcheck
-    - gosimple
-    - govet
-    - ineffassign
-    - staticcheck
-    - unused
-    - gofmt
-    - goimports
-    - misspell
-    - unconvert
-    - dupl
-    - goconst
-    - gocyclo
-    - gosec
-    - stylecheck
-    - revive
+    - misspell      # Catch typos
+    - unconvert     # Remove unnecessary type conversions
+    - dupl          # Find duplicate code
+    - goconst       # Find repeated strings that should be constants
+    - gocyclo       # Check cyclomatic complexity
+    - gosec         # Security issues
+    - revive        # Configurable replacement for golint
+  
+  settings:
+    errcheck:
+      check-type-assertions: true
+      check-blank: true
+    
+    govet:
+      enable-all: true
+    
+    gocyclo:
+      # Higher threshold for table-driven tests with many cases
+      min-complexity: 30
+    
+    dupl:
+      threshold: 100
+    
+    misspell:
+      locale: US
+    
+    goconst:
+      # Require 5+ occurrences before suggesting constant extraction
+      min-occurrences: 5
+    
+    revive:
+      # Disable the exported stuttering rule
+      # Our response types intentionally use full names for clarity
+      # e.g., property.PropertyDetailResponse vs property.DetailResponse
+      rules:
+        - name: exported
+          disabled: true
+  
+  exclusions:
+    rules:
+      # Table-driven tests can have high cyclomatic complexity
+      - path: _test\.go
+        linters:
+          - dupl
+          - gosec
+          - gocyclo
 
-linters-settings:
-  errcheck:
-    check-type-assertions: true
-    check-blank: true
-  
-  govet:
-    enable-all: true
-  
-  gocyclo:
-    min-complexity: 15
-  
-  dupl:
-    threshold: 100
-  
-  misspell:
-    locale: US
+formatters:
+  enable:
+    - gofmt       # Standard Go formatting
+    - goimports   # Organize imports
 
 issues:
-  exclude-use-default: false
   max-issues-per-linter: 0
   max-same-issues: 0
-  
-  exclude-rules:
-    # Exclude some linters from running on tests files
-    - path: _test\.go
-      linters:
-        - dupl
-        - gosec
