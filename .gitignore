@@ -4,6 +4,9 @@
 
 # Test coverage artifacts
 coverage.out
+coverage.html
+client_coverage.out
+client_cov.out
 coverage/
 
 # IDE project files
