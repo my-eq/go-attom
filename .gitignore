@@ -2,25 +2,12 @@
 .DS_Store
 .vscode
 
-# Go artifacts
-*.exe
-*.exe~
-*.dll
-*.so
-*.dylib
-*.test
-*.out
+# Test coverage artifacts
 coverage.out
-coverage.html
-go.work
-go.work.sum
+coverage/
 
-# Build artifacts
-/bin/
-/dist/
-
-# IDE
+# IDE project files
 .idea/
-*.swp
-*.swo
-*~
+
+# Optional: uncomment if vendoring dependencies
+# vendor/
