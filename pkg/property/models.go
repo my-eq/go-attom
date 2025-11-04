@@ -12,8 +12,8 @@ type Status struct {
 	PageSize *int    `json:"pagesize,omitempty"`
 }
 
-// PropertyIdentifier contains core identifiers for a property record.
-type PropertyIdentifier struct {
+// Identifier contains core identifiers for a property record.
+type Identifier struct {
 	AttomID  *string `json:"attomId,omitempty"`
 	ID       *string `json:"id,omitempty"`
 	FIPS     *string `json:"fips,omitempty"`
@@ -296,74 +296,74 @@ type AllEventsRecord struct {
 
 // Property encapsulates the full property data structure.
 type Property struct {
-	Identifier *PropertyIdentifier `json:"identifier,omitempty"`
-	Address    *Address            `json:"address,omitempty"`
-	Location   *GeoLocation        `json:"location,omitempty"`
-	Lot        *Lot                `json:"lot,omitempty"`
-	Summary    *Summary            `json:"summary,omitempty"`
-	Building   *Building           `json:"building,omitempty"`
-	Assessment *Assessment         `json:"assessment,omitempty"`
-	Sale       *Sale               `json:"sale,omitempty"`
-	AVM        *AVM                `json:"avm,omitempty"`
-	Mortgage   []*Mortgage         `json:"mortgage,omitempty"`
-	Ownership  *Ownership          `json:"ownership,omitempty"`
-	Tax        *Tax                `json:"tax,omitempty"`
-	Schools    []*School           `json:"schools,omitempty"`
+	Identifier *Identifier  `json:"identifier,omitempty"`
+	Address    *Address     `json:"address,omitempty"`
+	Location   *GeoLocation `json:"location,omitempty"`
+	Lot        *Lot         `json:"lot,omitempty"`
+	Summary    *Summary     `json:"summary,omitempty"`
+	Building   *Building    `json:"building,omitempty"`
+	Assessment *Assessment  `json:"assessment,omitempty"`
+	Sale       *Sale        `json:"sale,omitempty"`
+	AVM        *AVM         `json:"avm,omitempty"`
+	Mortgage   []*Mortgage  `json:"mortgage,omitempty"`
+	Ownership  *Ownership   `json:"ownership,omitempty"`
+	Tax        *Tax         `json:"tax,omitempty"`
+	Schools    []*School    `json:"schools,omitempty"`
 }
 
-// PropertyIDResponse wraps the /property/id endpoint response.
-type PropertyIDResponse struct {
-	Status     *Status               `json:"status,omitempty"`
-	Identifier []*PropertyIdentifier `json:"identifier,omitempty"`
+// IDResponse wraps the /property/id endpoint response.
+type IDResponse struct {
+	Status     *Status       `json:"status,omitempty"`
+	Identifier []*Identifier `json:"identifier,omitempty"`
 }
 
-// PropertyDetailResponse wraps detailed property data.
-type PropertyDetailResponse struct {
+// DetailResponse wraps detailed property data.
+type DetailResponse struct {
 	Status   *Status     `json:"status,omitempty"`
 	Property []*Property `json:"property,omitempty"`
 }
 
-// PropertyAddressResponse wraps address-only responses.
-type PropertyAddressResponse struct {
+// AddressResponse wraps address-only responses.
+type AddressResponse struct {
 	Status   *Status     `json:"status,omitempty"`
 	Property []*Property `json:"property,omitempty"`
 }
 
-// PropertySnapshotResponse provides lightweight property summaries.
-type PropertySnapshotResponse struct {
+// SnapshotResponse provides lightweight property summaries.
+type SnapshotResponse struct {
 	Status   *Status     `json:"status,omitempty"`
 	Property []*Property `json:"property,omitempty"`
 }
 
-// PropertyProfileResponse contains profile data (basic/expanded).
-type PropertyProfileResponse struct {
+// ProfileResponse contains profile data (basic/expanded).
+type ProfileResponse struct {
 	Status   *Status     `json:"status,omitempty"`
 	Property []*Property `json:"property,omitempty"`
 }
 
-// PropertyWithSchoolsResponse extends property data with school assignments.
-type PropertyWithSchoolsResponse struct {
+// WithSchoolsResponse extends property data with school assignments.
+type WithSchoolsResponse struct {
 	Status   *Status     `json:"status,omitempty"`
 	Property []*Property `json:"property,omitempty"`
 	Schools  []*School   `json:"school,omitempty"`
 }
 
-// PropertyMortgageResponse extends property data with mortgage information.
-type PropertyMortgageResponse struct {
+// MortgageResponse extends property data with mortgage information.
+type MortgageResponse struct {
 	Status   *Status     `json:"status,omitempty"`
 	Property []*Property `json:"property,omitempty"`
 	Mortgage []*Mortgage `json:"mortgage,omitempty"`
 }
 
-// PropertyOwnerResponse extends property data with ownership information.
-type PropertyOwnerResponse struct {
+// OwnerResponse extends property data with ownership information.
+type OwnerResponse struct {
 	Status   *Status      `json:"status,omitempty"`
 	Property []*Property  `json:"property,omitempty"`
 	Owners   []*Ownership `json:"owner,omitempty"`
 }
 
-// PropertyMortgageOwnerResponse combines property, mortgage, and owner data.
-type PropertyMortgageOwnerResponse struct {
+// MortgageOwnerResponse combines property, mortgage, and owner data.
+type MortgageOwnerResponse struct {
 	Status   *Status      `json:"status,omitempty"`
 	Property []*Property  `json:"property,omitempty"`
 	Mortgage []*Mortgage  `json:"mortgage,omitempty"`

@@ -603,8 +603,8 @@ func TestEnsureClient(t *testing.T) {
 	})
 }
 
-func TestOptionFunctions(t *testing.T) {
-	t.Run("WithStringSlice", func(t *testing.T) {
+func TestWithStringSlice(t *testing.T) {
+	t.Run("valid slice", func(t *testing.T) {
 		vals := url.Values{}
 		opt := WithStringSlice("test", []string{"a", "b", "c"}, ",")
 		opt(vals)
@@ -613,7 +613,7 @@ func TestOptionFunctions(t *testing.T) {
 		}
 	})
 
-	t.Run("WithStringSlice empty key", func(t *testing.T) {
+	t.Run("empty key", func(t *testing.T) {
 		vals := url.Values{}
 		opt := WithStringSlice("", []string{"a"}, ",")
 		opt(vals)
@@ -622,7 +622,7 @@ func TestOptionFunctions(t *testing.T) {
 		}
 	})
 
-	t.Run("WithStringSlice empty slice", func(t *testing.T) {
+	t.Run("empty slice", func(t *testing.T) {
 		vals := url.Values{}
 		opt := WithStringSlice("test", []string{}, ",")
 		opt(vals)
@@ -631,7 +631,7 @@ func TestOptionFunctions(t *testing.T) {
 		}
 	})
 
-	t.Run("WithStringSlice default separator", func(t *testing.T) {
+	t.Run("default separator", func(t *testing.T) {
 		vals := url.Values{}
 		opt := WithStringSlice("test", []string{"a", "b"}, "")
 		opt(vals)
@@ -639,49 +639,51 @@ func TestOptionFunctions(t *testing.T) {
 			t.Errorf("expected 'a|b' with default separator, got %q", vals.Get("test"))
 		}
 	})
+}
 
-	t.Run("WithPropertyID", func(t *testing.T) {
-		vals := url.Values{}
-		WithPropertyID("123")(vals)
-		if vals.Get("id") != "123" {
-			t.Errorf("expected '123', got %q", vals.Get("id"))
-		}
-	})
+func TestWithPropertyID(t *testing.T) {
+	vals := url.Values{}
+	WithPropertyID("123")(vals)
+	if vals.Get("id") != "123" {
+		t.Errorf("expected '123', got %q", vals.Get("id"))
+	}
+}
 
-	t.Run("WithFIPSAndAPN", func(t *testing.T) {
-		vals := url.Values{}
-		WithFIPSAndAPN("001", "456")(vals)
-		if vals.Get("fips") != "001" {
-			t.Errorf("expected '001', got %q", vals.Get("fips"))
-		}
-		if vals.Get("APN") != "456" {
-			t.Errorf("expected '456', got %q", vals.Get("APN"))
-		}
-	})
+func TestWithFIPSAndAPN(t *testing.T) {
+	vals := url.Values{}
+	WithFIPSAndAPN("001", "456")(vals)
+	if vals.Get("fips") != "001" {
+		t.Errorf("expected '001', got %q", vals.Get("fips"))
+	}
+	if vals.Get("APN") != "456" {
+		t.Errorf("expected '456', got %q", vals.Get("APN"))
+	}
+}
 
-	t.Run("WithAddressLines", func(t *testing.T) {
-		vals := url.Values{}
-		WithAddressLines("123 Main St", "City, ST")(vals)
-		if vals.Get("address1") != "123 Main St" {
-			t.Errorf("expected '123 Main St', got %q", vals.Get("address1"))
-		}
-		if vals.Get("address2") != "City, ST" {
-			t.Errorf("expected 'City, ST', got %q", vals.Get("address2"))
-		}
-	})
+func TestWithAddressLines(t *testing.T) {
+	vals := url.Values{}
+	WithAddressLines("123 Main St", "City, ST")(vals)
+	if vals.Get("address1") != "123 Main St" {
+		t.Errorf("expected '123 Main St', got %q", vals.Get("address1"))
+	}
+	if vals.Get("address2") != "City, ST" {
+		t.Errorf("expected 'City, ST', got %q", vals.Get("address2"))
+	}
+}
 
-	t.Run("WithLatitudeLongitude", func(t *testing.T) {
-		vals := url.Values{}
-		WithLatitudeLongitude(40.7128, -74.0060)(vals)
-		if vals.Get("latitude") != "40.7128" {
-			t.Errorf("expected '40.7128', got %q", vals.Get("latitude"))
-		}
-		if vals.Get("longitude") != "-74.006" {
-			t.Errorf("expected '-74.006', got %q", vals.Get("longitude"))
-		}
-	})
+func TestWithLatitudeLongitude(t *testing.T) {
+	vals := url.Values{}
+	WithLatitudeLongitude(40.7128, -74.0060)(vals)
+	if vals.Get("latitude") != "40.7128" {
+		t.Errorf("expected '40.7128', got %q", vals.Get("latitude"))
+	}
+	if vals.Get("longitude") != "-74.006" {
+		t.Errorf("expected '-74.006', got %q", vals.Get("longitude"))
+	}
+}
 
-	t.Run("WithRadius", func(t *testing.T) {
+func TestWithRadius(t *testing.T) {
+	t.Run("valid radius", func(t *testing.T) {
 		vals := url.Values{}
 		WithRadius(5.5)(vals)
 		if vals.Get("radius") != "5.5" {
@@ -689,7 +691,7 @@ func TestOptionFunctions(t *testing.T) {
 		}
 	})
 
-	t.Run("WithRadius zero or negative", func(t *testing.T) {
+	t.Run("zero or negative", func(t *testing.T) {
 		vals := url.Values{}
 		WithRadius(0)(vals)
 		if vals.Get("radius") != "" {
@@ -700,32 +702,34 @@ func TestOptionFunctions(t *testing.T) {
 			t.Errorf("expected empty for negative radius")
 		}
 	})
+}
 
-	t.Run("WithCityName", func(t *testing.T) {
-		vals := url.Values{}
-		WithCityName("Springfield")(vals)
-		if vals.Get("cityname") != "Springfield" {
-			t.Errorf("expected 'Springfield', got %q", vals.Get("cityname"))
-		}
-	})
+func TestWithCityName(t *testing.T) {
+	vals := url.Values{}
+	WithCityName("Springfield")(vals)
+	if vals.Get("cityname") != "Springfield" {
+		t.Errorf("expected 'Springfield', got %q", vals.Get("cityname"))
+	}
+}
 
-	t.Run("WithGeoID", func(t *testing.T) {
-		vals := url.Values{}
-		WithGeoID("PL0820000")(vals)
-		if vals.Get("geoid") != "PL0820000" {
-			t.Errorf("expected 'PL0820000', got %q", vals.Get("geoid"))
-		}
-	})
+func TestWithGeoID(t *testing.T) {
+	vals := url.Values{}
+	WithGeoID("PL0820000")(vals)
+	if vals.Get("geoid") != "PL0820000" {
+		t.Errorf("expected 'PL0820000', got %q", vals.Get("geoid"))
+	}
+}
 
-	t.Run("WithPropertyType", func(t *testing.T) {
-		vals := url.Values{}
-		WithPropertyType("SFR")(vals)
-		if vals.Get("propertytype") != "SFR" {
-			t.Errorf("expected 'SFR', got %q", vals.Get("propertytype"))
-		}
-	})
+func TestWithPropertyType(t *testing.T) {
+	vals := url.Values{}
+	WithPropertyType("SFR")(vals)
+	if vals.Get("propertytype") != "SFR" {
+		t.Errorf("expected 'SFR', got %q", vals.Get("propertytype"))
+	}
+}
 
-	t.Run("WithPropertyIndicator", func(t *testing.T) {
+func TestWithPropertyIndicator(t *testing.T) {
+	t.Run("valid indicator", func(t *testing.T) {
 		vals := url.Values{}
 		WithPropertyIndicator(10)(vals)
 		if vals.Get("propertyIndicator") != "10" {
@@ -733,92 +737,94 @@ func TestOptionFunctions(t *testing.T) {
 		}
 	})
 
-	t.Run("WithPropertyIndicator zero or negative", func(t *testing.T) {
+	t.Run("zero or negative", func(t *testing.T) {
 		vals := url.Values{}
 		WithPropertyIndicator(0)(vals)
 		if vals.Get("propertyIndicator") != "" {
 			t.Errorf("expected empty for zero indicator")
 		}
 	})
+}
 
-	t.Run("WithBedsRange", func(t *testing.T) {
-		vals := url.Values{}
-		WithBedsRange(2, 4)(vals)
-		if vals.Get("minBeds") != "2" {
-			t.Errorf("expected '2', got %q", vals.Get("minBeds"))
-		}
-		if vals.Get("maxBeds") != "4" {
-			t.Errorf("expected '4', got %q", vals.Get("maxBeds"))
-		}
-	})
+func TestWithBedsRange(t *testing.T) {
+	vals := url.Values{}
+	WithBedsRange(2, 4)(vals)
+	if vals.Get("minBeds") != "2" {
+		t.Errorf("expected '2', got %q", vals.Get("minBeds"))
+	}
+	if vals.Get("maxBeds") != "4" {
+		t.Errorf("expected '4', got %q", vals.Get("maxBeds"))
+	}
+}
 
-	t.Run("WithBathsRange", func(t *testing.T) {
-		vals := url.Values{}
-		WithBathsRange(1.5, 3.0)(vals)
-		if vals.Get("minBathsTotal") != "1.5" {
-			t.Errorf("expected '1.5', got %q", vals.Get("minBathsTotal"))
-		}
-		if vals.Get("maxBathsTotal") != "3" {
-			t.Errorf("expected '3', got %q", vals.Get("maxBathsTotal"))
-		}
-	})
+func TestWithBathsRange(t *testing.T) {
+	vals := url.Values{}
+	WithBathsRange(1.5, 3.0)(vals)
+	if vals.Get("minBathsTotal") != "1.5" {
+		t.Errorf("expected '1.5', got %q", vals.Get("minBathsTotal"))
+	}
+	if vals.Get("maxBathsTotal") != "3" {
+		t.Errorf("expected '3', got %q", vals.Get("maxBathsTotal"))
+	}
+}
 
-	t.Run("WithSaleAmountRange", func(t *testing.T) {
-		vals := url.Values{}
-		WithSaleAmountRange(100000, 500000)(vals)
-		if vals.Get("minSaleAmt") != "100000" {
-			t.Errorf("expected '100000', got %q", vals.Get("minSaleAmt"))
-		}
-		if vals.Get("maxSaleAmt") != "500000" {
-			t.Errorf("expected '500000', got %q", vals.Get("maxSaleAmt"))
-		}
-	})
+func TestWithSaleAmountRange(t *testing.T) {
+	vals := url.Values{}
+	WithSaleAmountRange(100000, 500000)(vals)
+	if vals.Get("minSaleAmt") != "100000" {
+		t.Errorf("expected '100000', got %q", vals.Get("minSaleAmt"))
+	}
+	if vals.Get("maxSaleAmt") != "500000" {
+		t.Errorf("expected '500000', got %q", vals.Get("maxSaleAmt"))
+	}
+}
 
-	t.Run("WithUniversalSizeRange", func(t *testing.T) {
-		vals := url.Values{}
-		WithUniversalSizeRange(1000, 3000)(vals)
-		if vals.Get("minUniversalSize") != "1000" {
-			t.Errorf("expected '1000', got %q", vals.Get("minUniversalSize"))
-		}
-		if vals.Get("maxUniversalSize") != "3000" {
-			t.Errorf("expected '3000', got %q", vals.Get("maxUniversalSize"))
-		}
-	})
+func TestWithUniversalSizeRange(t *testing.T) {
+	vals := url.Values{}
+	WithUniversalSizeRange(1000, 3000)(vals)
+	if vals.Get("minUniversalSize") != "1000" {
+		t.Errorf("expected '1000', got %q", vals.Get("minUniversalSize"))
+	}
+	if vals.Get("maxUniversalSize") != "3000" {
+		t.Errorf("expected '3000', got %q", vals.Get("maxUniversalSize"))
+	}
+}
 
-	t.Run("WithYearBuiltRange", func(t *testing.T) {
-		vals := url.Values{}
-		WithYearBuiltRange(1990, 2020)(vals)
-		if vals.Get("minYearBuilt") != "1990" {
-			t.Errorf("expected '1990', got %q", vals.Get("minYearBuilt"))
-		}
-		if vals.Get("maxYearBuilt") != "2020" {
-			t.Errorf("expected '2020', got %q", vals.Get("maxYearBuilt"))
-		}
-	})
+func TestWithYearBuiltRange(t *testing.T) {
+	vals := url.Values{}
+	WithYearBuiltRange(1990, 2020)(vals)
+	if vals.Get("minYearBuilt") != "1990" {
+		t.Errorf("expected '1990', got %q", vals.Get("minYearBuilt"))
+	}
+	if vals.Get("maxYearBuilt") != "2020" {
+		t.Errorf("expected '2020', got %q", vals.Get("maxYearBuilt"))
+	}
+}
 
-	t.Run("WithLotSize1Range", func(t *testing.T) {
-		vals := url.Values{}
-		WithLotSize1Range(0.5, 2.0)(vals)
-		if vals.Get("minLotSize1") != "0.5" {
-			t.Errorf("expected '0.5', got %q", vals.Get("minLotSize1"))
-		}
-		if vals.Get("maxLotSize1") != "2" {
-			t.Errorf("expected '2', got %q", vals.Get("maxLotSize1"))
-		}
-	})
+func TestWithLotSize1Range(t *testing.T) {
+	vals := url.Values{}
+	WithLotSize1Range(0.5, 2.0)(vals)
+	if vals.Get("minLotSize1") != "0.5" {
+		t.Errorf("expected '0.5', got %q", vals.Get("minLotSize1"))
+	}
+	if vals.Get("maxLotSize1") != "2" {
+		t.Errorf("expected '2', got %q", vals.Get("maxLotSize1"))
+	}
+}
 
-	t.Run("WithLotSize2Range", func(t *testing.T) {
-		vals := url.Values{}
-		WithLotSize2Range(5000, 10000)(vals)
-		if vals.Get("minLotSize2") != "5000" {
-			t.Errorf("expected '5000', got %q", vals.Get("minLotSize2"))
-		}
-		if vals.Get("maxLotSize2") != "10000" {
-			t.Errorf("expected '10000', got %q", vals.Get("maxLotSize2"))
-		}
-	})
+func TestWithLotSize2Range(t *testing.T) {
+	vals := url.Values{}
+	WithLotSize2Range(5000, 10000)(vals)
+	if vals.Get("minLotSize2") != "5000" {
+		t.Errorf("expected '5000', got %q", vals.Get("minLotSize2"))
+	}
+	if vals.Get("maxLotSize2") != "10000" {
+		t.Errorf("expected '10000', got %q", vals.Get("maxLotSize2"))
+	}
+}
 
-	t.Run("WithDateRange", func(t *testing.T) {
+func TestWithDateRange(t *testing.T) {
+	t.Run("valid range", func(t *testing.T) {
 		vals := url.Values{}
 		start := time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)
 		end := time.Date(2020, 12, 31, 0, 0, 0, 0, time.UTC)
@@ -831,28 +837,30 @@ func TestOptionFunctions(t *testing.T) {
 		}
 	})
 
-	t.Run("WithDateRange zero times", func(t *testing.T) {
+	t.Run("zero times", func(t *testing.T) {
 		vals := url.Values{}
 		WithDateRange("Test", time.Time{}, time.Time{})(vals)
 		if vals.Get("startTest") != "" || vals.Get("endTest") != "" {
 			t.Errorf("expected empty for zero times")
 		}
 	})
+}
 
-	t.Run("WithISODateRange", func(t *testing.T) {
-		vals := url.Values{}
-		start := time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)
-		end := time.Date(2020, 12, 31, 0, 0, 0, 0, time.UTC)
-		WithISODateRange("CalendarDate", start, end)(vals)
-		if vals.Get("startCalendarDate") != "2020-01-01" {
-			t.Errorf("expected '2020-01-01', got %q", vals.Get("startCalendarDate"))
-		}
-		if vals.Get("endCalendarDate") != "2020-12-31" {
-			t.Errorf("expected '2020-12-31', got %q", vals.Get("endCalendarDate"))
-		}
-	})
+func TestWithISODateRange(t *testing.T) {
+	vals := url.Values{}
+	start := time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)
+	end := time.Date(2020, 12, 31, 0, 0, 0, 0, time.UTC)
+	WithISODateRange("CalendarDate", start, end)(vals)
+	if vals.Get("startCalendarDate") != "2020-01-01" {
+		t.Errorf("expected '2020-01-01', got %q", vals.Get("startCalendarDate"))
+	}
+	if vals.Get("endCalendarDate") != "2020-12-31" {
+		t.Errorf("expected '2020-12-31', got %q", vals.Get("endCalendarDate"))
+	}
+}
 
-	t.Run("WithPage", func(t *testing.T) {
+func TestWithPage(t *testing.T) {
+	t.Run("valid page", func(t *testing.T) {
 		vals := url.Values{}
 		WithPage(5)(vals)
 		if vals.Get("page") != "5" {
@@ -860,37 +868,37 @@ func TestOptionFunctions(t *testing.T) {
 		}
 	})
 
-	t.Run("WithPage zero or negative", func(t *testing.T) {
+	t.Run("zero or negative", func(t *testing.T) {
 		vals := url.Values{}
 		WithPage(0)(vals)
 		if vals.Get("page") != "" {
 			t.Errorf("expected empty for zero page")
 		}
 	})
+}
 
-	t.Run("WithPageSize", func(t *testing.T) {
-		vals := url.Values{}
-		WithPageSize(100)(vals)
-		if vals.Get("pagesize") != "100" {
-			t.Errorf("expected '100', got %q", vals.Get("pagesize"))
-		}
-	})
+func TestWithPageSize(t *testing.T) {
+	vals := url.Values{}
+	WithPageSize(100)(vals)
+	if vals.Get("pagesize") != "100" {
+		t.Errorf("expected '100', got %q", vals.Get("pagesize"))
+	}
+}
 
-	t.Run("WithOrderBy", func(t *testing.T) {
-		vals := url.Values{}
-		WithOrderBy("saleamt")(vals)
-		if vals.Get("orderby") != "saleamt" {
-			t.Errorf("expected 'saleamt', got %q", vals.Get("orderby"))
-		}
-	})
+func TestWithOrderBy(t *testing.T) {
+	vals := url.Values{}
+	WithOrderBy("saleamt")(vals)
+	if vals.Get("orderby") != "saleamt" {
+		t.Errorf("expected 'saleamt', got %q", vals.Get("orderby"))
+	}
+}
 
-	t.Run("WithAdditionalParam", func(t *testing.T) {
-		vals := url.Values{}
-		WithAdditionalParam("custom", "value")(vals)
-		if vals.Get("custom") != "value" {
-			t.Errorf("expected 'value', got %q", vals.Get("custom"))
-		}
-	})
+func TestWithAdditionalParam(t *testing.T) {
+	vals := url.Values{}
+	WithAdditionalParam("custom", "value")(vals)
+	if vals.Get("custom") != "value" {
+		t.Errorf("expected 'value', got %q", vals.Get("custom"))
+	}
 }
 
 func TestValidatorFunctions(t *testing.T) {
@@ -1023,7 +1031,7 @@ func TestDoGetErrorHandling(t *testing.T) {
 		c := client.New("test-key", mock, client.WithBaseURL("https://example.com/"))
 		svc := NewService(c)
 
-		var resp PropertyDetailResponse
+		var resp DetailResponse
 		err := svc.doGet(ctx, "property/detail", url.Values{}, &resp)
 		if err == nil {
 			t.Errorf("expected decode error")
@@ -1042,7 +1050,7 @@ func TestDoGetErrorHandling(t *testing.T) {
 		c := client.New("test-key", mock, client.WithBaseURL("https://example.com/"))
 		svc := NewService(c)
 
-		var resp PropertyDetailResponse
+		var resp DetailResponse
 		err := svc.doGet(ctx, "property/detail", url.Values{}, &resp)
 		if err == nil {
 			t.Errorf("expected error for bad request")
@@ -1075,7 +1083,7 @@ func TestDoGetErrorHandling(t *testing.T) {
 		c := client.New("test-key", mockClient, client.WithBaseURL("https://example.com/"))
 		svc := NewService(c)
 
-		var resp PropertyDetailResponse
+		var resp DetailResponse
 		err := svc.doGet(ctx, "property/detail", url.Values{}, &resp)
 		if err == nil {
 			t.Errorf("expected error for bad request with unreadable body")
