@@ -1,3 +1,87 @@
 {
-  "status": "Not found"
+    "swagger": "2.0",
+    "info": {
+        "version": "1.0.0",
+        "title": "",
+        "description": ""
+    },
+    "host": "api.gateway.attomdata.com",
+    "basePath": "/propertyapi/v1.0.0",
+    "schemes": [
+        "https"
+    ],
+    "tags": [
+        {
+            "name": "Assessment History By Address"
+        }
+    ],
+    "consumes": [
+        "application/json",
+        "application/xml"
+    ],
+    "produces": [
+        "application/xml",
+        "application/json"
+    ],
+    "paths": {
+        "/assessmenthistory/detail": {
+            "get": {
+                "tags": [
+                    "Assessment History By Address"
+                ],
+                "summary": "Returns assessment history and property details.",
+                "description": "Get a full detail of property characteristics and assessment history information for a specific property.",
+                "operationId": "assessmentHistoryDetailPostal",
+                "parameters": [
+                    {
+                        "name": "apikey",
+                        "description": "Application Key",
+                        "type": "string",
+                        "required": true,
+                        "in": "header",
+                        "default": "48ed381483aabf5758717c7aa023980f",
+                        "x-data-threescale-name": "user_keys"
+                    },
+                    {
+                        "name": "accept",
+                        "description": "application/xml or application/json (default)",
+                        "type": "string",
+                        "required": false,
+                        "in": "header",
+                        "enum": [
+                            "application/xml",
+                            "application/json"
+                        ]
+                    },
+                    {
+                        "name": "address1",
+                        "description": "The first line of the property address",
+                        "type": "string",
+                        "required": false,
+                        "in": "query",
+                        "default": "468 SEQUOIA DR"
+                    },
+                    {
+                        "name": "address2",
+                        "description": "The second line of the property address",
+                        "type": "string",
+                        "required": false,
+                        "in": "query",
+                        "default": "SMYRNA, DE"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "list of full assessment history details for a specific address"
+                    },
+                    "403": {
+                        "description": "apikey invalid/missing"
+                    },
+                    "default": {
+                        "description": "unexpected error"
+                    }
+                }
+            }
+        }
+    }
 }

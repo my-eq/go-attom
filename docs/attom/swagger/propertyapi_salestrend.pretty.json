@@ -1,3 +1,103 @@
 {
-  "status": "Not found"
+    "swagger": "2.0",
+    "info": {
+        "version": "1.0.0",
+        "title": "",
+        "description": ""
+    },
+    "host": "api.gateway.attomdata.com",
+    "basePath": "/propertyapi/v1.0.0",
+    "schemes": [
+        "https"
+    ],
+    "tags": [
+        {
+            "name": "Zip Code Sales Trends by Year"
+        }
+    ],
+    "consumes": [
+        "application/json",
+        "application/xml"
+    ],
+    "produces": [
+        "application/xml",
+        "application/json"
+    ],
+    "paths": {
+        "/salestrend/snapshot": {
+            "get": {
+                "tags": [
+                    "Sales Trend by Year"
+                ],
+                "summary": "Returns sales trends for a given zip code in yearly intervals",
+                "description": "Get the average sale price, median sale price, and count of sales for the past 2 years in yearly intervals.",
+                "operationId": "getSalesTrendByYear",
+                "parameters": [
+                    {
+                        "name": "apikey",
+                        "description": "Application Key",
+                        "type": "string",
+                        "required": true,
+                        "in": "header",
+                        "default": "2b1e86b638620bf2404521e6e9e1b19e",
+                        "x-data-threescale-name": "user_keys"
+                    },
+                    {
+                        "name": "accept",
+                        "description": "application/xml or application/json (default)",
+                        "type": "string",
+                        "required": false,
+                        "in": "header",
+                        "enum": [
+                            "application/xml",
+                            "application/json"
+                        ]
+                    },
+                    {
+                        "name": "geoid",
+                        "description": "A list of geographies that this property belongs to. These geoIDs are used by search engine and values should not be exposed to the public",
+                        "type": "string",
+                        "required": false,
+                        "in": "query",
+                        "default": "ZI11215"
+                    },
+                    {
+                        "name": "interval",
+                        "description": "The interval to search from",
+                        "type": "string",
+                        "required": false,
+                        "in": "query",
+                        "default": "yearly"
+                    },
+                    {
+                        "name": "startyear",
+                        "description": "The start year to search from",
+                        "type": "string",
+                        "required": false,
+                        "in": "query",
+                        "default": "2015"
+                    },
+                    {
+                        "name": "endyear",
+                        "description": "The end year to search from",
+                        "type": "string",
+                        "required": false,
+                        "in": "query",
+                        "default": "2017"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "list of sales trends for a given zip code in yearly intervals"
+                    },
+                    "403": {
+                        "description": "apikey invalid/missing"
+                    },
+                    "default": {
+                        "description": "unexpected error"
+                    }
+                }
+            }
+        }
+    }
 }
