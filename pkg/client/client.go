@@ -73,11 +73,11 @@ var ErrInvalidAPIKey = errors.New("invalid or missing API key")
 // The req must be non-nil and will have the API key added as a header.
 // Returns an error with context if the request fails.
 func (c *Client) DoRequest(req *http.Request) (*http.Response, error) {
-	if c.apiKey == "" {
-		return nil, ErrInvalidAPIKey
-	}
 	if req == nil {
 		return nil, fmt.Errorf("request cannot be nil")
+	}
+	if c.apiKey == "" {
+		return nil, ErrInvalidAPIKey
 	}
 	req.Header.Set("apikey", c.apiKey)
 	resp, err := c.httpClient.Do(req)
