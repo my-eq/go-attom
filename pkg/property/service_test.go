@@ -3,6 +3,7 @@ package property
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"net/http"
 	"net/url"
@@ -68,7 +69,7 @@ func diffQuery(expected, actual url.Values) string {
 		}
 		for i, val := range expectedVals {
 			if actualVals[i] != val {
-				return "value mismatch for key " + key
+				return fmt.Sprintf("value mismatch for key %s: expected %q, got %q", key, val, actualVals[i])
 			}
 		}
 	}
@@ -1154,15 +1155,29 @@ func TestGetPropertySnapshotValidation(t *testing.T) {
 		}
 	})
 
-	t.Run("with lat/lon", func(t *testing.T) {
+	t.Run("with lat/lon and radius", func(t *testing.T) {
+		mock.expectedQuery = url.Values{
+			"latitude":  {"40.7128"},
+			"longitude": {"-74.006"},
+			"radius":    {"5"},
+		}
+		_, err := svc.GetPropertySnapshot(ctx, WithLatitudeLongitude(40.7128, -74.0060), WithRadius(5))
+		if err != nil {
+			t.Errorf("unexpected error: %v", err)
+		}
+	})
+
+	t.Run("with lat/lon missing radius", func(t *testing.T) {
 		mock.expectedQuery = url.Values{
 			"latitude":  {"40.7128"},
 			"longitude": {"-74.006"},
 		}
-
 		_, err := svc.GetPropertySnapshot(ctx, WithLatitudeLongitude(40.7128, -74.0060))
-		if err != nil {
-			t.Errorf("unexpected error: %v", err)
+		if err == nil {
+			t.Errorf("expected error for missing radius with lat/lon")
+		}
+		if !errors.Is(err, ErrMissingParameter) {
+			t.Errorf("expected ErrMissingParameter, got %v", err)
 		}
 	})
 

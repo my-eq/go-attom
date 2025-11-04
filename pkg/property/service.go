@@ -48,15 +48,17 @@ func (s *Service) ensureClient() error {
 	return nil
 }
 
-func (s *Service) doGet(ctx context.Context, endpoint string, query url.Values, out interface{}) error {
-	if err := s.ensureClient(); err != nil {
+func (s *Service) doGet(ctx context.Context, endpoint string, query url.Values, out interface{}) (err error) {
+	if err = s.ensureClient(); err != nil {
 		return err
 	}
-	req, err := s.client.NewRequest(ctx, http.MethodGet, endpoint, query, nil)
+	var req *http.Request
+	req, err = s.client.NewRequest(ctx, http.MethodGet, endpoint, query, nil)
 	if err != nil {
 		return fmt.Errorf("property: failed to build request: %w", err)
 	}
-	resp, err := s.client.DoRequest(req)
+	var resp *http.Response
+	resp, err = s.client.DoRequest(req)
 	if err != nil {
 		return fmt.Errorf("property: request failed: %w", err)
 	}
@@ -74,7 +76,7 @@ func (s *Service) doGet(ctx context.Context, endpoint string, query url.Values, 
 				Status  *Status `json:"status,omitempty"`
 				Message string  `json:"message,omitempty"`
 			}
-			if err := json.Unmarshal(rawBody, &statusWrapper); err == nil {
+			if unmarshalErr := json.Unmarshal(rawBody, &statusWrapper); unmarshalErr == nil {
 				apiErr.Status = statusWrapper.Status
 				apiErr.Message = statusWrapper.Message
 			}
@@ -87,17 +89,17 @@ func (s *Service) doGet(ctx context.Context, endpoint string, query url.Values, 
 
 	if out == nil {
 		// Drain and discard the body when no output is needed
-		if _, err := io.Copy(io.Discard, resp.Body); err != nil {
-			return fmt.Errorf("property: failed to drain response body: %w", err)
+		if _, copyErr := io.Copy(io.Discard, resp.Body); copyErr != nil {
+			return fmt.Errorf("property: failed to drain response body: %w", copyErr)
 		}
 		return nil
 	}
 
 	decoder := json.NewDecoder(resp.Body)
-	if err := decoder.Decode(out); err != nil {
-		return fmt.Errorf("property: failed to decode response: %w", err)
+	if decodeErr := decoder.Decode(out); decodeErr != nil {
+		return fmt.Errorf("property: failed to decode response: %w", decodeErr)
 	}
-	return nil
+	return err
 }
 
 func (s *Service) get(ctx context.Context, endpoint string, opts []Option, validator func(url.Values) error, out interface{}) error {
@@ -187,13 +189,36 @@ func (s *Service) GetPropertyAddress(ctx context.Context, opts ...Option) (*Addr
 // GetPropertySnapshot retrieves a lightweight property snapshot summary.
 func (s *Service) GetPropertySnapshot(ctx context.Context, opts ...Option) (*SnapshotResponse, error) {
 	validator := func(values url.Values) error {
-		if values.Get("address") != "" || values.Get("postalCode") != "" {
+		// attomId or id
+		if values.Get("attomId") != "" || values.Get("id") != "" {
 			return nil
 		}
-		if values.Get("latitude") != "" && values.Get("longitude") != "" {
+		// FIPS + APN
+		if values.Get("fips") != "" && values.Get("apn") != "" {
 			return nil
 		}
-		return fmt.Errorf("%w: address, postalCode, or latitude/longitude required", ErrMissingParameter)
+		// address (single line)
+		if values.Get("address") != "" {
+			return nil
+		}
+		// address1 + address2 (two lines)
+		if values.Get("address1") != "" && values.Get("address2") != "" {
+			return nil
+		}
+		// postalCode
+		if values.Get("postalCode") != "" {
+			return nil
+		}
+		// latitude + longitude (+ radius required)
+		lat := values.Get("latitude")
+		lon := values.Get("longitude")
+		if lat != "" && lon != "" {
+			if values.Get("radius") != "" {
+				return nil
+			}
+			return fmt.Errorf("%w: radius required with latitude/longitude", ErrMissingParameter)
+		}
+		return fmt.Errorf("%w: valid property identifier required (attomId, id, FIPS+APN, address, address1/address2, postalCode, or latitude/longitude+radius)", ErrMissingParameter)
 	}
 	var resp SnapshotResponse
 	err := s.get(ctx, propertyBasePath+"snapshot", opts, validator, &resp)
@@ -223,10 +248,10 @@ func (s *Service) GetBasicProfile(ctx context.Context, address string, opts ...O
 func (s *Service) GetExpandedProfile(ctx context.Context, opts ...Option) (*ProfileResponse, error) {
 	var resp ProfileResponse
 	err := s.get(ctx, propertyBasePath+"expandedprofile", opts, func(values url.Values) error {
-		if values.Get("address") != "" || values.Get("geoIdV4") != "" {
+		if requirePropertyIdentifier(values) == nil || values.Get("geoIdV4") != "" {
 			return nil
 		}
-		return fmt.Errorf("%w: address or geoIdV4 required", ErrMissingParameter)
+		return fmt.Errorf("%w: property identifier or geoIdV4 required", ErrMissingParameter)
 	}, &resp)
 	if err != nil {
 		return nil, err
