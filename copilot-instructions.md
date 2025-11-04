@@ -358,6 +358,39 @@ type Client struct {
 func (c *Client) GetProperty(id string) (*Property, error) {
     // ...
 }
+
+### Naming Conventions (Go Idioms)
+
+Consistent naming improves readability and maintainability. Follow established Go conventions:
+
+- ✅ Exported identifiers use PascalCase: `Client`, `New`, `ErrInvalidAPIKey`
+- ✅ Unexported identifiers use camelCase: `httpClient`, `baseURL`, `doRequest`
+- ✅ Acronyms are capitalized consistently: `API`, `HTTP`, `URL` (e.g. `apiKey`, `baseURL`, `HTTPClient`)
+- ✅ Avoid stutter: If the package is `client`, exported types should not repeat: prefer `Client` over `ClientClient`
+- ✅ Single-purpose option types may use `Option`; if multiple option types emerge, prefix with the domain: `ClientOption`
+- ✅ Short receiver names: Use one or two letters (`c`, `r`, `s`) unless ambiguity arises
+- ✅ Prefer descriptive names over ambiguous: `baseURL` not `u`, `normalized` not `trimmed`
+- ✅ Keep test variable names clear: `got`, `want`, `tt` for table rows
+- ❌ Don't use Hungarian notation or type hints in names (e.g. `strName`)
+- ❌ Don't use snake_case
+- ❌ Don't over-abbreviate (`propID` -> prefer `propertyID` unless widely understood)
+
+```go
+// ✅ GOOD
+const DefaultBaseURL = "https://api.attomdata.com/v1/"
+
+func WithBaseURL(baseURL string) Option {
+    return func(c *Client) {
+        if baseURL == "" { return }
+        c.baseURL = strings.TrimRight(baseURL, "/") + "/"
+    }
+}
+
+// ❌ BAD (ambiguous variable names)
+func WithBaseURL(u string) Option { /* ... */ }
+```
+
+Refactor on sight any ambiguous variable names introduced by agents; update this section if new patterns emerge (e.g., generics, context handling, retries).
 ```
 
 ## Package Structure
