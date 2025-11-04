@@ -158,3 +158,135 @@ func TestNewRequestErrors(t *testing.T) {
 		t.Errorf("expected endpoint error, got %v", err)
 	}
 }
+
+func TestNewRequest_InvalidBaseURL(t *testing.T) {
+	c := New("key", nil)
+	c.baseURL = "://invalid-url"
+	ctx := context.Background()
+
+	_, err := c.NewRequest(ctx, http.MethodGet, "endpoint", nil, nil)
+	if err == nil || !strings.Contains(err.Error(), "invalid base URL") {
+		t.Errorf("expected invalid base URL error, got %v", err)
+	}
+}
+
+func TestNewRequest_WithBody(t *testing.T) {
+	c := New("key", nil)
+	ctx := context.Background()
+	body := strings.NewReader(`{"test":"data"}`)
+
+	req, err := c.NewRequest(ctx, http.MethodPost, "endpoint", nil, body)
+	if err != nil {
+		t.Fatalf("NewRequest returned error: %v", err)
+	}
+
+	if ct := req.Header.Get("Content-Type"); ct != "application/json" {
+		t.Errorf("Content-Type header = %q, want application/json", ct)
+	}
+}
+
+func TestNewRequest_PreservesExistingHeaders(t *testing.T) {
+	c := New("key", nil)
+	ctx := context.Background()
+	body := strings.NewReader(`{"test":"data"}`)
+
+	// Create request that will have headers set
+	req, err := c.NewRequest(ctx, http.MethodPost, "endpoint", nil, body)
+	if err != nil {
+		t.Fatalf("NewRequest returned error: %v", err)
+	}
+
+	// Verify Accept header is set when not present
+	if accept := req.Header.Get("Accept"); accept != "application/json" {
+		t.Errorf("Accept header = %q, want application/json", accept)
+	}
+
+	// Verify Content-Type is set for body
+	if ct := req.Header.Get("Content-Type"); ct != "application/json" {
+		t.Errorf("Content-Type header = %q, want application/json", ct)
+	}
+}
+
+func TestNewRequest_EndpointTrimming(t *testing.T) {
+	c := New("key", nil)
+	ctx := context.Background()
+
+	tests := []struct {
+		name     string
+		endpoint string
+		wantPath string
+	}{
+		{
+			name:     "no leading slash",
+			endpoint: "property/detail",
+			wantPath: "/property/detail",
+		},
+		{
+			name:     "with leading slash",
+			endpoint: "/property/detail",
+			wantPath: "/property/detail",
+		},
+		{
+			name:     "with whitespace",
+			endpoint: "  /property/detail  ",
+			wantPath: "/property/detail",
+		},
+		{
+			name:     "multiple leading slashes",
+			endpoint: "///property/detail",
+			wantPath: "/property/detail",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			req, err := c.NewRequest(ctx, http.MethodGet, tt.endpoint, nil, nil)
+			if err != nil {
+				t.Fatalf("NewRequest returned error: %v", err)
+			}
+			if req.URL.Path != tt.wantPath {
+				t.Errorf("URL path = %q, want %q", req.URL.Path, tt.wantPath)
+			}
+		})
+	}
+}
+
+func TestNewRequest_QueryParameters(t *testing.T) {
+	c := New("key", nil)
+	ctx := context.Background()
+
+	params := url.Values{}
+	params.Set("foo", "bar")
+	params.Add("multi", "value1")
+	params.Add("multi", "value2")
+
+	req, err := c.NewRequest(ctx, http.MethodGet, "endpoint", params, nil)
+	if err != nil {
+		t.Fatalf("NewRequest returned error: %v", err)
+	}
+
+	// Verify query encoding
+	if !strings.Contains(req.URL.RawQuery, "foo=bar") {
+		t.Errorf("query string missing foo=bar: %q", req.URL.RawQuery)
+	}
+	if !strings.Contains(req.URL.RawQuery, "multi=value1") {
+		t.Errorf("query string missing multi=value1: %q", req.URL.RawQuery)
+	}
+	if !strings.Contains(req.URL.RawQuery, "multi=value2") {
+		t.Errorf("query string missing multi=value2: %q", req.URL.RawQuery)
+	}
+}
+
+func TestNewRequest_NilQuery(t *testing.T) {
+	c := New("key", nil)
+	ctx := context.Background()
+
+	req, err := c.NewRequest(ctx, http.MethodGet, "endpoint", nil, nil)
+	if err != nil {
+		t.Fatalf("NewRequest returned error: %v", err)
+	}
+
+	if req.URL.RawQuery != "" {
+		t.Errorf("expected empty query string, got %q", req.URL.RawQuery)
+	}
+}
