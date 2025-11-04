@@ -213,6 +213,28 @@ go tool cover -func=coverage.out
 
 **ALWAYS** run the following checks before committing:
 
+### 0. Version Compatibility Check
+
+**NEVER downgrade dependency versions without explicit justification.**
+
+Before modifying `go.mod`, CI configuration, or any dependency versions:
+
+- ✅ **Do**: Use web search to verify the latest stable release of Go or dependencies
+- ✅ **Do**: Check the current date and year to ensure version compatibility
+- ✅ **Do**: Upgrade to newer stable versions when addressing compatibility issues
+- ✅ **Do**: Verify the version exists and is released before using it
+- ❌ **Don't**: Assume a version doesn't exist without checking
+- ❌ **Don't**: Downgrade versions to match CI without first checking if CI should be updated
+- ❌ **Don't**: Make version changes based on assumptions about release schedules
+
+```bash
+# Before changing Go version, verify what's actually released
+# Use web search: "latest stable Go version [current date]"
+
+# If CI and go.mod differ, upgrade CI to match go.mod (if go.mod version exists)
+# NOT the other way around
+```
+
 ### 1. Run Linters
 
 ```bash
@@ -424,6 +446,7 @@ Follow Go package best practices:
 
 Before committing, ensure:
 
+- [ ] No version downgrades without web search verification
 - [ ] No logging statements in library code
 - [ ] All dependencies are injected and mockable
 - [ ] Errors are wrapped with context using `%w`
