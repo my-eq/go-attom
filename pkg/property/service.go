@@ -146,9 +146,9 @@ func ensureGeoContext(values url.Values) error {
 }
 
 // GetPropertyID retrieves ATTOM property identifiers for a supplied address.
-func (s *Service) GetPropertyID(ctx context.Context, address string, opts ...Option) (*PropertyIDResponse, error) {
+func (s *Service) GetPropertyID(ctx context.Context, address string, opts ...Option) (*IDResponse, error) {
 	allOpts := append([]Option{WithAddress(address)}, opts...)
-	var resp PropertyIDResponse
+	var resp IDResponse
 	err := s.get(ctx, propertyBasePath+"id", allOpts, func(values url.Values) error {
 		if values.Get("address") != "" {
 			return nil
@@ -165,8 +165,8 @@ func (s *Service) GetPropertyID(ctx context.Context, address string, opts ...Opt
 }
 
 // GetPropertyDetail retrieves detailed property information.
-func (s *Service) GetPropertyDetail(ctx context.Context, opts ...Option) (*PropertyDetailResponse, error) {
-	var resp PropertyDetailResponse
+func (s *Service) GetPropertyDetail(ctx context.Context, opts ...Option) (*DetailResponse, error) {
+	var resp DetailResponse
 	err := s.get(ctx, propertyBasePath+"detail", opts, requirePropertyIdentifier, &resp)
 	if err != nil {
 		return nil, err
@@ -175,8 +175,8 @@ func (s *Service) GetPropertyDetail(ctx context.Context, opts ...Option) (*Prope
 }
 
 // GetPropertyAddress retrieves property address details by identifier.
-func (s *Service) GetPropertyAddress(ctx context.Context, opts ...Option) (*PropertyAddressResponse, error) {
-	var resp PropertyAddressResponse
+func (s *Service) GetPropertyAddress(ctx context.Context, opts ...Option) (*AddressResponse, error) {
+	var resp AddressResponse
 	err := s.get(ctx, propertyBasePath+"address", opts, requirePropertyIdentifier, &resp)
 	if err != nil {
 		return nil, err
@@ -185,7 +185,7 @@ func (s *Service) GetPropertyAddress(ctx context.Context, opts ...Option) (*Prop
 }
 
 // GetPropertySnapshot retrieves a lightweight property snapshot summary.
-func (s *Service) GetPropertySnapshot(ctx context.Context, opts ...Option) (*PropertySnapshotResponse, error) {
+func (s *Service) GetPropertySnapshot(ctx context.Context, opts ...Option) (*SnapshotResponse, error) {
 	validator := func(values url.Values) error {
 		if values.Get("address") != "" || values.Get("postalCode") != "" {
 			return nil
@@ -195,7 +195,7 @@ func (s *Service) GetPropertySnapshot(ctx context.Context, opts ...Option) (*Pro
 		}
 		return fmt.Errorf("%w: address, postalCode, or latitude/longitude required", ErrMissingParameter)
 	}
-	var resp PropertySnapshotResponse
+	var resp SnapshotResponse
 	err := s.get(ctx, propertyBasePath+"snapshot", opts, validator, &resp)
 	if err != nil {
 		return nil, err
@@ -204,11 +204,11 @@ func (s *Service) GetPropertySnapshot(ctx context.Context, opts ...Option) (*Pro
 }
 
 // GetBasicProfile retrieves the basic property profile.
-func (s *Service) GetBasicProfile(ctx context.Context, address string, opts ...Option) (*PropertyProfileResponse, error) {
+func (s *Service) GetBasicProfile(ctx context.Context, address string, opts ...Option) (*ProfileResponse, error) {
 	allOpts := append([]Option{WithAddress(address)}, opts...)
-	var resp PropertyProfileResponse
+	var resp ProfileResponse
 	err := s.get(ctx, propertyBasePath+"basicprofile", allOpts, func(values url.Values) error {
-		if values.Get("address") != "" {
+		if values.Get("address") != "" || values.Get("address1") != "" {
 			return nil
 		}
 		return fmt.Errorf("%w: address required", ErrMissingParameter)
@@ -220,8 +220,8 @@ func (s *Service) GetBasicProfile(ctx context.Context, address string, opts ...O
 }
 
 // GetExpandedProfile retrieves the expanded property profile.
-func (s *Service) GetExpandedProfile(ctx context.Context, opts ...Option) (*PropertyProfileResponse, error) {
-	var resp PropertyProfileResponse
+func (s *Service) GetExpandedProfile(ctx context.Context, opts ...Option) (*ProfileResponse, error) {
+	var resp ProfileResponse
 	err := s.get(ctx, propertyBasePath+"expandedprofile", opts, func(values url.Values) error {
 		if values.Get("address") != "" || values.Get("geoIdV4") != "" {
 			return nil
@@ -235,9 +235,9 @@ func (s *Service) GetExpandedProfile(ctx context.Context, opts ...Option) (*Prop
 }
 
 // GetDetailWithSchools retrieves property detail including school information.
-func (s *Service) GetDetailWithSchools(ctx context.Context, address string, opts ...Option) (*PropertyWithSchoolsResponse, error) {
+func (s *Service) GetDetailWithSchools(ctx context.Context, address string, opts ...Option) (*WithSchoolsResponse, error) {
 	allOpts := append([]Option{WithAddress(address)}, opts...)
-	var resp PropertyWithSchoolsResponse
+	var resp WithSchoolsResponse
 	err := s.get(ctx, propertyBasePath+"detailwithschools", allOpts, func(values url.Values) error {
 		if values.Get("address") != "" {
 			return nil
@@ -251,9 +251,9 @@ func (s *Service) GetDetailWithSchools(ctx context.Context, address string, opts
 }
 
 // GetDetailMortgage retrieves property detail with mortgage information.
-func (s *Service) GetDetailMortgage(ctx context.Context, address string, opts ...Option) (*PropertyMortgageResponse, error) {
+func (s *Service) GetDetailMortgage(ctx context.Context, address string, opts ...Option) (*MortgageResponse, error) {
 	allOpts := append([]Option{WithAddress(address)}, opts...)
-	var resp PropertyMortgageResponse
+	var resp MortgageResponse
 	err := s.get(ctx, propertyBasePath+"detailmortgage", allOpts, func(values url.Values) error {
 		if values.Get("address") != "" {
 			return nil
@@ -267,9 +267,9 @@ func (s *Service) GetDetailMortgage(ctx context.Context, address string, opts ..
 }
 
 // GetDetailOwner retrieves property detail with owner information.
-func (s *Service) GetDetailOwner(ctx context.Context, address string, opts ...Option) (*PropertyOwnerResponse, error) {
+func (s *Service) GetDetailOwner(ctx context.Context, address string, opts ...Option) (*OwnerResponse, error) {
 	allOpts := append([]Option{WithAddress(address)}, opts...)
-	var resp PropertyOwnerResponse
+	var resp OwnerResponse
 	err := s.get(ctx, propertyBasePath+"detailowner", allOpts, func(values url.Values) error {
 		if values.Get("address") != "" {
 			return nil
@@ -283,9 +283,9 @@ func (s *Service) GetDetailOwner(ctx context.Context, address string, opts ...Op
 }
 
 // GetDetailMortgageOwner retrieves property detail with mortgage and ownership information.
-func (s *Service) GetDetailMortgageOwner(ctx context.Context, address string, opts ...Option) (*PropertyMortgageOwnerResponse, error) {
+func (s *Service) GetDetailMortgageOwner(ctx context.Context, address string, opts ...Option) (*MortgageOwnerResponse, error) {
 	allOpts := append([]Option{WithAddress(address)}, opts...)
-	var resp PropertyMortgageOwnerResponse
+	var resp MortgageOwnerResponse
 	err := s.get(ctx, propertyBasePath+"detailmortgageowner", allOpts, func(values url.Values) error {
 		if values.Get("address") != "" {
 			return nil
