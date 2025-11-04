@@ -60,7 +60,11 @@ func (s *Service) doGet(ctx context.Context, endpoint string, query url.Values, 
 	if err != nil {
 		return fmt.Errorf("property: request failed: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() {
+		if closeErr := resp.Body.Close(); closeErr != nil && err == nil {
+			err = fmt.Errorf("property: failed to close response body: %w", closeErr)
+		}
+	}()
 
 	if resp.StatusCode < http.StatusOK || resp.StatusCode >= http.StatusMultipleChoices {
 		rawBody, readErr := io.ReadAll(resp.Body)
@@ -82,7 +86,10 @@ func (s *Service) doGet(ctx context.Context, endpoint string, query url.Values, 
 	}
 
 	if out == nil {
-		_, _ = io.Copy(io.Discard, resp.Body)
+		// Drain and discard the body when no output is needed
+		if _, err := io.Copy(io.Discard, resp.Body); err != nil {
+			return fmt.Errorf("property: failed to drain response body: %w", err)
+		}
 		return nil
 	}
 

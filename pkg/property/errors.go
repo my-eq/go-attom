@@ -1,3 +1,8 @@
+// Package property provides access to the ATTOM Property API.
+//
+// This package implements a comprehensive client for interacting with ATTOM's
+// Property API endpoints, including property details, assessments, sales data,
+// AVM (Automated Valuation Model), school information, and more.
 package property
 
 import (
@@ -11,10 +16,10 @@ var ErrMissingParameter = errors.New("property: missing required parameter")
 
 // Error represents an ATTOM Property API error response.
 type Error struct {
-	StatusCode int
 	Status     *Status
 	Message    string
 	Body       json.RawMessage
+	StatusCode int
 }
 
 // Error implements the error interface.

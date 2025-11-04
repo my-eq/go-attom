@@ -16,11 +16,11 @@ import (
 
 type mockHTTPClient struct {
 	t              *testing.T
+	expectedQuery  url.Values
 	expectedMethod string
 	expectedPath   string
-	expectedQuery  url.Values
-	statusCode     int
 	responseBody   string
+	statusCode     int
 }
 
 func (m *mockHTTPClient) Do(req *http.Request) (*http.Response, error) {
@@ -46,7 +46,7 @@ func (m *mockHTTPClient) Do(req *http.Request) (*http.Response, error) {
 // errorReader simulates a failing io.ReadCloser for testing error paths
 type errorReader struct{}
 
-func (errorReader) Read(p []byte) (n int, err error) {
+func (errorReader) Read(_ []byte) (n int, err error) {
 	return 0, errors.New("simulated read error")
 }
 
@@ -80,11 +80,11 @@ func TestServiceEndpoints(t *testing.T) {
 	ctx := context.Background()
 
 	tests := []struct {
+		call          func(context.Context, *Service) (interface{}, error)
+		expectedQuery url.Values
 		name          string
 		expectedPath  string
-		expectedQuery url.Values
 		responseBody  string
-		call          func(context.Context, *Service) (interface{}, error)
 	}{
 		{
 			name:          "GetPropertyID",
@@ -398,8 +398,8 @@ func TestServiceValidationErrors(t *testing.T) {
 	svc := NewService(c)
 
 	cases := []struct {
-		name string
 		call func() error
+		name string
 	}{
 		{name: "PropertyID", call: func() error { _, err := svc.GetPropertyID(ctx, ""); return err }},
 		{name: "PropertyDetail", call: func() error { _, err := svc.GetPropertyDetail(ctx); return err }},
@@ -1091,7 +1091,7 @@ type mockHTTPClientWithErrorBody struct {
 	statusCode int
 }
 
-func (m *mockHTTPClientWithErrorBody) Do(req *http.Request) (*http.Response, error) {
+func (m *mockHTTPClientWithErrorBody) Do(_ *http.Request) (*http.Response, error) {
 	return &http.Response{
 		StatusCode: m.statusCode,
 		Body:       errorReader{},

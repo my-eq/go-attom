@@ -246,7 +246,7 @@ type BuildingPermit struct {
 	Value        *float64 `json:"value,omitempty"`
 }
 
-// School summarises a school entity used within school endpoints.
+// School summarizes a school entity used within school endpoints.
 type School struct {
 	SchoolID        *string        `json:"schoolId,omitempty"`
 	Name            *string        `json:"name,omitempty"`
