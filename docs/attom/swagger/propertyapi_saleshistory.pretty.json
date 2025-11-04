@@ -199,7 +199,7 @@
           "Sales History"
         ],
         "summary": "Returns detailed sales history for a property.",
-        "description": "Get a sales history details of a propertyon for a specific address.",
+        "description": "Get a sales history details of a property on for a specific address.",
         "operationId": "saleHistoryDetail",
         "parameters": [
           {

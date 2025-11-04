@@ -305,10 +305,10 @@ type Property struct {
 	Assessment *Assessment  `json:"assessment,omitempty"`
 	Sale       *Sale        `json:"sale,omitempty"`
 	AVM        *AVM         `json:"avm,omitempty"`
-	Mortgage   []*Mortgage  `json:"mortgage,omitempty"`
+	Mortgage   []Mortgage   `json:"mortgage,omitempty"`
 	Ownership  *Ownership   `json:"ownership,omitempty"`
 	Tax        *Tax         `json:"tax,omitempty"`
-	Schools    []*School    `json:"schools,omitempty"`
+	Schools    []School     `json:"schools,omitempty"`
 }
 
 // IDResponse wraps the /property/id endpoint response.
