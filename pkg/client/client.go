@@ -30,7 +30,7 @@ type Client struct {
 type Option func(*Client)
 
 // DefaultBaseURL is the default root ATTOM API URL used when no override is supplied.
-const DefaultBaseURL = "https://api.attomdata.com/v1/"
+const DefaultBaseURL = "https://api.gateway.attomdata.com/"
 
 // WithBaseURL sets a custom base URL for the API client. Trailing slashes are normalized.
 // If an empty string is provided, the option is ignored and DefaultBaseURL remains.
