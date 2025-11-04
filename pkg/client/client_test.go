@@ -13,7 +13,7 @@ type mockHTTPClient struct {
 	err  error
 }
 
-func (m *mockHTTPClient) Do(req *http.Request) (*http.Response, error) {
+func (m *mockHTTPClient) Do(_ *http.Request) (*http.Response, error) {
 	return m.resp, m.err
 }
 
@@ -48,8 +48,11 @@ func (m *headerCheckHTTPClient) Do(req *http.Request) (*http.Response, error) {
 func TestDoRequest_APIKeyInjection(t *testing.T) {
 	mock := &headerCheckHTTPClient{t: t, wantKey: "my-key"}
 	c := New("my-key", mock)
-	req, _ := http.NewRequest("GET", "http://example.com", nil)
-	_, err := c.DoRequest(req)
+	req, err := http.NewRequest("GET", "http://example.com", nil)
+	if err != nil {
+		t.Fatalf("failed to create request: %v", err)
+	}
+	_, err = c.DoRequest(req)
 	if err != nil {
 		t.Errorf("unexpected error: %v", err)
 	}
@@ -60,8 +63,11 @@ func TestDoRequest_APIKeyInjection(t *testing.T) {
 
 func TestDoRequest_Errors(t *testing.T) {
 	c := New("", &mockHTTPClient{})
-	req, _ := http.NewRequest("GET", "http://example.com", nil)
-	_, err := c.DoRequest(req)
+	req, err := http.NewRequest("GET", "http://example.com", nil)
+	if err != nil {
+		t.Fatalf("failed to create request: %v", err)
+	}
+	_, err = c.DoRequest(req)
 	if !errors.Is(err, ErrInvalidAPIKey) {
 		t.Errorf("expected ErrInvalidAPIKey, got %v", err)
 	}
@@ -73,7 +79,10 @@ func TestDoRequest_Errors(t *testing.T) {
 	}
 
 	c = New("key", &mockHTTPClient{err: errors.New("fail")})
-	req, _ = http.NewRequest("GET", "http://example.com", nil)
+	req, err = http.NewRequest("GET", "http://example.com", nil)
+	if err != nil {
+		t.Fatalf("failed to create request: %v", err)
+	}
 	_, err = c.DoRequest(req)
 	if err == nil || !strings.Contains(err.Error(), "failed to execute request") {
 		t.Errorf("expected wrapped error, got %v", err)
