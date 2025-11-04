@@ -1,0 +1,172 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "",
+    "description": ""
+  },
+  "host": "api.gateway.attomdata.com",
+  "basePath": "/propertyapi/v1.0.0",
+  "schemes": [
+    "https"
+  ],
+  "tags": [
+    {
+      "name": "Sale"
+    }
+  ],
+  "consumes": [
+    "application/json",
+    "application/xml"
+  ],
+  "produces": [
+    "application/xml",
+    "application/json"
+  ],
+  "paths": {
+    "/sale/snapshot": {
+      "get": {
+        "tags": [
+          "Sale"
+        ],
+        "summary": "Returns home sale information for properties within a geography.",
+        "description": "Get a list of home sale snapshots within a GeoID that sold within a date range and specified sale amount.",
+        "operationId": "getHomeSaleSnapshotsGeoId",
+        "parameters": [
+          {
+            "name": "apikey",
+            "description": "Application Key",
+            "type": "string",
+            "required": true,
+            "in": "header",
+            "default": "2b1e86b638620bf2404521e6e9e1b19e",
+            "x-data-threescale-name": "user_keys"
+          },
+          {
+            "name": "accept",
+            "description": "application/xml or application/json (default)",
+            "type": "string",
+            "required": false,
+            "in": "header",
+            "enum": [
+              "application/xml",
+              "application/json"
+            ]
+          },
+          {
+            "name": "geoIdV4",
+            "description": "A list of geographies that this property belongs to. These geoIDs are used by search engine and values should not be exposed to the public",
+            "type": "string",
+            "required": false,
+            "in": "query",
+            "default": "8370d93a17ba7fb07f115392bd1225d9"
+          },
+          {
+            "name": "minsaleamt",
+            "description": "The recorded amount of the sale transaction",
+            "type": "string",
+            "required": false,
+            "in": "query",
+            "default": "121465"
+          },
+          {
+            "name": "maxsaleamt",
+            "description": "The recorded amount of the sale transaction",
+            "type": "string",
+            "required": false,
+            "in": "query",
+            "default": "465000"
+          },
+          {
+            "name": "startsalesearchdate",
+            "description": "The standardized date for search purposes",
+            "type": "string",
+            "format": "date",
+            "required": false,
+            "in": "query",
+            "default": "2014-04-01"
+          },
+          {
+            "name": "endsalesearchdate",
+            "description": "The standardized date for search purposes",
+            "type": "string",
+            "format": "date",
+            "required": false,
+            "in": "query",
+            "default": "2015-07-01"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "list of home sale snapshots by GeoID"
+          },
+          "403": {
+            "description": "apikey invalid/missing"
+          },
+          "default": {
+            "description": "unexpected error"
+          }
+        }
+      }
+    },
+    "/sale/detail": {
+      "get": {
+        "tags": [
+          "Sale"
+        ],
+        "summary": "Returns sale information for a property.",
+        "description": "Get sales information for a specific address.",
+        "operationId": "getSaleDetailPostal",
+        "parameters": [
+          {
+            "name": "apikey",
+            "description": "Application Key",
+            "type": "string",
+            "required": true,
+            "in": "header",
+            "default": "2b1e86b638620bf2404521e6e9e1b19e",
+            "x-data-threescale-name": "user_keys"
+          },
+          {
+            "name": "accept",
+            "description": "application/xml or application/json (default)",
+            "type": "string",
+            "required": false,
+            "in": "header",
+            "enum": [
+              "application/xml",
+              "application/json"
+            ]
+          },
+          {
+            "name": "address1",
+            "description": "The first line of the property address",
+            "type": "string",
+            "required": false,
+            "in": "query",
+            "default": "468 SEQUOIA DR"
+          },
+          {
+            "name": "address2",
+            "description": "The second line of the property address",
+            "type": "string",
+            "required": false,
+            "in": "query",
+            "default": "SMYRNA, DE"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "list of sale detail record based on a specific address"
+          },
+          "403": {
+            "description": "apikey invalid/missing"
+          },
+          "default": {
+            "description": "unexpected error"
+          }
+        }
+      }
+    }
+  }
+}
