@@ -1,0 +1,16 @@
+.env
+.DS_Store
+.vscode
+
+# Test coverage artifacts
+coverage.out
+coverage.html
+client_coverage.out
+client_cov.out
+coverage/
+
+# IDE project files
+.idea/
+
+# Optional: uncomment if vendoring dependencies
+# vendor/

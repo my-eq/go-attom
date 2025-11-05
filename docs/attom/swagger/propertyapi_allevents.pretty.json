@@ -1,0 +1,87 @@
+{
+    "swagger": "2.0",
+    "basePath": "/propertyapi/v1.0.0",
+    "info": {
+        "version": "v1.2",
+        "title": "",
+        "description": ""
+    },
+    "host": "api.gateway.attomdata.com",
+    "schemes": [
+        "https"
+    ],
+    "tags": [
+        {
+            "name": "All Events Extended by Address"
+        }
+    ],
+    "consumes": [
+        "application/json",
+        "application/xml"
+    ],
+    "produces": [
+        "application/xml",
+        "application/json"
+    ],
+    "paths": {
+        "/allevents/detail": {
+            "get": {
+                "tags": [
+                    "All Events Extended by Address"
+                ],
+                "summary": "Returns all the events that have occurred on a specific address.",
+                "description": "Get a detail of all the events on a specific property based on its address.",
+                "operationId": "getAllEventsDetailAddress",
+                "parameters": [
+                    {
+                        "name": "apikey",
+                        "x-data-threescale-name": "user_keys",
+                        "description": "API Security Key",
+                        "type": "string",
+                        "required": true,
+                        "in": "header",
+                        "default": "2b1e86b638620bf2404521e6e9e1b19e"
+                    },
+                    {
+                        "name": "accept",
+                        "description": "application/xml or application/json (default)",
+                        "type": "string",
+                        "required": false,
+                        "in": "header",
+                        "enum": [
+                            "application/xml",
+                            "application/json"
+                        ]
+                    },
+                    {
+                        "name": "address1",
+                        "description": "The first line of the property address",
+                        "type": "string",
+                        "required": false,
+                        "in": "query",
+                        "default": "4529 Winona Court"
+                    },
+                    {
+                        "name": "address2",
+                        "description": "The second line of the property address",
+                        "type": "string",
+                        "required": false,
+                        "in": "query",
+                        "default": "Denver, CO 80212"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "detail record of all the events"
+                    },
+                    "403": {
+                        "description": "apikey invalid/missing"
+                    },
+                    "default": {
+                        "description": "unexpected error"
+                    }
+                }
+            }
+        }
+    }
+}

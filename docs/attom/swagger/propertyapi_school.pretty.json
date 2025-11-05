@@ -1,0 +1,261 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "version": "1.0.0",
+        "title": "",
+        "description": ""
+    },
+    "host": "api.gateway.attomdata.com",
+    "basePath": "/propertyapi/v1.0.0",
+    "schemes": [
+        "https"
+    ],
+    "tags": [
+        {
+            "name": "School V1",
+            "description": "Profiles for schools and school districts"
+        }
+    ],
+    "consumes": [
+        "application/json",
+        "application/xml"
+    ],
+    "produces": [
+        "application/xml",
+        "application/json"
+    ],
+    "paths": {
+        "/property/detailwithschools": {
+            "get": {
+                "tags": [
+                    "School V1"
+                ],
+                "summary": "Return schools within the attendance boundary of a property.",
+                "description": "Search for a property to have the property details returned, along with the schools in the associated attendance zones.",
+                "operationId": "propertyDetailsWithSchools",
+                "deprecated": true,
+                "parameters": [
+                    {
+                        "name": "apikey",
+                        "description": "Application Key",
+                        "type": "string",
+                        "required": true,
+                        "in": "header",
+                        "default": "2b1e86b638620bf2404521e6e9e1b19e",
+                        "x-data-threescale-name": "user_keys"
+                    },
+                    {
+                        "name": "accept",
+                        "description": "application/xml or application/json (default)",
+                        "type": "string",
+                        "required": false,
+                        "in": "header",
+                        "enum": [
+                            "application/xml",
+                            "application/json"
+                        ]
+                    },
+                    {
+                        "name": "attomid",
+                        "description": "attom id",
+                        "type": "string",
+                        "required": true,
+                        "in": "query",
+                        "default": "184713191"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "list of schools"
+                    },
+                    "403": {
+                        "description": "apikey invalid/missing"
+                    },
+                    "default": {
+                        "description": "unexpected error"
+                    }
+                }
+            }
+        },
+        "/school/snapshot": {
+            "get": {
+                "tags": [
+                    "School V1"
+                ],
+                "summary": "Schools within a defined radius from a point.",
+                "description": "Search for all schools that are located within a given radius around a given latitude and longitude.",
+                "operationId": "propertySchoolSnapshot",
+                "deprecated": true,
+                "parameters": [
+                    {
+                        "name": "apikey",
+                        "description": "Application Key",
+                        "type": "string",
+                        "required": true,
+                        "in": "header",
+                        "default": "2b1e86b638620bf2404521e6e9e1b19e",
+                        "x-data-threescale-name": "user_keys"
+                    },
+                    {
+                        "name": "accept",
+                        "description": "application/xml or application/json (default)",
+                        "type": "string",
+                        "required": false,
+                        "in": "header",
+                        "enum": [
+                            "application/xml",
+                            "application/json"
+                        ]
+                    },
+                    {
+                        "name": "latitude",
+                        "description": "The property latitude coordinate",
+                        "type": "string",
+                        "required": false,
+                        "in": "query",
+                        "default": "39.731234"
+                    },
+                    {
+                        "name": "longitude",
+                        "description": "The property longitude coordinate",
+                        "type": "string",
+                        "required": false,
+                        "in": "query",
+                        "default": "-75.581182"
+                    },
+                    {
+                        "name": "radius",
+                        "description": "",
+                        "type": "string",
+                        "required": false,
+                        "in": "query",
+                        "default": "5"
+                    },
+                    {
+                        "name": "filetypetext",
+                        "description": "The type of school (public, private, or catholic can be selected)",
+                        "type": "string",
+                        "required": false,
+                        "in": "query",
+                        "default": "private"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "list of schools"
+                    },
+                    "403": {
+                        "description": "apikey invalid/missing"
+                    },
+                    "default": {
+                        "description": "unexpected error"
+                    }
+                }
+            }
+        },
+        "/school/detail": {
+            "get": {
+                "tags": [
+                    "School V1"
+                ],
+                "summary": "Return details about a particular school.",
+                "description": "Search by school ID to return all of the available details about a school",
+                "operationId": "propertyDetails",
+                "deprecated": true,
+                "parameters": [
+                    {
+                        "name": "apikey",
+                        "description": "Application Key",
+                        "type": "string",
+                        "required": true,
+                        "in": "header",
+                        "default": "2b1e86b638620bf2404521e6e9e1b19e",
+                        "x-data-threescale-name": "user_keys"
+                    },
+                    {
+                        "name": "accept",
+                        "description": "application/xml or application/json (default)",
+                        "type": "string",
+                        "required": false,
+                        "in": "header",
+                        "enum": [
+                            "application/xml",
+                            "application/json"
+                        ]
+                    },
+                    {
+                        "name": "id",
+                        "description": "school id",
+                        "type": "string",
+                        "required": false,
+                        "in": "query",
+                        "default": "00892645"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "list of schools"
+                    },
+                    "403": {
+                        "description": "apikey invalid/missing"
+                    },
+                    "default": {
+                        "description": "unexpected error"
+                    }
+                }
+            }
+        },
+        "/school/districtdetail": {
+            "get": {
+                "tags": [
+                    "School V1"
+                ],
+                "summary": "Return details about a particular school district.",
+                "description": "Search by district number to return all of the available details about a school district",
+                "operationId": "propertySchoolDistrictDetail",
+                "deprecated": true,
+                "parameters": [
+                    {
+                        "name": "apikey",
+                        "description": "Application Key",
+                        "type": "string",
+                        "required": true,
+                        "in": "header",
+                        "default": "2b1e86b638620bf2404521e6e9e1b19e",
+                        "x-data-threescale-name": "user_keys"
+                    },
+                    {
+                        "name": "accept",
+                        "description": "application/xml or application/json (default)",
+                        "type": "string",
+                        "required": false,
+                        "in": "header",
+                        "enum": [
+                            "application/xml",
+                            "application/json"
+                        ]
+                    },
+                    {
+                        "name": "id",
+                        "description": "district number",
+                        "type": "string",
+                        "required": false,
+                        "in": "query",
+                        "default": "5700086424"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "list of schools"
+                    },
+                    "403": {
+                        "description": "apikey invalid/missing"
+                    },
+                    "default": {
+                        "description": "unexpected error"
+                    }
+                }
+            }
+        }
+    }
+}
