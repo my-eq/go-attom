@@ -581,6 +581,8 @@ func (s *Service) GetSchoolSnapshot(ctx context.Context, latitude, longitude, ra
 }
 
 // GetSchoolDetail retrieves details about a particular school (deprecated endpoint).
+//
+//nolint:dupl // similar code patterns shared across school endpoints
 func (s *Service) GetSchoolDetail(ctx context.Context, schoolID string, opts ...Option) (*SchoolDetailResponse, error) {
 	allOpts := append([]Option{WithString("id", schoolID)}, opts...)
 	var resp SchoolDetailResponse
@@ -597,6 +599,8 @@ func (s *Service) GetSchoolDetail(ctx context.Context, schoolID string, opts ...
 }
 
 // GetSchoolDistrictDetail retrieves details about a particular school district (deprecated endpoint).
+//
+//nolint:dupl // similar code patterns shared across school endpoints
 func (s *Service) GetSchoolDistrictDetail(ctx context.Context, districtID string, opts ...Option) (*SchoolDistrictDetailResponse, error) {
 	allOpts := append([]Option{WithString("id", districtID)}, opts...)
 	var resp SchoolDistrictDetailResponse
@@ -613,6 +617,8 @@ func (s *Service) GetSchoolDistrictDetail(ctx context.Context, districtID string
 }
 
 // GetHomeEquity retrieves estimated home equity for a property.
+//
+//nolint:dupl // pattern duplicated with other address-based endpoints
 func (s *Service) GetHomeEquity(ctx context.Context, address1, address2 string, opts ...Option) (*HomeEquityResponse, error) {
 	allOpts := append([]Option{
 		WithString("address1", address1),
@@ -657,6 +663,8 @@ func (s *Service) GetAVMSnapshotGeo(ctx context.Context, geoIdV4, minAVMValue, m
 }
 
 // GetAVMHistoryByAddress retrieves AVM history for a property by address.
+//
+//nolint:dupl // pattern duplicated with other address-based endpoints
 func (s *Service) GetAVMHistoryByAddress(ctx context.Context, address1, address2 string, opts ...Option) (*AVMHistoryResponse, error) {
 	allOpts := append([]Option{
 		WithString("address1", address1),
