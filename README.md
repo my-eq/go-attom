@@ -39,6 +39,31 @@
 
 `go-attom` is a strongly-typed, mock-friendly Go client for the [ATTOM Data API](https://api.gateway.attomdata.com/). The library focuses on clean, idiomatic Go and provides deep coverage of the Property API including property profiles, sales, assessments, valuations, schools, and historical trends (see the [API implementation summary](API_IMPLEMENTATION_SUMMARY.md#L9-L118) for the full endpoint catalog).
 
+## Table of Contents
+
+- [Overview](#overview)
+- [Key Features](#key-features)
+- [Installation](#installation)
+- [Quick Start](#quick-start)
+  - [Look up an ATTOM ID for an address](#look-up-an-attom-id-for-an-address)
+  - [Search for schools near a coordinate](#search-for-schools-near-a-coordinate)
+- [Property API Coverage](#property-api-coverage)
+  - [Property Profiles & Basics](#property-profiles--basics)
+  - [Ownership, Mortgage, and Schools](#ownership-mortgage-and-schools)
+  - [Sales, Assessments, and Valuations](#sales-assessments-and-valuations)
+  - [Sales History & Trends](#sales-history--trends)
+- [Building Requests with Options](#building-requests-with-options)
+- [Error Handling](#error-handling)
+- [Advanced Usage](#advanced-usage)
+- [⚠️ ATTOM Naming Nuances](#%EF%B8%8F-attom-naming-nuances)
+- [Development](#development)
+- [Contributing](#contributing)
+- [License](#license)
+
+## Overview
+
+go-attom wraps the ATTOM Property API with a composable client that embraces Go best practices: contexts on every call, functional options for query parameters, dependency injection for HTTP clients, and rich error handling. The goal is to make ATTOM's real estate data easy to integrate in production services.
+
 ## Key Features
 
 - **Deep Property API coverage** – 30+ endpoints spanning property profiles, ownership, mortgage liens, building permits, assessments, AVMs, sales history, and geo trends. The coverage mirrors the official [ATTOM Property API catalog](API_IMPLEMENTATION_SUMMARY.md).
@@ -166,65 +191,62 @@ if err != nil {
 fmt.Printf("Found %d schools\n", len(schools.School))
 ```
 
+> [!NOTE]
+> Helpers like `safeString` are optional—responses expose pointers so you can detect missing data.
+
 ## Property API Coverage
 
-All endpoints use ATTOM API version `v1.0.0` unless stated otherwise. Descriptions below align with ATTOM’s official endpoint definitions sourced from the ATTOM Data API documentation dump in [`.github/agents/attom-docs-dump.txt`](.github/agents/attom-docs-dump.txt) and summarized in [API_IMPLEMENTATION_SUMMARY.md](API_IMPLEMENTATION_SUMMARY.md).
+All endpoints use ATTOM API version `v1.0.0` unless noted otherwise. Descriptions come from the official ATTOM swagger definitions included in this repository.
 
 ### Property Profiles and Core Records
 
-| Go Method | Endpoint | Description |
-|-----------|----------|-------------|
-| `GetPropertyID` | `/propertyapi/v1.0.0/property/id` | Get the ATTOM property ID for a parcel using address or identifier inputs. |
-| `GetPropertyDetail` | `/propertyapi/v1.0.0/property/detail` | Detailed property information for structure, lot, tax, ownership, and location. |
-| `GetPropertyAddress` | `/propertyapi/v1.0.0/property/address` | Normalized property address and geocoding metadata. |
-| `GetPropertySnapshot` | `/propertyapi/v1.0.0/property/snapshot` | Summary snapshot with key property fields for display workflows. |
-| `GetBasicProfile` | `/propertyapi/v1.0.0/property/basicprofile` | Basic property profile with marketing-friendly characteristics. |
-| `GetExpandedProfile` | `/propertyapi/v1.0.0/property/expandedprofile` | Expanded property profile containing the full ATTOM characteristic set. |
-| `GetDetailWithSchools` | `/propertyapi/v1.0.0/property/detailwithschools` | Property detail plus school attendance zone assignments. |
-| `GetDetailMortgage` | `/propertyapi/v1.0.0/property/detailmortgage` | Property detail with mortgage loan information. |
-| `GetDetailOwner` | `/propertyapi/v1.0.0/property/detailowner` | Property detail with owner mailing, vesting, and occupancy data. |
-| `GetDetailMortgageOwner` | `/propertyapi/v1.0.0/property/detailmortgageowner` | Property detail with combined mortgage and owner records. |
-| `GetBuildingPermits` | `/propertyapi/v1.0.0/property/buildingpermits` | Building permit history and contractor information for the parcel. |
+| Go Method | Endpoint | ATTOM Description |
+|-----------|----------|-------------------|
+| `GetPropertyID` | `/propertyapi/v1.0.0/property/id` | Returns properties that match search criteria and "get a list of property IDs within a specific geography that have a specific number of beds".【F:docs/attom/swagger/propertyapi_property.pretty.json†L117-L144】 |
+| `GetPropertyDetail` | `/propertyapi/v1.0.0/property/detail` | Returns property details for a supplied ATTOM ID.【F:docs/attom/swagger/propertyapi_property.pretty.json†L115-L148】 |
+| `GetPropertyAddress` | `/propertyapi/v1.0.0/property/address` | Returns properties within a ZIP code and supports narrowing with property type and ordering options.【F:docs/attom/swagger/propertyapi_property.pretty.json†L148-L188】 |
+| `GetPropertySnapshot` | `/propertyapi/v1.0.0/property/snapshot` | Returns property snapshots that match filters such as city, size range, and property type.【F:docs/attom/swagger/propertyapi_property.pretty.json†L188-L227】 |
+| `GetBasicProfile` | `/propertyapi/v1.0.0/property/basicprofile` | Returns basic property information plus the most recent transaction and tax data for an address.【F:docs/attom/swagger/propertyapi_property.pretty.json†L227-L269】 |
+| `GetExpandedProfile` | `/propertyapi/v1.0.0/property/expandedprofile` | Returns detailed property information with the latest transaction and taxes for an address.【F:docs/attom/swagger/propertyapi_property.pretty.json†L269-L309】 |
+| `GetBuildingPermits` | `/propertyapi/v1.0.0/property/buildingpermits` | Returns basic property information and detailed building permits for an address.【F:docs/attom/swagger/propertyapi_property.pretty.json†L309-L352】 |
+| `GetAllEventsDetail` | `/propertyapi/v1.0.0/allevents/detail` | Returns the full timeline of events that occurred on a property, including cross-domain activity.【F:docs/attom/swagger/propertyapi_allevents.pretty.json†L5-L47】 |
 
 ### Ownership, Mortgage, and Schools
 
-| Go Method | Endpoint | Description |
-|-----------|----------|-------------|
-| `SearchSchools` | `/propertyapi/v1.0.0/school/search` | Search for schools near a property or coordinate within a supplied radius. |
-| `GetSchoolProfile` | `/propertyapi/v1.0.0/school/profile` | School profile details including ratings, programs, and enrollment. |
-| `GetSchoolDistrict` | `/propertyapi/v1.0.0/school/district` | School district boundary and contact information. |
-| `GetSchoolDetailWithSchools` | `/propertyapi/v1.0.0/school/detailwithschools` | Property detail including school attendance information. |
+| Go Method | Endpoint | ATTOM Description |
+|-----------|----------|-------------------|
+| `GetDetailWithSchools` | `/propertyapi/v1.0.0/property/detailwithschools` | Returns property details together with the schools inside the attendance zones for the address.【F:docs/attom/swagger/propertyapi_school.pretty.json†L28-L70】 |
+| `GetDetailMortgage` | `/propertyapi/v1.0.0/property/detailmortgage` | Returns property detail enriched with mortgage information for the provided address.【F:pkg/property/service.go†L268-L288】 |
+| `GetDetailOwner` | `/propertyapi/v1.0.0/property/detailowner` | Returns property detail enriched with ownership information for the provided address.【F:pkg/property/service.go†L290-L307】 |
+| `GetDetailMortgageOwner` | `/propertyapi/v1.0.0/property/detailmortgageowner` | Returns property detail enriched with combined mortgage and ownership information for the address.【F:pkg/property/service.go†L309-L327】 |
+| `SearchSchools` | `/propertyapi/v1.0.0/school/search` | Returns school listings around an address or coordinate search context.【F:docs/attom/swagger/propertyapi_school.pretty.json†L70-L123】 |
+| `GetSchoolProfile` | `/propertyapi/v1.0.0/school/profile` | Returns enriched profile information for an individual school.【F:docs/attom/swagger/propertyapi_school.pretty.json†L123-L166】 |
+| `GetSchoolDistrict` | `/propertyapi/v1.0.0/school/district` | Returns school district boundaries and related contact data.【F:docs/attom/swagger/propertyapi_school.pretty.json†L166-L209】 |
 
 ### Sales, Assessments, and Valuations
 
-| Go Method | Endpoint | Description |
-|-----------|----------|-------------|
-| `GetSaleDetail` | `/propertyapi/v1.0.0/sale/detail` | Sale transaction details including dates, amounts, and transfer types. |
-| `GetSaleSnapshot` | `/propertyapi/v1.0.0/sale/snapshot` | Sales snapshot summary for quick valuation views. |
-| `GetAssessmentDetail` | `/propertyapi/v1.0.0/assessment/detail` | Assessment and tax details with appraised and market values. |
-| `GetAssessmentSnapshot` | `/propertyapi/v1.0.0/assessment/snapshot` | Assessment summary snapshot. |
-| `GetAssessmentHistory` | `/propertyapi/v1.0.0/assessmenthistory/detail` | Historical assessment records over time. |
-| `GetAVMSnapshot` | `/propertyapi/v1.0.0/avm/snapshot` | Automated valuation snapshot with confidence metrics. |
-| `GetAttomAVMDetail` | `/propertyapi/v1.0.0/attomavm/detail` | Detailed ATTOM AVM data with value ranges and comparables. |
-| `GetAVMHistory` | `/propertyapi/v1.0.0/avmhistory/detail` | AVM historical values showing value changes over time. |
-| `GetRentalAVM` | `/propertyapi/v1.0.0/valuation/rentalavm` | Rental valuation estimates including rent range and ratios. |
+| Go Method | Endpoint | ATTOM Description |
+|-----------|----------|-------------------|
+| `GetSaleDetail` | `/propertyapi/v1.0.0/sale/detail` | Returns detailed sale transaction information for a property identifier.【F:docs/attom/swagger/propertyapi_sale.pretty.json†L5-L51】 |
+| `GetSaleSnapshot` | `/propertyapi/v1.0.0/sale/snapshot` | Returns a sale snapshot summarizing recent transaction metrics for a property.【F:docs/attom/swagger/propertyapi_sale.pretty.json†L51-L95】 |
+| `GetAssessmentDetail` | `/propertyapi/v1.0.0/assessment/detail` | Returns detailed assessment, tax, and market value data.【F:docs/attom/swagger/propertyapi_assessment.pretty.json†L5-L52】 |
+| `GetAssessmentSnapshot` | `/propertyapi/v1.0.0/assessment/snapshot` | Returns assessment snapshot metrics for a property identifier.【F:docs/attom/swagger/propertyapi_assessment.pretty.json†L52-L95】 |
+| `GetAssessmentHistory` | `/propertyapi/v1.0.0/assessmenthistory/detail` | Returns historical assessment records for the property.【F:docs/attom/swagger/propertyapi_assessmenthistory.pretty.json†L5-L48】 |
+| `GetAVMSnapshot` | `/propertyapi/v1.0.0/avm/snapshot` | Returns automated valuation model (AVM) snapshot values and confidence scoring.【F:docs/attom/swagger/propertyapi_avm.pretty.json†L5-L49】 |
+| `GetAttomAVMDetail` | `/propertyapi/v1.0.0/attomavm/detail` | Returns ATTOM AVM detail including percentile and scoring metrics.【F:docs/attom/swagger/propertyapi_attomavm.pretty.json†L5-L47】 |
+| `GetAVMHistory` | `/propertyapi/v1.0.0/avmhistory/detail` | Returns month-by-month AVM history for the property.【F:docs/attom/swagger/propertyapi_avmhistory.pretty.json†L5-L49】 |
+| `GetRentalAVM` | `/propertyapi/v1.0.0/valuation/rentalavm` | Returns rental AVM valuations and rent ranges.【F:docs/attom/swagger/propertyapi_valuation.pretty.json†L5-L46】 |
 
-### Sales History and Trends
+### Sales History & Trends
 
-| Go Method | Endpoint | Description |
-|-----------|----------|-------------|
-| `GetSalesHistoryDetail` | `/propertyapi/v1.0.0/saleshistory/detail` | Detailed sales history with full transaction records. |
-| `GetSalesHistorySnapshot` | `/propertyapi/v1.0.0/saleshistory/snapshot` | Sales history snapshot summary. |
-| `GetSalesHistoryBasic` | `/propertyapi/v1.0.0/saleshistory/basichistory` | Basic sales history with essential sale facts. |
-| `GetSalesHistoryExpanded` | `/propertyapi/v1.0.0/saleshistory/expandedhistory` | Expanded sales history with full document metadata. |
-| `GetSalesTrendSnapshot` | `/propertyapi/v1.0.0/salestrend/snapshot` | Sales trends by geography at configurable intervals. |
-| `GetTransactionSalesTrend` | `/propertyapi/v1.0.0/transaction/salestrend` | Transaction-based sales trends with property type filtering. |
-
-### Events and Permits
-
-| Go Method | Endpoint | Description |
-|-----------|----------|-------------|
-| `GetAllEventsDetail` | `/propertyapi/v1.0.0/allevents/detail` | All property events combined across sales, liens, AVM, and related feeds. |
+| Go Method | Endpoint | ATTOM Description |
+|-----------|----------|-------------------|
+| `GetSalesHistoryDetail` | `/propertyapi/v1.0.0/saleshistory/detail` | Returns the full sales history for a property.【F:docs/attom/swagger/propertyapi_saleshistory.pretty.json†L5-L50】 |
+| `GetSalesHistorySnapshot` | `/propertyapi/v1.0.0/saleshistory/snapshot` | Returns a snapshot of historical transactions for quick lookups.【F:docs/attom/swagger/propertyapi_saleshistory.pretty.json†L50-L92】 |
+| `GetSalesHistoryBasic` | `/propertyapi/v1.0.0/saleshistory/basichistory` | Returns a lightweight transaction history for rapid searches.【F:docs/attom/swagger/propertyapi_saleshistory.pretty.json†L92-L136】 |
+| `GetSalesHistoryExpanded` | `/propertyapi/v1.0.0/saleshistory/expandedhistory` | Returns expanded transaction history including document metadata.【F:docs/attom/swagger/propertyapi_saleshistory.pretty.json†L136-L180】 |
+| `GetSalesTrendSnapshot` | `/propertyapi/v1.0.0/salestrend/snapshot` | Returns sales trend metrics for a specified geographic ID.【F:docs/attom/swagger/propertyapi_salestrend.pretty.json†L5-L47】 |
+| `GetTransactionSalesTrend` | `/propertyapi/v1.0.0/transaction/salestrend` | Returns transaction-oriented sales trend metrics across geographies.【F:docs/attom/swagger/propertyapi_transaction.pretty.json†L5-L47】 |
 
 ## Composing Requests with Options
 
