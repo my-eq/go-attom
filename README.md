@@ -52,7 +52,7 @@
 ### Prerequisites
 
 - An ATTOM API key with access to the Property API portfolio.
-- Go 1.25 or newer (matches the module’s go directive).
+- Go 1.25.3 or newer (matches the module’s go directive).
 
 ### Installation
 
@@ -67,7 +67,7 @@ attomClient := client.New(apiKey, nil) // defaults to *http.Client with a 30s ti
 propertyService := property.NewService(attomClient)
 ```
 
-Passing `nil` uses an internal `*http.Client` with a 30 second timeout; you can inject your own implementation to customize timeouts, retries, or tracing (see [`pkg/client/client.go`](pkg/client/client.go)).
+Passing `nil` uses an internal `*http.Client` with a 30-second timeout; you can inject your own implementation to customize timeouts, retries, or tracing (see [`pkg/client/client.go`](pkg/client/client.go)).
 
 ## Quick Start
 
