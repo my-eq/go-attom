@@ -189,12 +189,12 @@ func (s *Service) GetPropertyAddress(ctx context.Context, opts ...Option) (*Addr
 // GetPropertySnapshot retrieves a lightweight property snapshot summary.
 func (s *Service) GetPropertySnapshot(ctx context.Context, opts ...Option) (*SnapshotResponse, error) {
 	validator := func(values url.Values) error {
-		// attomId or id
-		if values.Get("attomId") != "" || values.Get("id") != "" {
+		// attomId or attomid or id
+		if values.Get("attomId") != "" || values.Get("attomid") != "" || values.Get("id") != "" {
 			return nil
 		}
-		// FIPS + APN
-		if values.Get("fips") != "" && values.Get("apn") != "" {
+		// FIPS + APN or apn
+		if values.Get("fips") != "" && (values.Get("apn") != "" || values.Get("APN") != "") {
 			return nil
 		}
 		// address (single line)
@@ -218,7 +218,7 @@ func (s *Service) GetPropertySnapshot(ctx context.Context, opts ...Option) (*Sna
 			}
 			return fmt.Errorf("%w: radius required with latitude/longitude", ErrMissingParameter)
 		}
-		return fmt.Errorf("%w: valid property identifier required (attomId, id, FIPS+APN, address, address1/address2, postalCode, or latitude/longitude+radius)", ErrMissingParameter)
+		return fmt.Errorf("%w: valid property identifier required (attomId/attomid, id, FIPS+(APN/apn), address, address1/address2, postalCode, or latitude/longitude+radius)", ErrMissingParameter)
 	}
 	var resp SnapshotResponse
 	err := s.get(ctx, propertyBasePath+"snapshot", opts, validator, &resp)
