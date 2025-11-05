@@ -557,6 +557,124 @@ func (s *Service) GetSchoolDetailWithSchools(ctx context.Context, address string
 	return &resp, nil
 }
 
+// GetSchoolSnapshot retrieves schools within a defined radius from a point (deprecated endpoint).
+func (s *Service) GetSchoolSnapshot(ctx context.Context, latitude, longitude, radius string, fileTypeText string, opts ...Option) (*SchoolSnapshotResponse, error) {
+	allOpts := append([]Option{
+		WithString("latitude", latitude),
+		WithString("longitude", longitude),
+		WithString("radius", radius),
+	}, opts...)
+	if fileTypeText != "" {
+		allOpts = append(allOpts, WithString("filetypetext", fileTypeText))
+	}
+	var resp SchoolSnapshotResponse
+	err := s.get(ctx, schoolBasePath+"snapshot", allOpts, func(values url.Values) error {
+		if values.Get("latitude") != "" && values.Get("longitude") != "" && values.Get("radius") != "" {
+			return nil
+		}
+		return fmt.Errorf("%w: latitude, longitude, and radius required", ErrMissingParameter)
+	}, &resp)
+	if err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// GetSchoolDetail retrieves details about a particular school (deprecated endpoint).
+func (s *Service) GetSchoolDetail(ctx context.Context, schoolID string, opts ...Option) (*SchoolDetailResponse, error) {
+	allOpts := append([]Option{WithString("id", schoolID)}, opts...)
+	var resp SchoolDetailResponse
+	err := s.get(ctx, schoolBasePath+"detail", allOpts, func(values url.Values) error {
+		if values.Get("id") != "" {
+			return nil
+		}
+		return fmt.Errorf("%w: school id required", ErrMissingParameter)
+	}, &resp)
+	if err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// GetSchoolDistrictDetail retrieves details about a particular school district (deprecated endpoint).
+func (s *Service) GetSchoolDistrictDetail(ctx context.Context, districtID string, opts ...Option) (*SchoolDistrictDetailResponse, error) {
+	allOpts := append([]Option{WithString("id", districtID)}, opts...)
+	var resp SchoolDistrictDetailResponse
+	err := s.get(ctx, schoolBasePath+"districtdetail", allOpts, func(values url.Values) error {
+		if values.Get("id") != "" {
+			return nil
+		}
+		return fmt.Errorf("%w: district id required", ErrMissingParameter)
+	}, &resp)
+	if err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// GetHomeEquity retrieves estimated home equity for a property.
+func (s *Service) GetHomeEquity(ctx context.Context, address1, address2 string, opts ...Option) (*HomeEquityResponse, error) {
+	allOpts := append([]Option{
+		WithString("address1", address1),
+		WithString("address2", address2),
+	}, opts...)
+	var resp HomeEquityResponse
+	err := s.get(ctx, valuationBasePath+"homeequity", allOpts, func(values url.Values) error {
+		if values.Get("address1") != "" && values.Get("address2") != "" {
+			return nil
+		}
+		return fmt.Errorf("%w: address1 and address2 required", ErrMissingParameter)
+	}, &resp)
+	if err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// GetAVMSnapshotGeo retrieves AVM snapshot values for all properties within a specific geography.
+func (s *Service) GetAVMSnapshotGeo(ctx context.Context, geoIdV4, minAVMValue, maxAVMValue, propertyType string, opts ...Option) (*AVMSnapshotGeoResponse, error) {
+	allOpts := append([]Option{WithString("geoIdV4", geoIdV4)}, opts...)
+	if minAVMValue != "" {
+		allOpts = append(allOpts, WithString("minavmvalue", minAVMValue))
+	}
+	if maxAVMValue != "" {
+		allOpts = append(allOpts, WithString("maxavmvalue", maxAVMValue))
+	}
+	if propertyType != "" {
+		allOpts = append(allOpts, WithString("propertytype", propertyType))
+	}
+	var resp AVMSnapshotGeoResponse
+	err := s.get(ctx, avmBasePath+"snapshot", allOpts, func(values url.Values) error {
+		if values.Get("geoIdV4") != "" {
+			return nil
+		}
+		return fmt.Errorf("%w: geoIdV4 required", ErrMissingParameter)
+	}, &resp)
+	if err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// GetAVMHistoryByAddress retrieves AVM history for a property by address.
+func (s *Service) GetAVMHistoryByAddress(ctx context.Context, address1, address2 string, opts ...Option) (*AVMHistoryResponse, error) {
+	allOpts := append([]Option{
+		WithString("address1", address1),
+		WithString("address2", address2),
+	}, opts...)
+	var resp AVMHistoryResponse
+	err := s.get(ctx, avmHistoryBasePath+"detail", allOpts, func(values url.Values) error {
+		if values.Get("address1") != "" && values.Get("address2") != "" {
+			return nil
+		}
+		return fmt.Errorf("%w: address1 and address2 required", ErrMissingParameter)
+	}, &resp)
+	if err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
 // GetAllEventsDetail retrieves all events information for a property.
 func (s *Service) GetAllEventsDetail(ctx context.Context, opts ...Option) (*AllEventsDetailResponse, error) {
 	var resp AllEventsDetailResponse

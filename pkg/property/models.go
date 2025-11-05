@@ -473,6 +473,37 @@ type SchoolDetailWithSchoolsResponse struct {
 	Schools  []*School   `json:"school,omitempty"`
 }
 
+// SchoolSnapshotResponse wraps /school/snapshot endpoint results.
+type SchoolSnapshotResponse struct {
+	Status *Status   `json:"status,omitempty"`
+	School []*School `json:"school,omitempty"`
+}
+
+// SchoolDetailResponse wraps /school/detail endpoint results.
+type SchoolDetailResponse struct {
+	Status *Status   `json:"status,omitempty"`
+	School []*School `json:"school,omitempty"`
+}
+
+// SchoolDistrictDetailResponse wraps /school/districtdetail endpoint results.
+type SchoolDistrictDetailResponse struct {
+	Status   *Status           `json:"status,omitempty"`
+	District []*SchoolDistrict `json:"district,omitempty"`
+}
+
+// HomeEquityResponse wraps /valuation/homeequity endpoint results.
+type HomeEquityResponse struct {
+	Status     *Status     `json:"status,omitempty"`
+	Property   []*Property `json:"property,omitempty"`
+	HomeEquity *float64    `json:"homeEquity,omitempty"`
+}
+
+// AVMSnapshotGeoResponse wraps /avm/snapshot geoIdV4 endpoint results.
+type AVMSnapshotGeoResponse struct {
+	Status *Status `json:"status,omitempty"`
+	AVM    []*AVM  `json:"avm,omitempty"`
+}
+
 // AllEventsDetailResponse wraps all events data for a property.
 type AllEventsDetailResponse struct {
 	Status *Status            `json:"status,omitempty"`
