@@ -8,21 +8,66 @@
 [![Go Reference](https://pkg.go.dev/badge/github.com/my-eq/go-attom.svg)](https://pkg.go.dev/github.com/my-eq/go-attom)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-A strongly-typed, mock-friendly Go client for the [ATTOM Data API](https://api.gateway.attomdata.com/). The library focuses on clean, idiomatic Go and provides deep coverage of the Property API including property profiles, sales, assessments, valuations, schools, and historical trends.
+`go-attom` is a strongly typed, mock-friendly Go client for the [ATTOM Data API](https://api.gateway.attomdata.com/). The library emphasizes idiomatic Go ergonomics while delivering complete Property API coverage for property profiles, ownership, mortgages, assessments, valuations, schools, and historical trends.
+
+## Table of Contents
+
+- [Overview](#overview)
+- [Key Features](#key-features)
+- [Getting Started](#getting-started)
+  - [Prerequisites](#prerequisites)
+  - [Installation](#installation)
+  - [Authenticate and Instantiate](#authenticate-and-instantiate)
+- [Quick Start](#quick-start)
+  - [Look up an ATTOM ID for an address](#look-up-an-attom-id-for-an-address)
+  - [Search for schools near a coordinate](#search-for-schools-near-a-coordinate)
+- [Property API Coverage](#property-api-coverage)
+  - [Property Profiles and Core Records](#property-profiles-and-core-records)
+  - [Ownership, Mortgage, and Schools](#ownership-mortgage-and-schools)
+  - [Sales, Assessments, and Valuations](#sales-assessments-and-valuations)
+  - [Sales History and Trends](#sales-history-and-trends)
+  - [Events and Permits](#events-and-permits)
+- [Composing Requests with Options](#composing-requests-with-options)
+- [Error Handling](#error-handling)
+- [Advanced Usage](#advanced-usage)
+- [Naming Convention Warning](#naming-convention-warning)
+- [Development](#development)
+- [Contributing](#contributing)
+- [License](#license)
+
+## Overview
+
+`go-attom` packages the ATTOM Property API into a cohesive toolkit that is easy to integrate, test, and extend. Services wrap ATTOM endpoints with first-class Go models, and helpers ensure queries are constructed with the exact parameters the API expects.
 
 ## Key Features
 
-- **Comprehensive Property API coverage** – 30+ endpoints for property detail, ownership, mortgages, assessments, AVMs, sales history, trends, school lookups, and more.
-- **Functional option builders** – Compose ATTOM query parameters with helpers such as `WithAddress`, `WithAttomID`, `WithLatitudeLongitude`, `WithDateRange`, and `WithPropertyType`.
-- **Mockable client** – Inject your own `http.Client` implementation for testing or advanced networking requirements.
-- **Consistent error handling** – Detailed errors with contextual wrapping and specialized `property.Error` values when the ATTOM API responds with non-2xx codes.
-- **Zero logging in library code** – The client returns rich errors and leaves logging decisions to your application.
+- **Deep Property API coverage** – 30+ endpoints spanning property profiles, ownership, mortgage liens, building permits, assessments, AVMs, sales history, and geo trends. The coverage mirrors the official ATTOM Property API catalog.【F:API_IMPLEMENTATION_SUMMARY.md†L9-L63】
+- **Functional option builders** – Compose ATTOM query parameters with helpers such as `WithAddress`, `WithAttomID`, `WithLatitudeLongitude`, `WithDateRange`, and `WithPropertyType` from `pkg/property/options.go`.
+- **Mockable foundation** – Inject any `http.Client`-compatible type through `client.New`, or supply your own interface implementation for advanced testing scenarios.【F:pkg/client/client.go†L14-L71】
+- **Consistent error propagation** – Library methods wrap errors with context and return structured `*property.Error` values that capture status metadata and raw responses.【F:pkg/property/service.go†L55-L122】
+- **No hidden logging** – The client surfaces detailed errors while leaving logging decisions entirely to consuming applications.
 
-## Installation
+## Getting Started
+
+### Prerequisites
+
+- An ATTOM API key with access to the Property API portfolio.
+- Go 1.21 or newer (matches the module’s go directive).
+
+### Installation
 
 ```bash
 go get github.com/my-eq/go-attom
 ```
+
+### Authenticate and Instantiate
+
+```go
+attomClient := client.New(apiKey, nil) // defaults to *http.Client with a 30s timeout
+propertyService := property.NewService(attomClient)
+```
+
+Passing `nil` uses an internal `*http.Client` with a 30 second timeout; you can inject your own implementation to customize timeouts, retries, or tracing.【F:pkg/client/client.go†L32-L71】
 
 ## Quick Start
 
@@ -88,6 +133,9 @@ func safeInt(v *int) string {
 }
 ```
 
+> [!NOTE]
+> Helpers like `safeString` are optional—responses expose pointers so you can detect missing data.【F:pkg/property/models.go†L6-L129】
+
 ### Look up an ATTOM ID for an address
 
 ```go
@@ -118,94 +166,112 @@ if err != nil {
 fmt.Printf("Found %d schools\n", len(schools.School))
 ```
 
-> [!NOTE]
-> Helpers like `safeString` are optional—responses expose pointers so you can detect missing data.
+## Property API Coverage
 
-## Supported Property API Endpoints
+All endpoints use ATTOM API version `v1.0.0` unless stated otherwise. Descriptions below are aligned with ATTOM’s official endpoint definitions.【F:API_IMPLEMENTATION_SUMMARY.md†L9-L63】
 
-All endpoints use ATTOM API version `v1.0.0` unless noted otherwise.
-
-### Property Profiles & Basics
+### Property Profiles and Core Records
 
 | Go Method | Endpoint | Description |
 |-----------|----------|-------------|
-| `GetPropertyID` | `/propertyapi/v1.0.0/property/id` | Lookup ATTOM identifiers for an address. |
-| `GetPropertyDetail` | `/propertyapi/v1.0.0/property/detail` | Detailed property characteristics, building data, and more. |
-| `GetPropertyAddress` | `/propertyapi/v1.0.0/property/address` | Address, geocoding, and identifier metadata. |
-| `GetPropertySnapshot` | `/propertyapi/v1.0.0/property/snapshot` | Lightweight property snapshot for summaries and lists. |
-| `GetBasicProfile` | `/propertyapi/v1.0.0/property/basicprofile` | Basic profile fields for marketing or quick previews. |
-| `GetExpandedProfile` | `/propertyapi/v1.0.0/property/expandedprofile` | Complete profile including 400+ data points. |
-| `GetBuildingPermits` | `/propertyapi/v1.0.0/property/buildingpermits` | Historical building permits tied to the property. |
-| `GetAllEventsDetail` | `/propertyapi/v1.0.0/allevents/detail` | Cross-domain events (sales, liens, MLS, AVM) for a property. |
+| `GetPropertyID` | `/propertyapi/v1.0.0/property/id` | Resolve ATTOM, legacy, or county identifiers for a supplied postal address. |
+| `GetPropertyDetail` | `/propertyapi/v1.0.0/property/detail` | Retrieve the full property detail dossier covering structure, lot, owner, tax, and location attributes. |
+| `GetPropertyAddress` | `/propertyapi/v1.0.0/property/address` | Access normalized address, geocoding metadata, and linked identifiers. |
+| `GetPropertySnapshot` | `/propertyapi/v1.0.0/property/snapshot` | Produce a condensed property profile for list views and portfolio summaries. |
+| `GetBasicProfile` | `/propertyapi/v1.0.0/property/basicprofile` | Return marketing-friendly high-level property characteristics. |
+| `GetExpandedProfile` | `/propertyapi/v1.0.0/property/expandedprofile` | Deliver ATTOM’s expanded profile with 400+ data points across building, lot, tax, and location dimensions. |
+| `GetDetailWithSchools` | `/propertyapi/v1.0.0/property/detailwithschools` | Combine property detail with assigned public and private schools. |
+| `GetDetailMortgage` | `/propertyapi/v1.0.0/property/detailmortgage` | Enrich property detail with active mortgage positions, lien holders, and loan characteristics. |
+| `GetDetailOwner` | `/propertyapi/v1.0.0/property/detailowner` | Surface vesting, owner mailing addresses, and ownership history alongside property data. |
+| `GetDetailMortgageOwner` | `/propertyapi/v1.0.0/property/detailmortgageowner` | Provide a unified record including mortgage liens and ownership insight for skip tracing. |
+| `GetBuildingPermits` | `/propertyapi/v1.0.0/property/buildingpermits` | List building permits, contractors, valuations, and work types tied to the property. |
 
 ### Ownership, Mortgage, and Schools
 
 | Go Method | Endpoint | Description |
 |-----------|----------|-------------|
-| `GetDetailWithSchools` | `/propertyapi/v1.0.0/property/detailwithschools` | Property detail with assigned schools. |
-| `GetDetailMortgage` | `/propertyapi/v1.0.0/property/detailmortgage` | Detail enriched with mortgage positions. |
-| `GetDetailOwner` | `/propertyapi/v1.0.0/property/detailowner` | Ownership information including vesting and mailing address. |
-| `GetDetailMortgageOwner` | `/propertyapi/v1.0.0/property/detailmortgageowner` | Combined ownership and mortgage data. |
-| `SearchSchools` | `/propertyapi/v1.0.0/school/search` | Locate schools near an address or coordinate. |
-| `GetSchoolProfile` | `/propertyapi/v1.0.0/school/profile` | Enriched school profile data. |
-| `GetSchoolDistrict` | `/propertyapi/v1.0.0/school/district` | School district boundaries and contacts. |
-| `GetSchoolDetailWithSchools` | `/propertyapi/v1.0.0/school/detailwithschools` | Property and assigned schools in one response. |
+| `SearchSchools` | `/propertyapi/v1.0.0/school/search` | Search nearby K–12 schools using address, lat/lon, or geo filters with distance scoring. |
+| `GetSchoolProfile` | `/propertyapi/v1.0.0/school/profile` | Retrieve school performance, enrollment, and program details. |
+| `GetSchoolDistrict` | `/propertyapi/v1.0.0/school/district` | Return district boundaries, contact information, and governance metadata. |
+| `GetSchoolDetailWithSchools` | `/propertyapi/v1.0.0/school/detailwithschools` | Blend property characteristics with the set of assigned schools. |
 
 ### Sales, Assessments, and Valuations
 
 | Go Method | Endpoint | Description |
 |-----------|----------|-------------|
-| `GetSaleDetail` | `/propertyapi/v1.0.0/sale/detail` | Latest sale transaction with buyer/seller data. |
-| `GetSaleSnapshot` | `/propertyapi/v1.0.0/sale/snapshot` | High-level sale metrics for quick valuation. |
-| `GetAssessmentDetail` | `/propertyapi/v1.0.0/assessment/detail` | Current assessment, tax, and market value data. |
-| `GetAssessmentSnapshot` | `/propertyapi/v1.0.0/assessment/snapshot` | Assessment summary including tax amounts and rates. |
-| `GetAssessmentHistory` | `/propertyapi/v1.0.0/assessmenthistory/detail` | Historical assessments back to 1985 where available. |
-| `GetAVMSnapshot` | `/propertyapi/v1.0.0/avm/snapshot` | Automated valuation snapshot with confidence scores. |
-| `GetAttomAVMDetail` | `/propertyapi/v1.0.0/attomavm/detail` | ATTOM AVM detail with percentile and scoring. |
-| `GetAVMHistory` | `/propertyapi/v1.0.0/avmhistory/detail` | Monthly AVM history. |
-| `GetRentalAVM` | `/propertyapi/v1.0.0/valuation/rentalavm` | Rental valuation and rent range. |
+| `GetSaleDetail` | `/propertyapi/v1.0.0/sale/detail` | Fetch recorded sale transactions including parties, price, deed type, and document metadata. |
+| `GetSaleSnapshot` | `/propertyapi/v1.0.0/sale/snapshot` | Summarize most recent sale metrics and confidence scores for valuation workflows. |
+| `GetAssessmentDetail` | `/propertyapi/v1.0.0/assessment/detail` | Provide assessor valuations, tax burdens, exemptions, and rate information. |
+| `GetAssessmentSnapshot` | `/propertyapi/v1.0.0/assessment/snapshot` | Deliver condensed assessment metrics suitable for dashboards or list views. |
+| `GetAssessmentHistory` | `/propertyapi/v1.0.0/assessmenthistory/detail` | Supply a historical timeline of annual assessments dating back to 1985 when available. |
+| `GetAVMSnapshot` | `/propertyapi/v1.0.0/avm/snapshot` | Return ATTOM automated valuation estimates with ranges and confidence scoring. |
+| `GetAttomAVMDetail` | `/propertyapi/v1.0.0/attomavm/detail` | Provide the full ATTOM AVM detail record with percentile, trend, and supporting comps. |
+| `GetAVMHistory` | `/propertyapi/v1.0.0/avmhistory/detail` | Retrieve month-over-month valuation history for trending analyses. |
+| `GetRentalAVM` | `/propertyapi/v1.0.0/valuation/rentalavm` | Calculate rent range, estimated rent, and rent-to-price metrics for investment workflows. |
 
-### Sales History & Trends
+### Sales History and Trends
 
 | Go Method | Endpoint | Description |
 |-----------|----------|-------------|
-| `GetSalesHistoryDetail` | `/propertyapi/v1.0.0/saleshistory/detail` | Full sales history for the property. |
-| `GetSalesHistorySnapshot` | `/propertyapi/v1.0.0/saleshistory/snapshot` | Summary view of historical transactions. |
-| `GetSalesHistoryBasic` | `/propertyapi/v1.0.0/saleshistory/basichistory` | Lightweight transaction history for quick lookups. |
-| `GetSalesHistoryExpanded` | `/propertyapi/v1.0.0/saleshistory/expandedhistory` | Rich transaction history with document metadata. |
-| `GetSalesTrendSnapshot` | `/propertyapi/v1.0.0/salestrend/snapshot` | Geographic sales trends for a specified GeoID. |
-| `GetTransactionSalesTrend` | `/propertyapi/v1.0.0/transaction/salestrend` | Transaction-oriented sales trend metrics. |
+| `GetSalesHistoryDetail` | `/propertyapi/v1.0.0/saleshistory/detail` | Produce the complete chain of historical sales with deed and financing attributes. |
+| `GetSalesHistorySnapshot` | `/propertyapi/v1.0.0/saleshistory/snapshot` | Return a summarized view of transaction history for quick evaluation. |
+| `GetSalesHistoryBasic` | `/propertyapi/v1.0.0/saleshistory/basichistory` | Deliver essential sale facts (price, date, deed) for high-volume lookups. |
+| `GetSalesHistoryExpanded` | `/propertyapi/v1.0.0/saleshistory/expandedhistory` | Provide exhaustive sale history with document images, mortgage data, and recording details. |
+| `GetSalesTrendSnapshot` | `/propertyapi/v1.0.0/salestrend/snapshot` | Offer geo-based trend indicators such as median price, volume, and DOM for a given GeoID. |
+| `GetTransactionSalesTrend` | `/propertyapi/v1.0.0/transaction/salestrend` | Produce transaction-centric sales trend analytics for underwriting and forecasting. |
 
-## Building Requests with Options
+### Events and Permits
 
-Property requests accept a flexible list of functional options:
+| Go Method | Endpoint | Description |
+|-----------|----------|-------------|
+| `GetAllEventsDetail` | `/propertyapi/v1.0.0/allevents/detail` | Aggregate cross-domain events (sales, liens, foreclosure, MLS, AVM) into a single property timeline. |
 
-- **Property identifiers** – `WithAttomID`, `WithPropertyID`, `WithFIPSAndAPN`, and `WithAddressLines`.
-- **Geographic search** – `WithLatitudeLongitude`, `WithRadius`, `WithPostalCode`, `WithGeoID`, and `WithGeoIDV4`.
-- **Filtering** – `WithBedsRange`, `WithBathsRange`, `WithSaleAmountRange`, `WithPropertyType`, `WithPropertyIndicator`, `WithUniversalSizeRange`, `WithYearBuiltRange`, `WithLotSize1Range`, and `WithLotSize2Range`.
-- **Date windows** – `WithDateRange` (MM/DD format) and `WithISODateRange` (YYYY-MM-DD).
-- **Pagination and sorting** – `WithPage`, `WithPageSize`, and `WithOrderBy`.
-- **Custom parameters** – `WithString`, `WithStringSlice`, and `WithAdditionalParam` for rarely used filters.
+## Composing Requests with Options
 
-These helpers ensure requests include the correct parameter names and formatting required by ATTOM.
+Property methods accept a flexible list of functional options defined in `pkg/property/options.go`.
+
+- **Property identifiers** – `WithAttomID`, `WithPropertyID`, `WithFIPSAndAPN`, and `WithAddressLines` automatically populate ATTOM’s identifier parameters.
+- **Geographic search** – `WithLatitudeLongitude`, `WithRadius`, `WithPostalCode`, `WithGeoID`, and `WithGeoIDV4` generate latitude/longitude or GeoID queries with ATTOM’s expected units and casing.
+- **Filtering** – Helpers such as `WithBedsRange`, `WithBathsRange`, `WithSaleAmountRange`, `WithPropertyType`, `WithPropertyIndicator`, `WithUniversalSizeRange`, `WithYearBuiltRange`, `WithLotSize1Range`, and `WithLotSize2Range` enforce allowed parameter combinations.【F:pkg/property/options.go†L139-L356】
+- **Date windows** – `WithDateRange` (MM/DD) and `WithISODateRange` (YYYY-MM-DD) translate human-friendly inputs into the `start*`/`end*` parameters expected by ATTOM.
+- **Pagination and sorting** – `WithPage`, `WithPageSize`, and `WithOrderBy` manage paging controls and ordering fields.
+- **Custom parameters** – `WithString`, `WithStringSlice`, and `WithAdditionalParam` let you add rarely used query strings without manual URL encoding.
+
+These helpers guarantee your requests ship with the correct casing and parameter names—many ATTOM filters are case-sensitive and reject mismatched field names.【F:pkg/property/options.go†L19-L121】【F:pkg/property/service.go†L123-L179】
 
 ## Error Handling
 
-- `property.ErrMissingParameter` is returned when required query parameters are omitted.
-- API errors use `*property.Error`, which exposes the HTTP status code, parsed ATTOM status block, and raw response body for debugging.
-- All public methods wrap lower-level errors with context using Go's `%w` semantics so you can use `errors.Is`/`errors.As`.
+- `property.ErrMissingParameter` is returned when required query parameters are omitted or incompatible.【F:pkg/property/options.go†L21-L33】
+- API failures surface as `*property.Error`, which includes the HTTP status, parsed ATTOM status block, and raw response body for debugging.【F:pkg/property/error.go†L14-L77】
+- All public methods wrap underlying errors using Go’s `%w` semantics so you can chain `errors.Is`/`errors.As` checks.【F:pkg/property/service.go†L63-L122】
+
+## Advanced Usage
+
+- **Inject custom HTTP clients** – Supply a transport that adds retries, tracing, or circuit breaking by passing your implementation to `client.New(apiKey, httpClient)`. The client only requires a `Do(*http.Request)` method.【F:pkg/client/client.go†L14-L71】
+- **Override base URLs** – Target sandboxes or mock servers with `client.WithBaseURL` while keeping path composition intact.【F:pkg/client/client.go†L24-L47】
+- **Context-driven cancellation** – Every service method accepts a `context.Context`, enabling per-call deadlines or integration with upstream request lifecycles.【F:pkg/property/service.go†L40-L122】
+- **Thin mocks for testing** – The `client.HTTPClient` interface makes it straightforward to stub ATTOM responses in unit tests without hitting the network.【F:pkg/client/client.go†L14-L71】
+
+## Naming Convention Warning
+
+ATTOM mixes camelCase, lowercase, and legacy uppercase parameters (`fips` + `APN`) across the Property API. The models and option builders in `go-attom` preserve those cases deliberately:
+
+- Struct fields use idiomatic Go names while JSON tags mirror ATTOM’s exact field casing (for example, `Identifier.AttomID` maps to `attomId`, and `Identifier.APN` maps to `apn`).【F:pkg/property/models.go†L14-L47】
+- Query helpers emit ATTOM’s parameter names verbatim (`WithFIPSAndAPN` sets `fips` and `APN`, while `WithGeoIDV4` sets `geoIdV4`). Mixing cases or renaming parameters will trigger `property.ErrMissingParameter` before the request is issued.【F:pkg/property/options.go†L139-L305】【F:pkg/property/service.go†L123-L179】
+
+When you introduce new fields or options, copy ATTOM’s casing exactly in JSON tags and query keys to avoid subtle API rejections.
 
 ## Development
 
 ```bash
 # Run tests with race detection
- go test ./... -race -v
+go test ./... -race -v
 
 # Run golangci-lint
- golangci-lint run ./...
+golangci-lint run ./...
 
 # Check markdown formatting
- markdownlint-cli2 "**/*.md"
+markdownlint-cli2 "**/*.md"
 ```
 
 See [`API_IMPLEMENTATION_SUMMARY.md`](API_IMPLEMENTATION_SUMMARY.md) for a full breakdown of every ATTOM API group and [`docs/GITHUB_ACTIONS_SUMMARY.md`](docs/GITHUB_ACTIONS_SUMMARY.md) for CI/CD pipeline details.
