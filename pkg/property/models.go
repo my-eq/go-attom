@@ -493,9 +493,9 @@ type SchoolDistrictDetailResponse struct {
 
 // HomeEquityResponse wraps /valuation/homeequity endpoint results.
 type HomeEquityResponse struct {
+	HomeEquity *float64    `json:"homeEquity,omitempty"`
 	Status     *Status     `json:"status,omitempty"`
 	Property   []*Property `json:"property,omitempty"`
-	HomeEquity *float64    `json:"homeEquity,omitempty"`
 }
 
 // AVMSnapshotGeoResponse wraps /avm/snapshot geoIdV4 endpoint results.

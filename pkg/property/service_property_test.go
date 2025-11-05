@@ -17,8 +17,8 @@ type mockHTTPClient struct {
 	expectedMethod string
 	expectedPath   string
 	expectedQuery  url.Values
-	statusCode     int
 	responseBody   string
+	statusCode     int
 }
 
 func (m *mockHTTPClient) Do(req *http.Request) (*http.Response, error) {
