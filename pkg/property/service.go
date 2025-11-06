@@ -46,7 +46,7 @@ const (
 	poiBasePath              = "v4/neighborhood/poi"
 	communityBasePath        = "v4/neighborhood/neighborhood/community"
 	parcelTilesBasePath      = "v4/parceltiles/"
-	preforeclosureBasePath   = "v3/preforeclosuredetails"
+	preforeclosureBasePath   = "property/v3/preforeclosuredetails"
 )
 
 func (s *Service) ensureClient() error {
