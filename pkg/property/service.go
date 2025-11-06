@@ -40,7 +40,7 @@ const (
 	schoolBasePath           = "v4/school/"
 	allEventsBasePath        = "v4/property/"
 	saleComparablesBasePath  = "property/v2/salescomparables/"
-	hazardBasePath           = "transportationnoise"
+	hazardBasePath           = "propertyapi/v1.0.0/transportationnoise"
 	enumerationsBasePath     = "v4/enumerations/"
 	areaBasePath             = "v4/area/"
 	poiBasePath              = "v4/neighborhood/poi"
