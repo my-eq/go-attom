@@ -148,7 +148,7 @@ fmt.Printf("Found %d schools\n", len(schools.School))
 
 ## Property API Coverage
 
-All endpoints use ATTOM API version `v4` unless noted otherwise. Some endpoints use specialized versions: sale comparables use `v2`, preforeclosure uses `v3`, and transportation noise hazards use `v1.0.0`. Descriptions come from the official ATTOM swagger definitions included in this repository (note: swagger files are historical v1.0.0 specifications but endpoint paths have been updated to reflect current API usage).
+All endpoints use ATTOM API version `v4` unless noted otherwise. Some endpoints use specialized versions: sale comparables use `v2`, preforeclosure uses `v3`, and transportation noise hazards use `v1.0.0`. Descriptions come from the official ATTOM swagger definitions included in this repository, updated to reflect the latest API versions as of November 2025.
 
 ### Property Profiles & Basics
 
@@ -161,7 +161,7 @@ All endpoints use ATTOM API version `v4` unless noted otherwise. Some endpoints 
 | `GetBasicProfile` | `/v4/property/basicprofile` | Returns basic property information plus the most recent transaction and tax data for an address.【F:docs/attom/swagger/propertyapi_property.pretty.json†L227-L269】 |
 | `GetExpandedProfile` | `/v4/property/expandedprofile` | Returns detailed property information with the latest transaction and taxes for an address.【F:docs/attom/swagger/propertyapi_property.pretty.json†L269-L309】 |
 | `GetBuildingPermits` | `/v4/property/buildingpermits` | Returns basic property information and detailed building permits for an address.【F:docs/attom/swagger/propertyapi_property.pretty.json†L309-L352】 |
-| `GetAllEventsDetail` | `/v4/property/detail` | Returns the full timeline of events that occurred on a property, including cross-domain activity.【F:docs/attom/swagger/propertyapi_allevents.pretty.json†L5-L47】 |
+| `GetAllEventsDetail` | `/propertyapi/v1.0.0/allevents/detail` | Returns the full timeline of events that occurred on a property, including cross-domain activity.【F:docs/attom/swagger/allevents_extended_v4.pretty.json†L5-L47】 |
 
 ### Ownership, Mortgage, and Schools
 

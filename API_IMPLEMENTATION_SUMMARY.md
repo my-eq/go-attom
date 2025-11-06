@@ -9,9 +9,9 @@ This document summarizes the complete ATTOM API structure extracted from the off
 | API Group | Version | Endpoints | Purpose |
 |-----------|---------|-----------|---------|
 | PropertyAPI | v4 (primary), v2/v3/v1.0.0 (mixed) | 55+ | Property details, sales, assessments, valuations, schools, comparables, hazards, preforeclosure |
-| AreaAPI | v2.0.0 | 6 | Geographic boundaries, county/state lookups, hierarchies |
+| AreaAPI | v4.0.0 | 6 | Geographic boundaries, county/state lookups, hierarchies |
 | POIAPI | v2.0.0/v4 | 5 | Points of interest, business locations, amenities |
-| CommunityAPI | v2.0.0 | 2 | Demographics, economics, education, housing, climate, transportation |
+| CommunityAPI | v4.0.0 | 2 | Demographics, economics, education, housing, climate, transportation |
 | ParcelTilesAPI | - | 1 | Parcel boundary raster tiles (PNG format) |
 
 **Total: 69+ endpoints**
@@ -251,7 +251,7 @@ All APIs use the same authentication method:
    - CommunityAPI: 2 endpoints (100% complete)
    - ParcelTilesAPI: 1 endpoint (100% complete)
    - Hazard API: 1 endpoint (100% complete)
-   - All Events: 1 endpoint (100% complete)
+   - All Events: 2 endpoints (100% complete)
    - Preforeclosure API: 1 endpoint (100% complete)
 
 ## Testing Coverage Target
