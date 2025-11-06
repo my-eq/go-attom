@@ -1,19 +1,18 @@
 {
     "swagger": "2.0",
+    "basePath": "/v4/area",
     "info": {
         "version": "4.0.0",
         "title": "",
         "description": ""
     },
     "host": "api.gateway.attomdata.com",
-    "basePath": "/v4",
     "schemes": [
         "https"
     ],
     "tags": [
         {
-            "name": "School V4",
-            "description": "Profiles for schools and school districts"
+            "name": "Area"
         }
     ],
     "consumes": [
@@ -25,24 +24,23 @@
         "application/json"
     ],
     "paths": {
-        "/property/detailwithschools": {
+        "/boundary/detail": {
             "get": {
                 "tags": [
-                    "School V1"
+                    "Area"
                 ],
-                "summary": "Return schools within the attendance boundary of a property.",
-                "description": "Search for a property to have the property details returned, along with the schools in the associated attendance zones.",
-                "operationId": "propertyDetailsWithSchools",
-                "deprecated": true,
+                "summary": "Returns the boundaries of the geography requested.",
+                "description": "Get boundary details for a geography.",
+                "operationId": "getBoundaryDetail",
                 "parameters": [
                     {
                         "name": "apikey",
-                        "description": "Application Key",
+                        "x-data-threescale-name": "user_keys",
+                        "description": "API Security Key",
                         "type": "string",
                         "required": true,
                         "in": "header",
-                        "default": "2b1e86b638620bf2404521e6e9e1b19e",
-                        "x-data-threescale-name": "user_keys"
+                        "default": "2b1e86b638620bf2404521e6e9e1b19e"
                     },
                     {
                         "name": "accept",
@@ -56,247 +54,27 @@
                         ]
                     },
                     {
-                        "name": "attomid",
-                        "description": "attom id",
-                        "type": "string",
-                        "required": true,
-                        "in": "query",
-                        "default": "184713191"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "list of schools"
-                    },
-                    "403": {
-                        "description": "apikey invalid/missing"
-                    },
-                    "default": {
-                        "description": "unexpected error"
-                    }
-                }
-            }
-        },
-        "/school/snapshot": {
-            "get": {
-                "tags": [
-                    "School V1"
-                ],
-                "summary": "Schools within a defined radius from a point.",
-                "description": "Search for all schools that are located within a given radius around a given latitude and longitude.",
-                "operationId": "propertySchoolSnapshot",
-                "deprecated": true,
-                "parameters": [
-                    {
-                        "name": "apikey",
-                        "description": "Application Key",
-                        "type": "string",
-                        "required": true,
-                        "in": "header",
-                        "default": "2b1e86b638620bf2404521e6e9e1b19e",
-                        "x-data-threescale-name": "user_keys"
-                    },
-                    {
-                        "name": "accept",
-                        "description": "application/xml or application/json (default)",
-                        "type": "string",
-                        "required": false,
-                        "in": "header",
-                        "enum": [
-                            "application/xml",
-                            "application/json"
-                        ]
-                    },
-                    {
-                        "name": "latitude",
-                        "description": "The property latitude coordinate",
-                        "type": "string",
-                        "required": false,
-                        "in": "query",
-                        "default": "39.731234"
-                    },
-                    {
-                        "name": "longitude",
-                        "description": "The property longitude coordinate",
-                        "type": "string",
-                        "required": false,
-                        "in": "query",
-                        "default": "-75.581182"
-                    },
-                    {
-                        "name": "radius",
-                        "description": "",
-                        "type": "string",
-                        "required": false,
-                        "in": "query",
-                        "default": "5"
-                    },
-                    {
-                        "name": "filetypetext",
-                        "description": "The type of school (public, private, or catholic can be selected)",
-                        "type": "string",
-                        "required": false,
-                        "in": "query",
-                        "default": "private"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "list of schools"
-                    },
-                    "403": {
-                        "description": "apikey invalid/missing"
-                    },
-                    "default": {
-                        "description": "unexpected error"
-                    }
-                }
-            }
-        },
-        "/school/detail": {
-            "get": {
-                "tags": [
-                    "School V1"
-                ],
-                "summary": "Return details about a particular school.",
-                "description": "Search by school ID to return all of the available details about a school",
-                "operationId": "propertyDetails",
-                "deprecated": true,
-                "parameters": [
-                    {
-                        "name": "apikey",
-                        "description": "Application Key",
-                        "type": "string",
-                        "required": true,
-                        "in": "header",
-                        "default": "2b1e86b638620bf2404521e6e9e1b19e",
-                        "x-data-threescale-name": "user_keys"
-                    },
-                    {
-                        "name": "accept",
-                        "description": "application/xml or application/json (default)",
-                        "type": "string",
-                        "required": false,
-                        "in": "header",
-                        "enum": [
-                            "application/xml",
-                            "application/json"
-                        ]
-                    },
-                    {
-                        "name": "id",
-                        "description": "school id",
-                        "type": "string",
-                        "required": false,
-                        "in": "query",
-                        "default": "00892645"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "list of schools"
-                    },
-                    "403": {
-                        "description": "apikey invalid/missing"
-                    },
-                    "default": {
-                        "description": "unexpected error"
-                    }
-                }
-            }
-        },
-        "/school/districtdetail": {
-            "get": {
-                "tags": [
-                    "School V1"
-                ],
-                "summary": "Return details about a particular school district.",
-                "description": "Search by district number to return all of the available details about a school district",
-                "operationId": "propertySchoolDistrictDetail",
-                "deprecated": true,
-                "parameters": [
-                    {
-                        "name": "apikey",
-                        "description": "Application Key",
-                        "type": "string",
-                        "required": true,
-                        "in": "header",
-                        "default": "2b1e86b638620bf2404521e6e9e1b19e",
-                        "x-data-threescale-name": "user_keys"
-                    },
-                    {
-                        "name": "accept",
-                        "description": "application/xml or application/json (default)",
-                        "type": "string",
-                        "required": false,
-                        "in": "header",
-                        "enum": [
-                            "application/xml",
-                            "application/json"
-                        ]
-                    },
-                    {
-                        "name": "id",
-                        "description": "district number",
-                        "type": "string",
-                        "required": false,
-                        "in": "query",
-                        "default": "5700086424"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "list of schools"
-                    },
-                    "403": {
-                        "description": "apikey invalid/missing"
-                    },
-                    "default": {
-                        "description": "unexpected error"
-                    }
-                }
-            }
-        },
-        "/school/profile": {
-            "get": {
-                "tags": [
-                    "School V4"
-                ],
-                "summary": "Return school profile for a specific school.",
-                "description": "Get detailed profile for a specific school.",
-                "operationId": "getSchoolProfile",
-                "parameters": [
-                    {
-                        "name": "apikey",
-                        "description": "Application Key",
-                        "type": "string",
-                        "required": true,
-                        "in": "header",
-                        "default": "2b1e86b638620bf2404521e6e9e1b19e",
-                        "x-data-threescale-name": "user_keys"
-                    },
-                    {
-                        "name": "accept",
-                        "description": "application/xml or application/json (default)",
-                        "type": "string",
-                        "required": false,
-                        "in": "header",
-                        "enum": [
-                            "application/xml",
-                            "application/json"
-                        ]
-                    },
-                    {
-                        "name": "attomid",
-                        "description": "ATTOM school ID",
+                        "name": "geoIdV4",
+                        "description": "ATTOM GeoID V4",
                         "type": "string",
                         "required": true,
                         "in": "query"
+                    },
+                    {
+                        "name": "format",
+                        "description": "Boundary format",
+                        "type": "string",
+                        "required": false,
+                        "in": "query",
+                        "enum": [
+                            "geojson",
+                            "wkt"
+                        ]
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "School profile"
+                        "description": "Boundary details"
                     },
                     "403": {
                         "description": "apikey invalid/missing"
@@ -307,23 +85,23 @@
                 }
             }
         },
-        "/school/district": {
+        "/hierarchy/lookup": {
             "get": {
                 "tags": [
-                    "School V4"
+                    "Area"
                 ],
-                "summary": "School district profile for a specific school district.",
-                "description": "Get profile for a specific school district.",
-                "operationId": "getSchoolDistrict",
+                "summary": "Returns all boundaries a point falls within.",
+                "description": "Get hierarchy lookup for a point.",
+                "operationId": "getHierarchyLookup",
                 "parameters": [
                     {
                         "name": "apikey",
-                        "description": "Application Key",
+                        "x-data-threescale-name": "user_keys",
+                        "description": "API Security Key",
                         "type": "string",
                         "required": true,
                         "in": "header",
-                        "default": "2b1e86b638620bf2404521e6e9e1b19e",
-                        "x-data-threescale-name": "user_keys"
+                        "default": "2b1e86b638620bf2404521e6e9e1b19e"
                     },
                     {
                         "name": "accept",
@@ -337,58 +115,15 @@
                         ]
                     },
                     {
-                        "name": "attomid",
-                        "description": "ATTOM district ID",
+                        "name": "WKTString",
+                        "description": "Well Known Text string",
                         "type": "string",
                         "required": true,
                         "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "School district profile"
-                    },
-                    "403": {
-                        "description": "apikey invalid/missing"
-                    },
-                    "default": {
-                        "description": "unexpected error"
-                    }
-                }
-            }
-        },
-        "/school/search": {
-            "get": {
-                "tags": [
-                    "School V4"
-                ],
-                "summary": "List of schools that match specified search criteria.",
-                "description": "Search for schools based on criteria.",
-                "operationId": "searchSchools",
-                "parameters": [
-                    {
-                        "name": "apikey",
-                        "description": "Application Key",
-                        "type": "string",
-                        "required": true,
-                        "in": "header",
-                        "default": "2b1e86b638620bf2404521e6e9e1b19e",
-                        "x-data-threescale-name": "user_keys"
                     },
                     {
-                        "name": "accept",
-                        "description": "application/xml or application/json (default)",
-                        "type": "string",
-                        "required": false,
-                        "in": "header",
-                        "enum": [
-                            "application/xml",
-                            "application/json"
-                        ]
-                    },
-                    {
-                        "name": "postalcode",
-                        "description": "ZIP code",
+                        "name": "geoType",
+                        "description": "Geography type",
                         "type": "string",
                         "required": false,
                         "in": "query"
@@ -396,7 +131,250 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "List of schools"
+                        "description": "Hierarchy lookup"
+                    },
+                    "403": {
+                        "description": "apikey invalid/missing"
+                    },
+                    "default": {
+                        "description": "unexpected error"
+                    }
+                }
+            }
+        },
+        "/cbsa/lookup": {
+            "get": {
+                "tags": [
+                    "Area"
+                ],
+                "summary": "Returns all CBSAs within a state.",
+                "description": "Get CBSA lookup for a state.",
+                "operationId": "getCBSALookup",
+                "parameters": [
+                    {
+                        "name": "apikey",
+                        "x-data-threescale-name": "user_keys",
+                        "description": "API Security Key",
+                        "type": "string",
+                        "required": true,
+                        "in": "header",
+                        "default": "2b1e86b638620bf2404521e6e9e1b19e"
+                    },
+                    {
+                        "name": "accept",
+                        "description": "application/xml or application/json (default)",
+                        "type": "string",
+                        "required": false,
+                        "in": "header",
+                        "enum": [
+                            "application/xml",
+                            "application/json"
+                        ]
+                    },
+                    {
+                        "name": "StateId",
+                        "description": "State ID",
+                        "type": "string",
+                        "required": true,
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "CBSA lookup"
+                    },
+                    "403": {
+                        "description": "apikey invalid/missing"
+                    },
+                    "default": {
+                        "description": "unexpected error"
+                    }
+                }
+            }
+        },
+        "/county/lookup": {
+            "get": {
+                "tags": [
+                    "Area"
+                ],
+                "summary": "Returns all counties within a state.",
+                "description": "Get county lookup for a state.",
+                "operationId": "getCountyLookup",
+                "parameters": [
+                    {
+                        "name": "apikey",
+                        "x-data-threescale-name": "user_keys",
+                        "description": "API Security Key",
+                        "type": "string",
+                        "required": true,
+                        "in": "header",
+                        "default": "2b1e86b638620bf2404521e6e9e1b19e"
+                    },
+                    {
+                        "name": "accept",
+                        "description": "application/xml or application/json (default)",
+                        "type": "string",
+                        "required": false,
+                        "in": "header",
+                        "enum": [
+                            "application/xml",
+                            "application/json"
+                        ]
+                    },
+                    {
+                        "name": "StateId",
+                        "description": "State ID",
+                        "type": "string",
+                        "required": true,
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "County lookup"
+                    },
+                    "403": {
+                        "description": "apikey invalid/missing"
+                    },
+                    "default": {
+                        "description": "unexpected error"
+                    }
+                }
+            }
+        },
+        "/state/lookup": {
+            "get": {
+                "tags": [
+                    "Area"
+                ],
+                "summary": "Returns all states and their IDs.",
+                "description": "Get state lookup.",
+                "operationId": "getStateLookup",
+                "parameters": [
+                    {
+                        "name": "apikey",
+                        "x-data-threescale-name": "user_keys",
+                        "description": "API Security Key",
+                        "type": "string",
+                        "required": true,
+                        "in": "header",
+                        "default": "2b1e86b638620bf2404521e6e9e1b19e"
+                    },
+                    {
+                        "name": "accept",
+                        "description": "application/xml or application/json (default)",
+                        "type": "string",
+                        "required": false,
+                        "in": "header",
+                        "enum": [
+                            "application/xml",
+                            "application/json"
+                        ]
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "State lookup"
+                    },
+                    "403": {
+                        "description": "apikey invalid/missing"
+                    },
+                    "default": {
+                        "description": "unexpected error"
+                    }
+                }
+            }
+        },
+        "/geoid/lookup/": {
+            "get": {
+                "tags": [
+                    "Area"
+                ],
+                "summary": "Returns specific Geo IDs that exist within a specified Geo ID.",
+                "description": "Get GeoID lookup.",
+                "operationId": "getGeoIDLookup",
+                "parameters": [
+                    {
+                        "name": "apikey",
+                        "x-data-threescale-name": "user_keys",
+                        "description": "API Security Key",
+                        "type": "string",
+                        "required": true,
+                        "in": "header",
+                        "default": "2b1e86b638620bf2404521e6e9e1b19e"
+                    },
+                    {
+                        "name": "accept",
+                        "description": "application/xml or application/json (default)",
+                        "type": "string",
+                        "required": false,
+                        "in": "header",
+                        "enum": [
+                            "application/xml",
+                            "application/json"
+                        ]
+                    },
+                    {
+                        "name": "geoIdV4",
+                        "description": "ATTOM GeoID V4",
+                        "type": "string",
+                        "required": true,
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "GeoID lookup"
+                    },
+                    "403": {
+                        "description": "apikey invalid/missing"
+                    },
+                    "default": {
+                        "description": "unexpected error"
+                    }
+                }
+            }
+        },
+        "/geoid/legacyLookup/": {
+            "get": {
+                "tags": [
+                    "Area"
+                ],
+                "summary": "Returns a translation between legacy codes and new geography identifiers.",
+                "description": "Get legacy GeoID lookup.",
+                "operationId": "getGeoIDLegacyLookup",
+                "parameters": [
+                    {
+                        "name": "apikey",
+                        "x-data-threescale-name": "user_keys",
+                        "description": "API Security Key",
+                        "type": "string",
+                        "required": true,
+                        "in": "header",
+                        "default": "2b1e86b638620bf2404521e6e9e1b19e"
+                    },
+                    {
+                        "name": "accept",
+                        "description": "application/xml or application/json (default)",
+                        "type": "string",
+                        "required": false,
+                        "in": "header",
+                        "enum": [
+                            "application/xml",
+                            "application/json"
+                        ]
+                    },
+                    {
+                        "name": "geoIdV4",
+                        "description": "ATTOM GeoID V4",
+                        "type": "string",
+                        "required": true,
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Legacy GeoID lookup"
                     },
                     "403": {
                         "description": "apikey invalid/missing"

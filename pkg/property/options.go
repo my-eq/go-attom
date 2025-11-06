@@ -275,3 +275,23 @@ func WithOrderBy(field string) Option {
 func WithAdditionalParam(key, value string) Option {
 	return WithString(key, value)
 }
+
+// WithWKTString sets the WKTString parameter.
+func WithWKTString(wktString string) Option {
+	return WithString("WKTString", wktString)
+}
+
+// WithStateID sets the StateId parameter.
+func WithStateID(stateID string) Option {
+	return WithString("StateId", stateID)
+}
+
+// WithFIPS sets the fips parameter.
+func WithFIPS(fips string) Option {
+	return WithString("fips", fips)
+}
+
+// WithAPN sets the APN parameter.
+func WithAPN(apn string) Option {
+	return WithString("APN", apn)
+}

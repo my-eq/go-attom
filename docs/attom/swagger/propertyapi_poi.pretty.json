@@ -1,8 +1,8 @@
 {
     "swagger": "2.0",
-    "basePath": "/propertyapi/v1.0.0",
+    "basePath": "/v4/neighborhood/",
     "info": {
-        "version": "v1.2",
+        "version": "2.0.0",
         "title": "",
         "description": ""
     },
@@ -12,7 +12,7 @@
     ],
     "tags": [
         {
-            "name": "All Events Extended by Address"
+            "name": "POI"
         }
     ],
     "consumes": [
@@ -24,14 +24,14 @@
         "application/json"
     ],
     "paths": {
-        "/allevents/detail": {
+        "/poi": {
             "get": {
                 "tags": [
-                    "All Events Extended by Address"
+                    "POI"
                 ],
-                "summary": "Returns all the events that have occurred on a specific address.",
-                "description": "Get a detail of all the events on a specific property based on its address.",
-                "operationId": "getAllEventsDetailAddress",
+                "summary": "POIs in proximity of a location.",
+                "description": "Get points of interest near a location.",
+                "operationId": "getPOI",
                 "parameters": [
                     {
                         "name": "apikey",
@@ -54,25 +54,23 @@
                         ]
                     },
                     {
-                        "name": "address1",
-                        "description": "The first line of the property address",
+                        "name": "point",
+                        "description": "Point in WKT format",
                         "type": "string",
                         "required": false,
-                        "in": "query",
-                        "default": "4529 Winona Court"
+                        "in": "query"
                     },
                     {
-                        "name": "address2",
-                        "description": "The second line of the property address",
-                        "type": "string",
+                        "name": "radius",
+                        "description": "Search radius",
+                        "type": "number",
                         "required": false,
-                        "in": "query",
-                        "default": "Denver, CO 80212"
+                        "in": "query"
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "detail record of all the events"
+                        "description": "Points of interest"
                     },
                     "403": {
                         "description": "apikey invalid/missing"
@@ -83,14 +81,14 @@
                 }
             }
         },
-        "/allevents/snapshot": {
+        "/poi/categorylookup": {
             "get": {
                 "tags": [
-                    "All Events Extended by Address"
+                    "POI"
                 ],
-                "summary": "Returns a snapshot of events for a specific property.",
-                "description": "Get a snapshot of all events on a specific property based on its address.",
-                "operationId": "getAllEventsSnapshotAddress",
+                "summary": "Values used for category, lob, industry.",
+                "description": "Get POI category lookup.",
+                "operationId": "getPOICategoryLookup",
                 "parameters": [
                     {
                         "name": "apikey",
@@ -111,19 +109,11 @@
                             "application/xml",
                             "application/json"
                         ]
-                    },
-                    {
-                        "name": "address",
-                        "description": "The property address",
-                        "type": "string",
-                        "required": true,
-                        "in": "query",
-                        "default": "Denver, CO 80212"
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "snapshot of all events"
+                        "description": "POI category lookup"
                     },
                     "403": {
                         "description": "apikey invalid/missing"

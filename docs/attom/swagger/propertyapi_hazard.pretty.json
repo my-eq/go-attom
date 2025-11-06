@@ -1,0 +1,79 @@
+{
+    "swagger": "2.0",
+    "basePath": "/propertyapi/v1.0.0",
+    "info": {
+        "version": "1.0.0",
+        "title": "",
+        "description": ""
+    },
+    "host": "api.gateway.attomdata.com",
+    "schemes": [
+        "https"
+    ],
+    "tags": [
+        {
+            "name": "Hazard"
+        }
+    ],
+    "consumes": [
+        "application/json",
+        "application/xml"
+    ],
+    "produces": [
+        "application/xml",
+        "application/json"
+    ],
+    "paths": {
+        "/transportationnoise": {
+            "get": {
+                "tags": [
+                    "Hazard"
+                ],
+                "summary": "Transportation Noise",
+                "description": "Returns transportation noise data for a property.",
+                "operationId": "getTransportationNoise",
+                "parameters": [
+                    {
+                        "name": "apikey",
+                        "x-data-threescale-name": "user_keys",
+                        "description": "API Security Key",
+                        "type": "string",
+                        "required": true,
+                        "in": "header",
+                        "default": "2b1e86b638620bf2404521e6e9e1b19e"
+                    },
+                    {
+                        "name": "accept",
+                        "description": "application/xml or application/json (default)",
+                        "type": "string",
+                        "required": false,
+                        "in": "header",
+                        "enum": [
+                            "application/xml",
+                            "application/json"
+                        ]
+                    },
+                    {
+                        "name": "attomid",
+                        "description": "attom id",
+                        "type": "string",
+                        "required": true,
+                        "in": "query",
+                        "default": "184713191"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Transportation noise data"
+                    },
+                    "403": {
+                        "description": "apikey invalid/missing"
+                    },
+                    "default": {
+                        "description": "unexpected error"
+                    }
+                }
+            }
+        }
+    }
+}
