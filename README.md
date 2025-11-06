@@ -247,6 +247,12 @@ All endpoints use ATTOM API version `v2.0.0` unless noted otherwise.
 |-----------|----------|-------------------|
 | `GetPreforeclosureDetail` | `/property/v3/preforeclosure` | Returns preforeclosure information and notices for properties using v3 API.【F:docs/attom/swagger/propertyapi_preforeclosure.pretty.json†L5-L47】 |
 
+## Utility & Reference API Coverage
+
+| Go Method | Endpoint | ATTOM Description |
+|-----------|----------|-------------------|
+| `GetEnumerationsDetail` | `/v4/enumerations/detail` | Returns controlled vocabulary values for API parameters. Use the `field` parameter to get valid values for specific fields like `propertytype`, `orderby`, etc.【F:pkg/property/service.go†L720-L740】 |
+
 ## Building Requests with Options
 
 Property requests accept a flexible list of functional options:
@@ -278,6 +284,27 @@ attomClient := client.New(apiKey, httpClient)
 ```
 
 The constructor falls back to a 30-second timeout client when you pass `nil`, keeping defaults safe for production.【F:pkg/client/client.go†L36-L58】
+
+### Get controlled vocabulary values
+
+Use `GetEnumerationsDetail` to discover valid values for API parameters. This is especially useful for fields like `propertytype` that have many possible values:
+
+```go
+enums, err := propertyService.GetEnumerationsDetail(
+        ctx,
+        property.WithString("field", "propertytype"),
+)
+if err != nil {
+        return err
+}
+
+fmt.Printf("Valid property types:\n")
+for _, enum := range enums.Enumerations {
+        fmt.Printf("  - %s\n", safeString(enum.Value))
+}
+```
+
+This endpoint helps ensure your requests use valid enum values and can be used for building dynamic UIs or validation logic.【F:pkg/property/service.go†L720-L740】
 
 ### Override the base URL for staging and proxies
 
