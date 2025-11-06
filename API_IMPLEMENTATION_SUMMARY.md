@@ -72,23 +72,25 @@ This document summarizes the complete ATTOM API structure extracted from the off
 - `property/v2/salescomparables/apn/...` - Comparables by APN
 - `property/v2/salescomparables/propid/...` - Comparables by property ID
 
-### Other Resources (16 endpoints)
-- `/assessmenthistory/detail` - Assessment history (1 endpoint)
-- `/allevents/detail` - All property events (2 endpoints)
-- `/enumerations/detail` - API enumerations (1 endpoint)
-- `/area/boundary/detail` - Geographic boundaries (1 endpoint)
-- `/area/hierarchy/lookup` - Geographic hierarchy (1 endpoint)
-- `/area/cbsa/lookup` - CBSA lookup (1 endpoint)
-- `/area/county/lookup` - County lookup (1 endpoint)
-- `/area/state/lookup` - State lookup (1 endpoint)
-- `/area/geoId/Lookup` - GeoID lookup (1 endpoint)
-- `/area/geoId/legacyLookup` - Legacy GeoID lookup (1 endpoint)
+### Other Resources (17 endpoints)
+
+*Note: This section includes endpoints from various APIs. Some endpoints are duplicated in their dedicated API sections below for organizational purposes.*
+- `/assessmenthistory/detail` - Assessment history
+- `/allevents/detail` - All property events
+- `/enumerations/detail` - API enumerations
+- `/area/boundary/detail` - Geographic boundaries
+- `/area/hierarchy/lookup` - Geographic hierarchy
+- `/area/cbsa/lookup` - CBSA lookup
+- `/area/county/lookup` - County lookup
+- `/area/state/lookup` - State lookup
+- `/area/geoId/Lookup` - GeoID lookup
+- `/area/geoId/legacyLookup` - Legacy GeoID lookup
 - `/neighborhood/poi` - Points of interest (2 endpoints)
-- `/neighborhood/community` - Community data (1 endpoint)
-- `/neighborhood/locationlookup` - Location lookup (1 endpoint)
-- `propertyapi/v1.0.0/transportationnoise` - Transportation noise (1 endpoint)
-- `/parceltiles/{z}/{x}/{y}.png` - Parcel tiles (1 endpoint)
-- `property/v3/preforeclosuredetails` - Preforeclosure details (1 endpoint)
+- `/neighborhood/community` - Community data
+- `/neighborhood/locationlookup` - Location lookup
+- `propertyapi/v1.0.0/transportationnoise` - Transportation noise
+- `/parceltiles/{z}/{x}/{y}.png` - Parcel tiles
+- `property/v3/preforeclosuredetails` - Preforeclosure details
 
 ## AreaAPI Breakdown (6 endpoints)
 
