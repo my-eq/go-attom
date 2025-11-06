@@ -37,7 +37,7 @@ go-attom wraps the ATTOM Property API with a composable client that embraces Go 
 
 ## Key Features
 
-- **Comprehensive Property API coverage** – 44+ endpoints for property detail, ownership, mortgages, assessments, AVMs, sales history, trends, school lookups, geographic areas, points of interest, community data, parcel tiles, hazards, and preforeclosure information.
+- **Comprehensive Property API coverage** – 55+ endpoints for property detail, ownership, mortgages, assessments, AVMs, sales history, trends, school lookups, geographic areas, points of interest, community data, parcel tiles, hazards, preforeclosure information, and sale comparables.
 - **Functional option builders** – Compose ATTOM query parameters with helpers such as `WithAddress`, `WithAttomID`, `WithLatitudeLongitude`, `WithDateRange`, and `WithPropertyType`.
 - **Mockable client** – Inject your own `http.Client` implementation for testing or advanced networking requirements.
 - **Consistent error handling** – Detailed errors with contextual wrapping and specialized `property.Error` values when the ATTOM API responds with non-2xx codes.
@@ -148,7 +148,7 @@ fmt.Printf("Found %d schools\n", len(schools.School))
 
 ## Property API Coverage
 
-All endpoints use ATTOM API version `v4` unless noted otherwise. Descriptions come from the official ATTOM swagger definitions included in this repository (note: swagger files are historical v1.0.0 specifications but endpoint paths have been updated to reflect current API usage).
+All endpoints use ATTOM API version `v4` unless noted otherwise. Some endpoints use specialized versions: sale comparables use `v2`, preforeclosure uses `v3`, and transportation noise hazards use `v1.0.0`. Descriptions come from the official ATTOM swagger definitions included in this repository (note: swagger files are historical v1.0.0 specifications but endpoint paths have been updated to reflect current API usage).
 
 ### Property Profiles & Basics
 
@@ -188,6 +188,8 @@ All endpoints use ATTOM API version `v4` unless noted otherwise. Descriptions co
 | `GetAttomAVMDetail` | `/v4/attomavm/detail` | Returns ATTOM AVM detail including percentile and scoring metrics.【F:docs/attom/swagger/propertyapi_attomavm.pretty.json†L5-L47】 |
 | `GetAVMHistory` | `/v4/avmhistory/detail` | Returns month-by-month AVM history for the property.【F:docs/attom/swagger/propertyapi_avmhistory.pretty.json†L5-L49】 |
 | `GetRentalAVM` | `/v4/valuation/rentalavm` | Returns rental AVM valuations and rent ranges.【F:docs/attom/swagger/propertyapi_valuation.pretty.json†L5-L46】 |
+| `GetSaleComparablesByAddress` | `/property/v2/salescomparables/address` | Returns comparable sales data for a given address using v2 API.【F:pkg/property/service.go†L329-L349】 |
+| `GetSaleComparablesByAPN` | `/property/v2/salescomparables/apn` | Returns comparable sales data for a given APN using v2 API.【F:pkg/property/service.go†L351-L371】 |
 
 ### Sales History & Trends
 
@@ -212,7 +214,6 @@ All endpoints use ATTOM API version `v2.0.0` unless noted otherwise.
 | `GetAreaBoundaryDetail` | `/areaapi/v2.0.0/area/boundary/detail` | Returns detailed boundary information in GeoJSON or WKT format.【F:docs/attom/swagger/propertyapi_area.pretty.json†L131-L173】 |
 | `GetLegacyGeoIDLookup` | `/areaapi/v2.0.0/area/geoId/legacyLookup` | Returns geographic ID information using legacy geocoding.【F:docs/attom/swagger/propertyapi_area.pretty.json†L173-L215】 |
 | `GetGeoIDLookup` | `/areaapi/v2.0.0/area/geoId/Lookup` | Returns geographic ID information using current geocoding.【F:docs/attom/swagger/propertyapi_area.pretty.json†L215-L257】 |
-| `GetTransportationNoise` | `/areaapi/v2.0.0/area/transportationnoise/detail` | Returns transportation noise data for geographic areas.【F:pkg/property/service.go†L500-L518】 |
 
 ## Points of Interest API Coverage
 
@@ -237,12 +238,13 @@ All endpoints use ATTOM API version `v2.0.0` unless noted otherwise.
 |-----------|----------|-------------------|
 | `GetParcelTiles` | `/parceltiles/{z}/{x}/{y}.png` | Returns parcel boundary raster tiles in PNG format.【F:docs/attom/swagger/propertyapi_parceltile.pretty.json†L5-L47】 |
 | `GetHazardDetail` | `/v4/property/hazarddetail` | Returns natural hazard risk data for properties.【F:docs/attom/swagger/propertyapi_hazard.pretty.json†L5-L47】 |
+| `GetTransportationNoise` | `/propertyapi/v1.0.0/transportationnoise/detail` | Returns transportation noise data for geographic areas using v1.0.0 API.【F:pkg/property/service.go†L500-L518】 |
 
 ## Preforeclosure API Coverage
 
 | Go Method | Endpoint | ATTOM Description |
 |-----------|----------|-------------------|
-| `GetPreforeclosureDetail` | `/v4/property/preforeclosure` | Returns preforeclosure information and notices for properties.【F:docs/attom/swagger/propertyapi_preforeclosure.pretty.json†L5-L47】 |
+| `GetPreforeclosureDetail` | `/property/v3/preforeclosure` | Returns preforeclosure information and notices for properties using v3 API.【F:docs/attom/swagger/propertyapi_preforeclosure.pretty.json†L5-L47】 |
 
 ## Building Requests with Options
 
