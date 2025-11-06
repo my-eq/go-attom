@@ -1,0 +1,179 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "version": "4.0.0",
+        "title": "",
+        "description": ""
+    },
+    "host": "api.gateway.attomdata.com",
+    "basePath": "/v4",
+    "schemes": [
+        "https"
+    ],
+    "tags": [
+        {
+            "name": "Transaction V4",
+            "description": "Property-related transactions using new geocoding"
+        }
+    ],
+    "consumes": [
+        "application/json",
+        "application/xml"
+    ],
+    "produces": [
+        "application/xml",
+        "application/json"
+    ],
+    "paths": {
+        "/transaction/salestrend": {
+            "get": {
+                "tags": [
+                    "Transaction V4"
+                ],
+                "summary": "Returns sales trends for a given community",
+                "description": "Get the average sale price, median sale price, and count of sales for the past 5 years in yearly intervals.",
+                "operationId": "getSalesTrendByYear",
+                "parameters": [
+                    {
+                        "name": "apikey",
+                        "description": "Application Key",
+                        "type": "string",
+                        "in": "header",
+                        "default": "",
+                        "x-data-threescale-name": "user_keys"
+                    },
+                    {
+                        "name": "accept",
+                        "description": "application/xml or application/json (default)",
+                        "type": "string",
+                        "required": false,
+                        "in": "header",
+                        "enum": [
+                            "application/xml",
+                            "application/json"
+                        ]
+                    },
+                    {
+                        "name": "geoIdV4",
+                        "description": "A geocode that corresponds to the community to be summarized",
+                        "type": "string",
+                        "required": false,
+                        "in": "query",
+                        "default": "6828b00047035292dd47fe020e636bb3"
+                    },
+                    {
+                        "name": "interval",
+                        "description": "The interval to search from",
+                        "type": "string",
+                        "enum": [
+                            "yearly",
+                            "quarterly",
+                            "monthly"
+                        ],
+                        "required": true,
+                        "in": "query",
+                        "default": "yearly"
+                    },
+                    {
+                        "name": "startyear",
+                        "description": "The start year to search from",
+                        "type": "integer",
+                        "required": true,
+                        "in": "query",
+                        "default": "2018"
+                    },
+                    {
+                        "name": "endyear",
+                        "description": "The end year to search from",
+                        "type": "integer",
+                        "required": true,
+                        "in": "query",
+                        "default": "2022"
+                    },
+                    {
+                        "name": "startquarter",
+                        "description": "The start quarter to search from (Quarterly)",
+                        "type": "integer",
+                        "required": false,
+                        "in": "query"
+                    },
+                    {
+                        "name": "endquarter",
+                        "description": "The end quarter to search from (Quarterly)",
+                        "type": "integer",
+                        "required": false,
+                        "in": "query"
+                    },
+                    {
+                        "name": "startmonth",
+                        "description": "The start month to search from (Monthly)",
+                        "type": "integer",
+                        "required": false,
+                        "in": "query"
+                    },
+                    {
+                        "name": "endmonth",
+                        "description": "The end month to search from (Monthly)",
+                        "type": "integer",
+                        "required": false,
+                        "in": "query"
+                    },
+                    {
+                        "name": "propertytype",
+                        "description": "One or more specific property types to be included. Only one of propertytype or transfertype can be specified. Leave blank to consolidate for all property types. Use ALL to get sales trends for each property type.",
+                        "type": "string",
+                        "enum": [
+                            "",
+                            "ALL",
+                            "CONDO/TOWNHOME",
+                            "COOPERATIVE",
+                            "FARM/RANCH",
+                            "INDUSTRIAL",
+                            "MANUFACTURED",
+                            "MISCELLANEOUS",
+                            "MULTI (2-4 Units)",
+                            "MULTI 5+",
+                            "OFFICE",
+                            "OTHER",
+                            "RETAIL",
+                            "SINGLE FAMILY RESIDENCE",
+                            "VACANT LAND"
+                        ],
+                        "required": false,
+                        "in": "query",
+                        "default": ""
+                    },
+                    {
+                        "name": "transfertype",
+                        "description": "One or more specific transfer types to be included. Only one of propertytype or transfertype can be specified. Leave blank to consolidate for all transfer types. Use ALL to get sales trends for each transfer type.",
+                        "type": "string",
+                        "enum": [
+                            "",
+                            "ALL",
+                            "CONSTRUCTION SALE",
+                            "FORECLOSURE",
+                            "MORTGAGE",
+                            "SUBDIVISION RELATED TRANSFER",
+                            "TIMESHARE TRANSFER",
+                            "TRANSFER"
+                        ],
+                        "required": false,
+                        "in": "query",
+                        "default": ""
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "list of sales trends for a given zip code in yearly intervals"
+                    },
+                    "403": {
+                        "description": "apikey invalid/missing"
+                    },
+                    "default": {
+                        "description": "unexpected error"
+                    }
+                }
+            }
+        }
+    }
+}

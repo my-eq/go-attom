@@ -1,37 +1,52 @@
 # ATTOM API Swagger Specifications
 
-This directory contains the OpenAPI/Swagger specifications for various ATTOM Data API endpoints.
+This directory contains the latest OpenAPI/Swagger specifications for various ATTOM Data API endpoints, updated to reflect the current API versions as of November 2025.
 
-## Downloaded Files
+## Latest API Versions Downloaded
 
-All files have been successfully downloaded and pretty-printed from the ATTOM API swagger specification repository.
+All files have been downloaded from the ATTOM API swagger specification repository and updated to the latest versions.
 
-| Output File | Source URL | Description | Size |
-|-------------|------------|-------------|------|
-| `propertyapi_allevents.pretty.json` | `https://api.developer.attomdata.com/swagger/spec/allevents_extended_by_address.json` | All property events combined | 2.9 KB |
-| `propertyapi_assessmenthistory.pretty.json` | `https://api.developer.attomdata.com/swagger/spec/propertyapi_assessment_history_address.json` | Historical assessment records | 3.0 KB |
-| `propertyapi_salestrend.pretty.json` | `https://api.developer.attomdata.com/swagger/spec/sales_trend_by_year.json` | Geographic sales trends by year | 3.7 KB |
-| `propertyapi_school.pretty.json` | `https://api.developer.attomdata.com/swagger/spec/propertyapi_schools.json` | School information and search | 9.7 KB |
-| `propertyapi_valuation.pretty.json` | `https://api.developer.attomdata.com/swagger/spec/propertyapi-valuationv1.json` | Property valuation data | 23 KB |
+| API | Version | Base Path | File | Description |
+|-----|---------|-----------|------|-------------|
+| Property API | v4.0.0 | `/v4/property` | `propertyapi_v4.pretty.json` | Main property endpoints |
+| Property Detail | v4.0.0 | `/v4/property` | `propertyapi_propertydetailv4.pretty.json` | Detailed property information |
+| Transaction/All Events | v4.0.0 | `/v4` | `propertyapi_transactionv4.pretty.json` | Property transactions and events |
+| All Events Extended | v1.2 | `/propertyapi/v1.0.0` | `allevents_extended_v4.pretty.json` | Extended all events by address |
+| Area API | v4.0.0 | `/v4/area` | `areaapi_v4.pretty.json` | Geographic area data |
+| POI API | v4.0.0 | `/v4/neighborhood` | `poiapi_v4.pretty.json` | Points of interest |
+| Community API | v4.0.0 | `/v4` | `communityapi_v4.pretty.json` | Community data |
 
-## File Mapping Notes
+## Legacy Files (Deprecated)
 
-The original issue requested files with specific names, but the actual ATTOM API uses slightly different naming conventions. Here's the mapping:
+The following files contain older API versions and are kept for reference only. New development should use the latest versions above.
 
-- **allevents**: Source file is `allevents_extended_by_address.json` (not `propertyapi_allevents.json`)
-- **assessmenthistory**: Source file is `propertyapi_assessment_history_address.json` (address-based version)
-- **salestrend**: Source file is `sales_trend_by_year.json` (yearly trend version; monthly and quarterly versions also available)
-- **school**: Source file is `propertyapi_schools.json` (plural form)
-- **valuation**: Source file is `propertyapi-valuationv1.json` (with v1 suffix and hyphen)
+- `propertyapi_allevents.pretty.json` (superseded by `allevents_extended_v4.pretty.json`)
+- `propertyapi_area.pretty.json` (superseded by `areaapi_v4.pretty.json`)
+- `propertyapi_assessment.pretty.json` (superseded by `propertyapi_v4.pretty.json`)
+- `propertyapi_assessmenthistory.pretty.json` (superseded by `propertyapi_v4.pretty.json`)
+- `propertyapi_avm.pretty.json` (superseded by `propertyapi_v4.pretty.json`)
+- `propertyapi_community.pretty.json` (superseded by `communityapi_v4.pretty.json`)
+- `propertyapi_poi.pretty.json` (superseded by `poiapi_v4.pretty.json`)
+- `propertyapi_property.pretty.json` (superseded by `propertyapi_v4.pretty.json`)
+- `propertyapi_sale.pretty.json` (superseded by `propertyapi_v4.pretty.json`)
+- `propertyapi_saleshistory.pretty.json` (superseded by `propertyapi_v4.pretty.json`)
+- `propertyapi_valuation.pretty.json` (superseded by `propertyapi_v4.pretty.json`)
 
-## Other Available Swagger Specs
+## Download Source
 
-The ATTOM API provides many other swagger specifications. To see the complete list, access:
+All current files were downloaded from:
 ```
 https://api.developer.attomdata.com/swagger/spec/
 ```
 
-This returns a JSON index of all available specifications.
+Specific URLs used:
+- Property API v4: `https://api.developer.attomdata.com/swagger/spec/propertyapi_v4.json`
+- Property Detail v4: `https://api.developer.attomdata.com/swagger/spec/propertyapi_propertydetailv4.json`
+- Transaction v4: `https://api.developer.attomdata.com/swagger/spec/propertyapi_transactionv4.json`
+- All Events Extended: `https://api.developer.attomdata.com/swagger/spec/allevents_extended_by_address.json`
+- Area API v4: `https://api.developer.attomdata.com/swagger/spec/AreaAPI.json`
+- POI API v4: `https://api.developer.attomdata.com/swagger/spec/POIAPIV4.json`
+- Community API v4: `https://api.developer.attomdata.com/swagger/spec/communityv4_api.json`
 
 ## Verification
 
@@ -40,6 +55,7 @@ All files have been verified to:
 - Contain actual content (not empty)
 - Be properly formatted (pretty-printed)
 - Follow the OpenAPI 2.0 (Swagger) specification format
+- Reflect the current API versions as documented on the ATTOM developer portal
 
 ## Usage
 
@@ -48,3 +64,9 @@ These swagger specifications can be used to:
 - Understand API endpoints, parameters, and response schemas
 - Import into API testing tools like Postman
 - Reference during implementation of the go-attom client library
+- Ensure implementation matches the latest ATTOM API versions
+
+## Version History
+
+- **November 2025**: Updated all specifications to latest v4.0.0 versions where available
+- **Previous**: Mixed v1.0.0 and v2.0.0 versions

@@ -1,0 +1,175 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "version": "2.0.0",
+        "title": "",
+        "description": ""
+    },
+    "host": "api.gateway.attomdata.com",
+    "basePath": "/v4/neighborhood/",
+    "schemes": [
+        "https"
+    ],
+    "tags": [
+        {
+            "name": "POI V4",
+            "description": "Points of Interest"
+        }
+    ],
+    "consumes": [
+        "application/json",
+        "application/xml"
+    ],
+    "produces": [
+        "application/xml",
+        "application/json"
+    ],
+    "paths": {
+        "/poi": {
+            "get": {
+                "tags": [
+                    "POI V4"
+                ],
+                "summary": "POIs in proximity of a location.",
+                "description": "Search for points of interest in proximity (radius) of a specific location (address, zipcode, point).",
+                "operationId": "getPOISearchPoint",
+                "parameters": [
+                    {
+                        "name": "apikey",
+                        "description": "Application Key",
+                        "type": "string",
+                        "in": "header",
+                        "default": "",
+                        "x-data-threescale-name": "user_keys"
+                    },
+                    {
+                        "name": "accept",
+                        "description": "application/xml or application/json (default)",
+                        "type": "string",
+                        "required": false,
+                        "in": "header",
+                        "enum": [
+                            "application/xml",
+                            "application/json"
+                        ]
+                    },
+                    {
+                        "name": "address",
+                        "description": "Property Address. Use one of address, zipcode, or point to define search area.",
+                        "type": "string",
+                        "required": false,
+                        "in": "query",
+                        "default": "10 Wall St., New York, NY; 10005"
+                    },
+                    {
+                        "name": "zipcode",
+                        "description": "Zip Code",
+                        "type": "string",
+                        "required": false,
+                        "in": "query"
+                    },
+                    {
+                        "name": "point",
+                        "description": "Point e.g. POINT(-74.019215,40.706554)",
+                        "type": "string",
+                        "required": false,
+                        "in": "query"
+                    },
+                    {
+                        "name": "radius",
+                        "description": "Search radius distance (in miles)",
+                        "type": "string",
+                        "required": false,
+                        "in": "query",
+                        "default": "5"
+                    },
+                    {
+                        "name": "categoryName",
+                        "description": "Business category - as per Lookup - multiple values are separated by pipe '|'",
+                        "type": "string",
+                        "required": false,
+                        "in": "query",
+                        "default": "PERSONAL SERVICES"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "list of POI street addresses"
+                    },
+                    "403": {
+                        "description": "apikey invalid/missing"
+                    },
+                    "default": {
+                        "description": "unexpected error"
+                    }
+                }
+            }
+        },
+        "/poi/categorylookup": {
+            "get": {
+                "tags": [
+                    "POI V4"
+                ],
+                "summary": "Values used for category,lob, industry.",
+                "description": "Search taxonomy used for points of interest. The hierarchy used is - category : line of business : industry",
+                "operationId": "getPOISearchPoint",
+                "parameters": [
+                    {
+                        "name": "apikey",
+                        "description": "Application Key",
+                        "type": "string",
+                        "in": "header",
+                        "default": "",
+                        "x-data-threescale-name": "user_keys"
+                    },
+                    {
+                        "name": "accept",
+                        "description": "application/xml or application/json (default)",
+                        "type": "string",
+                        "required": false,
+                        "in": "header",
+                        "enum": [
+                            "application/xml",
+                            "application/json"
+                        ]
+                    },
+                    {
+                        "name": "category",
+                        "description": "Category assigned - multiple values are separated by pipe '|'",
+                        "type": "string",
+                        "required": false,
+                        "in": "query",
+                        "default": "TRAVEL"
+                    },
+                    {
+                        "name": "lineOfBusiness",
+                        "description": "Line of business assigned - multiple values are separated by pipe '|'",
+                        "type": "string",
+                        "required": false,
+                        "in": "query",
+                        "default": "TRANSPORTATION"
+                    },
+                    {
+                        "name": "industry",
+                        "description": "Industry assigned - multiple values are separated by pipe '|'",
+                        "type": "string",
+                        "required": false,
+                        "in": "query",
+                        "default": ""
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "list of POI street addresses"
+                    },
+                    "403": {
+                        "description": "apikey invalid/missing"
+                    },
+                    "default": {
+                        "description": "unexpected error"
+                    }
+                }
+            }
+        }
+    }
+}
