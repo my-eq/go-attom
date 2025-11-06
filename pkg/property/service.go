@@ -39,7 +39,7 @@ const (
 	transactionTrendBasePath = "v4/transaction/"
 	schoolBasePath           = "v4/school/"
 	allEventsBasePath        = "v4/property/"
-	saleComparablesBasePath  = "v2/salescomparables/"
+	saleComparablesBasePath  = "property/v2/salescomparables/"
 	hazardBasePath           = "transportationnoise"
 	enumerationsBasePath     = "v4/enumerations/"
 	areaBasePath             = "v4/area/"
@@ -874,14 +874,14 @@ func (s *Service) GetLocationLookup(ctx context.Context, opts ...Option) (*Locat
 }
 
 // GetSaleComparablesByAddress retrieves sale comparables by address.
-func (s *Service) GetSaleComparablesByAddress(ctx context.Context, address string, opts ...Option) (*SaleComparablesResponse, error) {
-	allOpts := append([]Option{WithAddress(address)}, opts...)
+func (s *Service) GetSaleComparablesByAddress(ctx context.Context, street, city, county, state, zip string, opts ...Option) (*SaleComparablesResponse, error) {
+	allOpts := append([]Option{WithAddress(fmt.Sprintf("%s, %s, %s, %s %s", street, city, county, state, zip))}, opts...)
 	var resp SaleComparablesResponse
-	err := s.get(ctx, saleComparablesBasePath+"address/"+address, allOpts, func(values url.Values) error {
-		if values.Get("address") != "" {
+	err := s.get(ctx, fmt.Sprintf("%saddress/%s/%s/%s/%s/%s", saleComparablesBasePath, url.PathEscape(street), url.PathEscape(city), url.PathEscape(county), url.PathEscape(state), url.PathEscape(zip)), allOpts, func(values url.Values) error {
+		if street != "" && city != "" && county != "" && state != "" && zip != "" {
 			return nil
 		}
-		return fmt.Errorf("%w: address required", ErrMissingParameter)
+		return fmt.Errorf("%w: street, city, county, state, and zip required", ErrMissingParameter)
 	}, &resp)
 	if err != nil {
 		return nil, err
@@ -890,14 +890,14 @@ func (s *Service) GetSaleComparablesByAddress(ctx context.Context, address strin
 }
 
 // GetSaleComparablesByAPN retrieves sale comparables by APN.
-func (s *Service) GetSaleComparablesByAPN(ctx context.Context, fips, apn string, opts ...Option) (*SaleComparablesResponse, error) {
-	allOpts := append([]Option{WithFIPS(fips), WithAPN(apn)}, opts...)
+func (s *Service) GetSaleComparablesByAPN(ctx context.Context, apn, county, state string, opts ...Option) (*SaleComparablesResponse, error) {
+	allOpts := append([]Option{WithAPN(apn)}, opts...)
 	var resp SaleComparablesResponse
-	err := s.get(ctx, saleComparablesBasePath+"apn/"+fips+"/"+apn, allOpts, func(values url.Values) error {
-		if values.Get("fips") != "" && values.Get("apn") != "" {
+	err := s.get(ctx, fmt.Sprintf("%sapn/%s/%s/%s", saleComparablesBasePath, url.PathEscape(apn), url.PathEscape(county), url.PathEscape(state)), allOpts, func(values url.Values) error {
+		if apn != "" && county != "" && state != "" {
 			return nil
 		}
-		return fmt.Errorf("%w: fips and apn required", ErrMissingParameter)
+		return fmt.Errorf("%w: apn, county, and state required", ErrMissingParameter)
 	}, &resp)
 	if err != nil {
 		return nil, err
