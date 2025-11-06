@@ -8,15 +8,15 @@ This document summarizes the complete ATTOM API structure extracted from the off
 
 | API Group | Version | Endpoints | Purpose |
 |-----------|---------|-----------|---------|
-| PropertyAPI | v4 | 36+ | Property details, sales, assessments, valuations, schools |
+| PropertyAPI | v4 (primary), v2/v3/v1.0.0 (mixed) | 55+ | Property details, sales, assessments, valuations, schools, comparables, hazards, preforeclosure |
 | AreaAPI | v2.0.0 | 6 | Geographic boundaries, county/state lookups, hierarchies |
 | POIAPI | v2.0.0/v4 | 5 | Points of interest, business locations, amenities |
 | CommunityAPI | v2.0.0 | 2 | Demographics, economics, education, housing, climate, transportation |
 | ParcelTilesAPI | - | 1 | Parcel boundary raster tiles (PNG format) |
 
-**Total: 50+ endpoints**
+**Total: 69+ endpoints**
 
-## PropertyAPI Breakdown (36+ endpoints)
+## PropertyAPI Breakdown (55+ endpoints)
 
 ### Property Resources (11 endpoints)
 - `/property/id` - Get ATTOM property ID
@@ -40,11 +40,13 @@ This document summarizes the complete ATTOM API structure extracted from the off
 - `/assessment/snapshot` - Assessment summary
 - `/assessmenthistory/detail` - Historical assessments
 
-### AVM Resources (4 endpoints)
+### AVM Resources (6 endpoints)
 - `/avm/snapshot` - AVM value snapshot
 - `/attomavm/detail` - Detailed ATTOM AVM
 - `/avmhistory/detail` - Historical AVM values
 - `/valuation/rentalavm` - Rental valuations
+- `/avm/snapshotgeo` - Geographic AVM snapshot
+- `/avmhistory/detail` (by address) - Historical AVM by address
 
 ### Sales History Resources (4 endpoints)
 - `/saleshistory/detail` - Full transaction history
@@ -56,15 +58,37 @@ This document summarizes the complete ATTOM API structure extracted from the off
 - `/salestrend/snapshot` - Geographic trends
 - `/transaction/salestrend` - Transaction-based trends
 
-### School Resources (4 endpoints)
+### School Resources (7 endpoints)
 - `/school/search` - Find nearby schools
 - `/school/profile` - School information
 - `/school/district` - District information
 - `/school/detailwithschools` - Property with school zones
+- `/school/snapshot` - School snapshot by location
+- `/school/detail` - Individual school detail
+- `/school/districtdetail` - District detail
 
-### Other Resources
+### Sale Comparables Resources (3 endpoints)
+- `property/v2/salescomparables/address/...` - Comparables by address
+- `property/v2/salescomparables/apn/...` - Comparables by APN
+- `property/v2/salescomparables/propid/...` - Comparables by property ID
+
+### Other Resources (16 endpoints)
 - `/assessmenthistory/detail` - Assessment history (1 endpoint)
-- `/allevents/detail` - All property events (1 endpoint)
+- `/allevents/detail` - All property events (2 endpoints)
+- `/enumerations/detail` - API enumerations (1 endpoint)
+- `/area/boundary/detail` - Geographic boundaries (1 endpoint)
+- `/area/hierarchy/lookup` - Geographic hierarchy (1 endpoint)
+- `/area/cbsa/lookup` - CBSA lookup (1 endpoint)
+- `/area/county/lookup` - County lookup (1 endpoint)
+- `/area/state/lookup` - State lookup (1 endpoint)
+- `/area/geoId/Lookup` - GeoID lookup (1 endpoint)
+- `/area/geoId/legacyLookup` - Legacy GeoID lookup (1 endpoint)
+- `/neighborhood/poi` - Points of interest (2 endpoints)
+- `/neighborhood/community` - Community data (1 endpoint)
+- `/neighborhood/locationlookup` - Location lookup (1 endpoint)
+- `propertyapi/v1.0.0/transportationnoise` - Transportation noise (1 endpoint)
+- `/parceltiles/{z}/{x}/{y}.png` - Parcel tiles (1 endpoint)
+- `property/v3/preforeclosuredetails` - Preforeclosure details (1 endpoint)
 
 ## AreaAPI Breakdown (6 endpoints)
 
@@ -187,7 +211,10 @@ if detail.Address != nil && detail.Address.Line1 != nil {
 
 ## Base URLs
 
-- **PropertyAPI**: `https://api.gateway.attomdata.com/v4`
+- **PropertyAPI (v4)**: `https://api.gateway.attomdata.com/v4`
+- **PropertyAPI (v2 sales comparables)**: `https://api.gateway.attomdata.com/property/v2`
+- **PropertyAPI (v3 preforeclosure)**: `https://api.gateway.attomdata.com/property/v3`
+- **PropertyAPI (v1.0.0 transportation noise)**: `https://api.gateway.attomdata.com/propertyapi/v1.0.0`
 - **AreaAPI**: `https://api.gateway.attomdata.com/areaapi/v2.0.0`
 - **POIAPI (legacy)**: `https://api.gateway.attomdata.com/poisearch/v2.0.0`
 - **POIAPI (v4)**: `https://api.gateway.attomdata.com/neighborhood`
