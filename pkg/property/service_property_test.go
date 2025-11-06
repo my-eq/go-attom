@@ -73,7 +73,7 @@ func TestPropertyEndpoints(t *testing.T) {
 	}{
 		{
 			name:          "GetPropertyDetail",
-			expectedPath:  "/propertyapi/v1.0.0/property/detail",
+			expectedPath:  "/v4/property/detail",
 			expectedQuery: url.Values{"address": {"123 Main St"}},
 			responseBody:  `{"status":{},"property":[{}]}`,
 			call: func(ctx context.Context, svc *Service) (interface{}, error) {
@@ -82,7 +82,7 @@ func TestPropertyEndpoints(t *testing.T) {
 		},
 		{
 			name:          "GetPropertyAddress",
-			expectedPath:  "/propertyapi/v1.0.0/property/address",
+			expectedPath:  "/v4/property/address",
 			expectedQuery: url.Values{"attomid": {"100"}},
 			responseBody:  `{"status":{},"property":[{}]}`,
 			call: func(ctx context.Context, svc *Service) (interface{}, error) {
@@ -91,7 +91,7 @@ func TestPropertyEndpoints(t *testing.T) {
 		},
 		{
 			name:          "GetPropertySnapshot",
-			expectedPath:  "/propertyapi/v1.0.0/property/snapshot",
+			expectedPath:  "/v4/property/snapshot",
 			expectedQuery: url.Values{"postalCode": {"62701"}},
 			responseBody:  `{"status":{},"property":[{}]}`,
 			call: func(ctx context.Context, svc *Service) (interface{}, error) {
@@ -100,7 +100,7 @@ func TestPropertyEndpoints(t *testing.T) {
 		},
 		{
 			name:          "GetBasicProfile",
-			expectedPath:  "/propertyapi/v1.0.0/property/basicprofile",
+			expectedPath:  "/v4/property/basicprofile",
 			expectedQuery: url.Values{"address": {"123 Main St"}},
 			responseBody:  `{"status":{},"property":[{}]}`,
 			call: func(ctx context.Context, svc *Service) (interface{}, error) {
@@ -109,7 +109,7 @@ func TestPropertyEndpoints(t *testing.T) {
 		},
 		{
 			name:          "GetExpandedProfile",
-			expectedPath:  "/propertyapi/v1.0.0/property/expandedprofile",
+			expectedPath:  "/v4/property/expandedprofile",
 			expectedQuery: url.Values{"geoIdV4": {"geo-1"}},
 			responseBody:  `{"status":{},"property":[{}]}`,
 			call: func(ctx context.Context, svc *Service) (interface{}, error) {
@@ -118,7 +118,7 @@ func TestPropertyEndpoints(t *testing.T) {
 		},
 		{
 			name:          "GetDetailWithSchools",
-			expectedPath:  "/propertyapi/v1.0.0/property/detailwithschools",
+			expectedPath:  "/v4/property/detailwithschools",
 			expectedQuery: url.Values{"address": {"123 Main St"}},
 			responseBody:  `{"status":{},"property":[{}],"school":[{}]}`,
 			call: func(ctx context.Context, svc *Service) (interface{}, error) {
@@ -127,7 +127,7 @@ func TestPropertyEndpoints(t *testing.T) {
 		},
 		{
 			name:          "GetDetailMortgage",
-			expectedPath:  "/propertyapi/v1.0.0/property/detailmortgage",
+			expectedPath:  "/v4/property/detailmortgage",
 			expectedQuery: url.Values{"address": {"123 Main St"}},
 			responseBody:  `{"status":{},"property":[{}],"mortgage":[{}]}`,
 			call: func(ctx context.Context, svc *Service) (interface{}, error) {
@@ -136,7 +136,7 @@ func TestPropertyEndpoints(t *testing.T) {
 		},
 		{
 			name:          "GetDetailOwner",
-			expectedPath:  "/propertyapi/v1.0.0/property/detailowner",
+			expectedPath:  "/v4/property/detailowner",
 			expectedQuery: url.Values{"address": {"123 Main St"}},
 			responseBody:  `{"status":{},"property":[{}],"owner":[{}]}`,
 			call: func(ctx context.Context, svc *Service) (interface{}, error) {
@@ -145,7 +145,7 @@ func TestPropertyEndpoints(t *testing.T) {
 		},
 		{
 			name:          "GetDetailMortgageOwner",
-			expectedPath:  "/propertyapi/v1.0.0/property/detailmortgageowner",
+			expectedPath:  "/v4/property/detailmortgageowner",
 			expectedQuery: url.Values{"address": {"123 Main St"}},
 			responseBody:  `{"status":{},"property":[{}],"mortgage":[{}],"owner":[{}]}`,
 			call: func(ctx context.Context, svc *Service) (interface{}, error) {
@@ -154,7 +154,7 @@ func TestPropertyEndpoints(t *testing.T) {
 		},
 		{
 			name:          "GetBuildingPermits",
-			expectedPath:  "/propertyapi/v1.0.0/property/buildingpermits",
+			expectedPath:  "/v4/property/buildingpermits",
 			expectedQuery: url.Values{"address": {"123 Main St"}},
 			responseBody:  `{"status":{},"buildingPermit":[{}]}`,
 			call: func(ctx context.Context, svc *Service) (interface{}, error) {

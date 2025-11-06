@@ -6,7 +6,7 @@ The PropertyAPI is the largest ATTOM API group with **36+ endpoints** across 9 c
 ## Endpoints by Category
 
 ### 1. Property Resources (11 endpoints)
-Base path: `/propertyapi/v1.0.0/property/`
+Base path: `/v4/property/`
 
 | Endpoint | Description | Key Parameters |
 |----------|-------------|----------------|

@@ -20,7 +20,7 @@ func TestServiceErrorResponse(t *testing.T) {
 	mock := &mockHTTPClient{
 		t:              t,
 		expectedMethod: http.MethodGet,
-		expectedPath:   "/propertyapi/v1.0.0/property/detail",
+		expectedPath:   "/v4/property/detail",
 		expectedQuery:  url.Values{"attomid": {"100"}},
 		statusCode:     http.StatusBadRequest,
 		responseBody:   `{"status":{"msg":"bad request"}}`,
@@ -557,7 +557,7 @@ func TestGetPropertyIDValidation(t *testing.T) {
 	svc := NewService(c)
 
 	t.Run("with address1 and address2", func(t *testing.T) {
-		mock.expectedPath = "/propertyapi/v1.0.0/property/id"
+		mock.expectedPath = "/v4/property/id"
 		mock.expectedQuery = url.Values{
 			"address1": {"123 Main St"},
 			"address2": {"City, ST"},
@@ -588,7 +588,7 @@ func TestGetPropertySnapshotValidation(t *testing.T) {
 	svc := NewService(c)
 
 	t.Run("with postal code", func(t *testing.T) {
-		mock.expectedPath = "/propertyapi/v1.0.0/property/snapshot"
+		mock.expectedPath = "/v4/property/snapshot"
 		mock.expectedQuery = url.Values{"postalCode": {"12345"}}
 
 		_, err := svc.GetPropertySnapshot(ctx, WithPostalCode("12345"))

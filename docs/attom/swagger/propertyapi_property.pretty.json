@@ -162,6 +162,156 @@
         }
       }
     },
+    "/property/detailowner": {
+      "get": {
+        "tags": [
+          "Property"
+        ],
+        "summary": "Property details and current owner for a specific property.",
+        "description": "Get property details and current owner information based on its attom ID.",
+        "operationId": "propertyDetailsOwner",
+        "parameters": [
+          {
+            "name": "apikey",
+            "description": "Application Key",
+            "type": "string",
+            "in": "header",
+            "default": "",
+            "x-data-threescale-name": "user_keys"
+          },
+          {
+            "name": "accept",
+            "description": "application/xml or application/json (default)",
+            "type": "string",
+            "required": false,
+            "in": "header",
+            "enum": [
+              "application/xml",
+              "application/json"
+            ]
+          },
+          {
+            "name": "attomid",
+            "description": "attom id",
+            "type": "string",
+            "required": true,
+            "in": "query",
+            "default": "184713191"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Property details and current owner"
+          },
+          "403": {
+            "description": "apikey invalid/missing"
+          },
+          "default": {
+            "description": "unexpected error"
+          }
+        }
+      }
+    },
+    "/property/detailmortgage": {
+      "get": {
+        "tags": [
+          "Property"
+        ],
+        "summary": "Property details and current mortgage for a property.",
+        "description": "Get property details and current mortgage information based on its attom ID.",
+        "operationId": "propertyDetailsMortgage",
+        "parameters": [
+          {
+            "name": "apikey",
+            "description": "Application Key",
+            "type": "string",
+            "in": "header",
+            "default": "",
+            "x-data-threescale-name": "user_keys"
+          },
+          {
+            "name": "accept",
+            "description": "application/xml or application/json (default)",
+            "type": "string",
+            "required": false,
+            "in": "header",
+            "enum": [
+              "application/xml",
+              "application/json"
+            ]
+          },
+          {
+            "name": "attomid",
+            "description": "attom id",
+            "type": "string",
+            "required": true,
+            "in": "query",
+            "default": "184713191"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Property details and current mortgage"
+          },
+          "403": {
+            "description": "apikey invalid/missing"
+          },
+          "default": {
+            "description": "unexpected error"
+          }
+        }
+      }
+    },
+    "/property/detailmortgageowner": {
+      "get": {
+        "tags": [
+          "Property"
+        ],
+        "summary": "Property details, owner and current mortgage for a specific property.",
+        "description": "Get property details, owner and current mortgage information based on its attom ID.",
+        "operationId": "propertyDetailsMortgageOwner",
+        "parameters": [
+          {
+            "name": "apikey",
+            "description": "Application Key",
+            "type": "string",
+            "in": "header",
+            "default": "",
+            "x-data-threescale-name": "user_keys"
+          },
+          {
+            "name": "accept",
+            "description": "application/xml or application/json (default)",
+            "type": "string",
+            "required": false,
+            "in": "header",
+            "enum": [
+              "application/xml",
+              "application/json"
+            ]
+          },
+          {
+            "name": "attomid",
+            "description": "attom id",
+            "type": "string",
+            "required": true,
+            "in": "query",
+            "default": "184713191"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Property details, owner and current mortgage"
+          },
+          "403": {
+            "description": "apikey invalid/missing"
+          },
+          "default": {
+            "description": "unexpected error"
+          }
+        }
+      }
+    },
     "/property/address": {
       "get": {
         "tags": [
@@ -606,6 +756,55 @@
         "responses": {
           "200": {
             "description": "Building permits record for a specific address"
+          },
+          "403": {
+            "description": "apikey invalid/missing"
+          },
+          "default": {
+            "description": "unexpected error"
+          }
+        }
+      }
+    },
+    "/enumerations/detail": {
+      "get": {
+        "tags": [
+          "Property"
+        ],
+        "summary": "Returns a list of field values.",
+        "description": "Get enumeration values for fields.",
+        "operationId": "getEnumerationsDetail",
+        "parameters": [
+          {
+            "name": "apikey",
+            "description": "Application Key",
+            "type": "string",
+            "in": "header",
+            "default": "",
+            "x-data-threescale-name": "user_keys"
+          },
+          {
+            "name": "accept",
+            "description": "application/xml or application/json (default)",
+            "type": "string",
+            "required": false,
+            "in": "header",
+            "enum": [
+              "application/xml",
+              "application/json"
+            ]
+          },
+          {
+            "name": "field",
+            "description": "Field name",
+            "type": "string",
+            "required": true,
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of field enumerations"
           },
           "403": {
             "description": "apikey invalid/missing"

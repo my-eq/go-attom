@@ -22,7 +22,7 @@ func TestSalesEndpoints(t *testing.T) {
 	}{
 		{
 			name:          "GetSaleDetail",
-			expectedPath:  "/propertyapi/v1.0.0/sale/detail",
+			expectedPath:  "/v4/transaction/detail",
 			expectedQuery: url.Values{"attomid": {"100"}},
 			responseBody:  `{"status":{},"sale":[{}]}`,
 			call: func(ctx context.Context, svc *Service) (interface{}, error) {
@@ -31,7 +31,7 @@ func TestSalesEndpoints(t *testing.T) {
 		},
 		{
 			name:          "GetSaleSnapshot",
-			expectedPath:  "/propertyapi/v1.0.0/sale/snapshot",
+			expectedPath:  "/v4/transaction/snapshot",
 			expectedQuery: url.Values{"attomid": {"100"}},
 			responseBody:  `{"status":{},"sale":[{}]}`,
 			call: func(ctx context.Context, svc *Service) (interface{}, error) {
@@ -40,7 +40,7 @@ func TestSalesEndpoints(t *testing.T) {
 		},
 		{
 			name:          "GetSalesHistoryDetail",
-			expectedPath:  "/propertyapi/v1.0.0/saleshistory/detail",
+			expectedPath:  "/v4/transaction/detail",
 			expectedQuery: url.Values{"attomid": {"100"}},
 			responseBody:  `{"status":{},"salesHistory":[{}]}`,
 			call: func(ctx context.Context, svc *Service) (interface{}, error) {
@@ -49,7 +49,7 @@ func TestSalesEndpoints(t *testing.T) {
 		},
 		{
 			name:          "GetSalesHistorySnapshot",
-			expectedPath:  "/propertyapi/v1.0.0/saleshistory/snapshot",
+			expectedPath:  "/v4/transaction/snapshot",
 			expectedQuery: url.Values{"attomid": {"100"}},
 			responseBody:  `{"status":{},"salesHistory":[{}]}`,
 			call: func(ctx context.Context, svc *Service) (interface{}, error) {
@@ -58,7 +58,7 @@ func TestSalesEndpoints(t *testing.T) {
 		},
 		{
 			name:          "GetSalesHistoryBasic",
-			expectedPath:  "/propertyapi/v1.0.0/saleshistory/basichistory",
+			expectedPath:  "/v4/transaction/basichistory",
 			expectedQuery: url.Values{"attomid": {"100"}},
 			responseBody:  `{"status":{},"salesHistory":[{}]}`,
 			call: func(ctx context.Context, svc *Service) (interface{}, error) {
@@ -67,7 +67,7 @@ func TestSalesEndpoints(t *testing.T) {
 		},
 		{
 			name:          "GetSalesHistoryExpanded",
-			expectedPath:  "/propertyapi/v1.0.0/saleshistory/expandedhistory",
+			expectedPath:  "/v4/transaction/expandedhistory",
 			expectedQuery: url.Values{"attomid": {"100"}},
 			responseBody:  `{"status":{},"salesHistory":[{}]}`,
 			call: func(ctx context.Context, svc *Service) (interface{}, error) {
@@ -76,7 +76,7 @@ func TestSalesEndpoints(t *testing.T) {
 		},
 		{
 			name:          "GetSalesTrendSnapshot",
-			expectedPath:  "/propertyapi/v1.0.0/salestrend/snapshot",
+			expectedPath:  "/v4/transaction/snapshot",
 			expectedQuery: url.Values{"geoIdV4": {"geo-1"}},
 			responseBody:  `{"status":{},"salesTrend":[{}]}`,
 			call: func(ctx context.Context, svc *Service) (interface{}, error) {
@@ -85,7 +85,7 @@ func TestSalesEndpoints(t *testing.T) {
 		},
 		{
 			name:          "GetTransactionSalesTrend",
-			expectedPath:  "/propertyapi/v1.0.0/transaction/salestrend",
+			expectedPath:  "/v4/transaction/salestrend",
 			expectedQuery: url.Values{"geoIdV4": {"geo-1"}},
 			responseBody:  `{"status":{},"transactionTrend":[{}]}`,
 			call: func(ctx context.Context, svc *Service) (interface{}, error) {

@@ -22,7 +22,7 @@ func TestAVMEndpoints(t *testing.T) {
 	}{
 		{
 			name:          "GetAVMSnapshot",
-			expectedPath:  "/propertyapi/v1.0.0/avm/snapshot",
+			expectedPath:  "/v4/property/snapshot",
 			expectedQuery: url.Values{"attomid": {"100"}},
 			responseBody:  `{"status":{},"avm":[{}]}`,
 			call: func(ctx context.Context, svc *Service) (interface{}, error) {
@@ -31,7 +31,7 @@ func TestAVMEndpoints(t *testing.T) {
 		},
 		{
 			name:          "GetAttomAVMDetail",
-			expectedPath:  "/propertyapi/v1.0.0/attomavm/detail",
+			expectedPath:  "/v4/property/detail",
 			expectedQuery: url.Values{"attomid": {"100"}},
 			responseBody:  `{"status":{},"attomAvm":[{}]}`,
 			call: func(ctx context.Context, svc *Service) (interface{}, error) {
@@ -40,7 +40,7 @@ func TestAVMEndpoints(t *testing.T) {
 		},
 		{
 			name:          "GetAVMHistory",
-			expectedPath:  "/propertyapi/v1.0.0/avmhistory/detail",
+			expectedPath:  "/v4/property/detail",
 			expectedQuery: url.Values{"attomid": {"100"}},
 			responseBody:  `{"status":{},"avmHistory":[{}]}`,
 			call: func(ctx context.Context, svc *Service) (interface{}, error) {
@@ -49,7 +49,7 @@ func TestAVMEndpoints(t *testing.T) {
 		},
 		{
 			name:          "GetRentalAVM",
-			expectedPath:  "/propertyapi/v1.0.0/valuation/rentalavm",
+			expectedPath:  "/v4/property/rentalavm",
 			expectedQuery: url.Values{"attomid": {"100"}},
 			responseBody:  `{"status":{},"rentalAvm":[{}]}`,
 			call: func(ctx context.Context, svc *Service) (interface{}, error) {
@@ -59,7 +59,7 @@ func TestAVMEndpoints(t *testing.T) {
 		// --- NEW ENDPOINT TESTS ---
 		{
 			name:          "GetAVMSnapshotGeo",
-			expectedPath:  "/propertyapi/v1.0.0/avm/snapshot",
+			expectedPath:  "/v4/property/snapshot",
 			expectedQuery: url.Values{"geoIdV4": {"geo-2"}, "minavmvalue": {"100000"}, "maxavmvalue": {"500000"}, "propertytype": {"SFR"}},
 			responseBody:  `{"status":{},"avm":[{}]}`,
 			call: func(ctx context.Context, svc *Service) (interface{}, error) {
@@ -68,7 +68,7 @@ func TestAVMEndpoints(t *testing.T) {
 		},
 		{
 			name:          "GetAVMHistoryByAddress",
-			expectedPath:  "/propertyapi/v1.0.0/avmhistory/detail",
+			expectedPath:  "/v4/property/detail",
 			expectedQuery: url.Values{"address1": {"123 Main St"}, "address2": {"Springfield, IL"}},
 			responseBody:  `{"status":{},"avmHistory":[{}]}`,
 			call: func(ctx context.Context, svc *Service) (interface{}, error) {

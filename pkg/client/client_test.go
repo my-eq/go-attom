@@ -128,12 +128,12 @@ func TestNewRequest(t *testing.T) {
 	params := url.Values{}
 	params.Set("foo", "bar")
 
-	req, err := c.NewRequest(ctx, http.MethodGet, "propertyapi/v1.0.0/property/detail", params, nil)
+	req, err := c.NewRequest(ctx, http.MethodGet, "v4/property/detail", params, nil)
 	if err != nil {
 		t.Fatalf("NewRequest returned error: %v", err)
 	}
 
-	expectedURL := "https://api.gateway.attomdata.com/propertyapi/v1.0.0/property/detail?foo=bar"
+	expectedURL := "https://api.gateway.attomdata.com/v4/property/detail?foo=bar"
 	if req.URL.String() != expectedURL {
 		t.Errorf("URL = %q, want %q", req.URL.String(), expectedURL)
 	}
