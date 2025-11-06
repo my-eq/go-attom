@@ -190,6 +190,7 @@ All endpoints use ATTOM API version `v4` unless noted otherwise. Some endpoints 
 | `GetRentalAVM` | `/v4/valuation/rentalavm` | Returns rental AVM valuations and rent ranges.【F:docs/attom/swagger/propertyapi_valuation.pretty.json†L5-L46】 |
 | `GetSaleComparablesByAddress` | `/property/v2/salescomparables/address` | Returns comparable sales data for a given address using v2 API.【F:pkg/property/service.go†L329-L349】 |
 | `GetSaleComparablesByAPN` | `/property/v2/salescomparables/apn` | Returns comparable sales data for a given APN using v2 API.【F:pkg/property/service.go†L351-L371】 |
+| `GetSaleComparablesByPropID` | `/property/v2/salescomparables/propid` | Returns comparable sales data for a given property ID using v2 API.【F:pkg/property/service.go†L908-L915】 |
 
 ### Sales History & Trends
 
