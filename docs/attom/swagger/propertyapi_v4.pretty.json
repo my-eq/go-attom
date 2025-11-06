@@ -1,0 +1,217 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "version": "2.0.0",
+        "title": "",
+        "description": ""
+    },
+    "host": "api.gateway.attomdata.com",
+    "basePath": "/v4",
+    "schemes": [
+        "https"
+    ],
+    "tags": [
+        {
+            "name": "School V4",
+            "description": "Profiles for schools and school districts using new geocoding"
+        }
+    ],
+    "consumes": [
+        "application/json",
+        "application/xml"
+    ],
+    "produces": [
+        "application/xml",
+        "application/json"
+    ],
+    "paths": {
+        "/school/profile": {
+            "get": {
+                "tags": [
+                    "School V4"
+                ],
+                "summary": "Return school profile for a specific school",
+                "description": "The new geocode (geoIdV4) is provided as output to many endpoints in the Property API. Look for geocodes with a type of SB",
+                "operationId": "propertySchoolProfile",
+                "parameters": [
+                    {
+                        "name": "apikey",
+                        "description": "Application Key",
+                        "type": "string",
+                        "in": "header",
+                        "default": "",
+                        "x-data-threescale-name": "user_keys"
+                    },
+                    {
+                        "name": "accept",
+                        "description": "application/xml or application/json (default)",
+                        "type": "string",
+                        "required": false,
+                        "in": "header",
+                        "enum": [
+                            "application/xml",
+                            "application/json"
+                        ]
+                    },
+                    {
+                        "name": "geoIdV4",
+                        "description": "The V4 geocode assigned to the school district",
+                        "type": "string",
+                        "required": true,
+                        "in": "query",
+                        "default": "68395c88b7a98b5714de7d79d48506ea"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "list of schools"
+                    },
+                    "403": {
+                        "description": "apikey invalid/missing"
+                    },
+                    "default": {
+                        "description": "unexpected error"
+                    }
+                }
+            }
+        },
+        "/school/district": {
+            "get": {
+                "tags": [
+                    "School V4"
+                ],
+                "summary": "School district profile for a specific school district.",
+                "description": "The new geocode (geoIdV4) is provided as output to many endpoints in the Property API. Look for geocodes with a type of DB",
+                "operationId": "propertySchoolDistrictDetail",
+                "parameters": [
+                    {
+                        "name": "apikey",
+                        "description": "Application Key",
+                        "type": "string",
+                        "in": "header",
+                        "default": "",
+                        "x-data-threescale-name": "user_keys"
+                    },
+                    {
+                        "name": "accept",
+                        "description": "application/xml or application/json (default)",
+                        "type": "string",
+                        "required": false,
+                        "in": "header",
+                        "enum": [
+                            "application/xml",
+                            "application/json"
+                        ]
+                    },
+                    {
+                        "name": "geoIdV4",
+                        "description": "(new) geocode assigned to the School District",
+                        "type": "string",
+                        "required": false,
+                        "in": "query",
+                        "default": "8370d93a17ba7fb07f115392bd1225d9"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "list of school districts"
+                    },
+                    "403": {
+                        "description": "apikey invalid/missing"
+                    },
+                    "default": {
+                        "description": "unexpected error"
+                    }
+                }
+            }
+        },
+        "/school/search": {
+            "get": {
+                "tags": [
+                    "School V4"
+                ],
+                "summary": "List of schools that match specified search criteria",
+                "description": "Search for schools within a speciic geography or circle (latitude/longitude/radius).",
+                "operationId": "propertySchoolSearch",
+                "parameters": [
+                    {
+                        "name": "apikey",
+                        "description": "Application Key",
+                        "type": "string",
+                        "in": "header",
+                        "default": "",
+                        "x-data-threescale-name": "user_keys"
+                    },
+                    {
+                        "name": "accept",
+                        "description": "application/xml or application/json (default)",
+                        "type": "string",
+                        "required": false,
+                        "in": "header",
+                        "enum": [
+                            "application/xml",
+                            "application/json"
+                        ]
+                    },
+                    {
+                        "name": "geoIdV4",
+                        "description": "geocode to search",
+                        "default": "6828b00047035292dd47fe020e636bb3",
+                        "type": "string",
+                        "required": false,
+                        "in": "query"
+                    },
+                    {
+                        "name": "latitude",
+                        "description": "latitude. optional input instead of geoIdV4",
+                        "type": "number",
+                        "required": false,
+                        "in": "query"
+                    },
+                    {
+                        "name": "longitude",
+                        "description": "longitude. optional input instead of geoIdV4",
+                        "type": "number",
+                        "required": false,
+                        "in": "query"
+                    },
+                    {
+                        "name": "radius",
+                        "description": "radius for search in miles",
+                        "type": "number",
+                        "required": false,
+                        "in": "query",
+                        "default": "5"
+                    },
+                    {
+                        "name": "page",
+                        "description": "page number for pagination",
+                        "type": "integer",
+                        "required": false,
+                        "in": "query",
+                        "default": "1"
+                    },
+                    {
+                        "name": "pageSize",
+                        "description": "number of results per page",
+                        "type": "integer",
+                        "required": false,
+                        "in": "query",
+                        "default": "200"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "list of schools"
+                    },
+                    "403": {
+                        "description": "apikey invalid/missing"
+                    },
+                    "default": {
+                        "description": "unexpected error"
+                    }
+                }
+            }
+        }
+    }
+}

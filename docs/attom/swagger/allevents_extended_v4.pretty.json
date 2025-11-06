@@ -1,18 +1,18 @@
 {
     "swagger": "2.0",
+    "basePath": "/propertyapi/v1.0.0",
     "info": {
-        "version": "4.0.0",
+        "version": "v1.2",
         "title": "",
         "description": ""
     },
     "host": "api.gateway.attomdata.com",
-    "basePath": "/v4/property",
     "schemes": [
         "https"
     ],
     "tags": [
         {
-            "name": "Assessment History By Address"
+            "name": "All Events Extended by Address"
         }
     ],
     "consumes": [
@@ -24,23 +24,23 @@
         "application/json"
     ],
     "paths": {
-        "/assessmenthistory/detail": {
+        "/allevents/detail": {
             "get": {
                 "tags": [
-                    "Assessment History By Address"
+                    "All Events Extended by Address"
                 ],
-                "summary": "Returns assessment history and property details.",
-                "description": "Get a full detail of property characteristics and assessment history information for a specific property.",
-                "operationId": "assessmentHistoryDetailPostal",
+                "summary": "Returns all the events that have occurred on a specific address.",
+                "description": "Get a detail of all the events on a specific property based on its address.",
+                "operationId": "getAllEventsDetailAddress",
                 "parameters": [
                     {
                         "name": "apikey",
-                        "description": "Application Key",
+                        "x-data-threescale-name": "user_keys",
+                        "description": "API Security Key",
                         "type": "string",
                         "required": true,
                         "in": "header",
-                        "default": "48ed381483aabf5758717c7aa023980f",
-                        "x-data-threescale-name": "user_keys"
+                        "default": "2b1e86b638620bf2404521e6e9e1b19e"
                     },
                     {
                         "name": "accept",
@@ -59,7 +59,7 @@
                         "type": "string",
                         "required": false,
                         "in": "query",
-                        "default": "468 SEQUOIA DR"
+                        "default": "4529 Winona Court"
                     },
                     {
                         "name": "address2",
@@ -67,12 +67,12 @@
                         "type": "string",
                         "required": false,
                         "in": "query",
-                        "default": "SMYRNA, DE"
+                        "default": "Denver, CO 80212"
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "list of full assessment history details for a specific address"
+                        "description": "detail record of all the events"
                     },
                     "403": {
                         "description": "apikey invalid/missing"

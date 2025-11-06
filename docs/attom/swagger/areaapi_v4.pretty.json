@@ -1,18 +1,18 @@
 {
     "swagger": "2.0",
-    "basePath": "/v4/area",
     "info": {
         "version": "4.0.0",
         "title": "",
         "description": ""
     },
     "host": "api.gateway.attomdata.com",
+    "basePath": "/v4/area",
     "schemes": [
         "https"
     ],
     "tags": [
         {
-            "name": "Area"
+            "name": "Area API"
         }
     ],
     "consumes": [
@@ -27,20 +27,19 @@
         "/boundary/detail": {
             "get": {
                 "tags": [
-                    "Area"
+                    "1. Area Boundary Detail"
                 ],
                 "summary": "Returns the boundaries of the geography requested.",
-                "description": "Get boundary details for a geography.",
-                "operationId": "getBoundaryDetail",
+                "description": "This method allows you to pass a valid geocode (geoIdV4) and retrieve boundaries, centroid and area for the geography request",
+                "operationId": "getBoundary",
                 "parameters": [
                     {
                         "name": "apikey",
-                        "x-data-threescale-name": "user_keys",
-                        "description": "API Security Key",
+                        "description": "Application Key",
                         "type": "string",
-                        "required": true,
                         "in": "header",
-                        "default": "2b1e86b638620bf2404521e6e9e1b19e"
+                        "default": "",
+                        "x-data-threescale-name": "user_keys"
                     },
                     {
                         "name": "accept",
@@ -48,6 +47,7 @@
                         "type": "string",
                         "required": false,
                         "in": "header",
+                        "default": "application/json",
                         "enum": [
                             "application/xml",
                             "application/json"
@@ -55,17 +55,19 @@
                     },
                     {
                         "name": "geoIdV4",
-                        "description": "ATTOM GeoID V4",
+                        "description": "Geocode requested",
                         "type": "string",
                         "required": true,
+                        "default": "53205b2ae13a4203456e53ed9d56cfea",
                         "in": "query"
                     },
                     {
                         "name": "format",
-                        "description": "Boundary format",
+                        "description": "Boundaries format",
                         "type": "string",
                         "required": false,
                         "in": "query",
+                        "default": "geojson",
                         "enum": [
                             "geojson",
                             "wkt"
@@ -74,7 +76,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Boundary details"
+                        "description": "Geography information"
                     },
                     "403": {
                         "description": "apikey invalid/missing"
@@ -88,20 +90,19 @@
         "/hierarchy/lookup": {
             "get": {
                 "tags": [
-                    "Area"
+                    "2. Area Hierarchy Lookup"
                 ],
                 "summary": "Returns all boundaries a point falls within.",
-                "description": "Get hierarchy lookup for a point.",
-                "operationId": "getHierarchyLookup",
+                "description": "This method allows you to pass a latitude and longitude point and retrieve a list of geographies that point falls within. Required input is a valid WKT (Well Known Text) point.",
+                "operationId": "getHierarchy",
                 "parameters": [
                     {
                         "name": "apikey",
-                        "x-data-threescale-name": "user_keys",
-                        "description": "API Security Key",
+                        "description": "Application Key",
                         "type": "string",
-                        "required": true,
                         "in": "header",
-                        "default": "2b1e86b638620bf2404521e6e9e1b19e"
+                        "default": "",
+                        "x-data-threescale-name": "user_keys"
                     },
                     {
                         "name": "accept",
@@ -116,22 +117,16 @@
                     },
                     {
                         "name": "WKTString",
-                        "description": "Well Known Text string",
+                        "description": "WKTString parameters",
                         "type": "string",
                         "required": true,
-                        "in": "query"
-                    },
-                    {
-                        "name": "geoType",
-                        "description": "Geography type",
-                        "type": "string",
-                        "required": false,
-                        "in": "query"
+                        "in": "query",
+                        "default": "POINT(-71.5776 41.66895)"
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Hierarchy lookup"
+                        "description": "list of area hierarchy lookup"
                     },
                     "403": {
                         "description": "apikey invalid/missing"
@@ -145,20 +140,19 @@
         "/cbsa/lookup": {
             "get": {
                 "tags": [
-                    "Area"
+                    "3. Area CBSA Lookup"
                 ],
                 "summary": "Returns all CBSAs within a state.",
-                "description": "Get CBSA lookup for a state.",
-                "operationId": "getCBSALookup",
+                "description": "This Core Based Statistical Area lookup allows you to find the CBSA within a given state. Required input is a state FIPS Code ID (e.g. New York is ST36).",
+                "operationId": "getCBSA",
                 "parameters": [
                     {
                         "name": "apikey",
-                        "x-data-threescale-name": "user_keys",
-                        "description": "API Security Key",
+                        "description": "Application Key",
                         "type": "string",
-                        "required": true,
                         "in": "header",
-                        "default": "2b1e86b638620bf2404521e6e9e1b19e"
+                        "default": "",
+                        "x-data-threescale-name": "user_keys"
                     },
                     {
                         "name": "accept",
@@ -173,15 +167,16 @@
                     },
                     {
                         "name": "StateId",
-                        "description": "State ID",
+                        "description": "State Id",
                         "type": "string",
                         "required": true,
-                        "in": "query"
+                        "in": "query",
+                        "default": "ST36"
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "CBSA lookup"
+                        "description": "list of area CBSA lookup"
                     },
                     "403": {
                         "description": "apikey invalid/missing"
@@ -195,20 +190,19 @@
         "/county/lookup": {
             "get": {
                 "tags": [
-                    "Area"
+                    "4. Area County Lookup"
                 ],
                 "summary": "Returns all counties within a state.",
-                "description": "Get county lookup for a state.",
-                "operationId": "getCountyLookup",
+                "description": "This lookup returns all the Counties that are in a particular state. The two-digit FIPS code is required.",
+                "operationId": "getCounty",
                 "parameters": [
                     {
                         "name": "apikey",
-                        "x-data-threescale-name": "user_keys",
-                        "description": "API Security Key",
+                        "description": "Application Key",
                         "type": "string",
-                        "required": true,
                         "in": "header",
-                        "default": "2b1e86b638620bf2404521e6e9e1b19e"
+                        "default": "",
+                        "x-data-threescale-name": "user_keys"
                     },
                     {
                         "name": "accept",
@@ -223,15 +217,16 @@
                     },
                     {
                         "name": "StateId",
-                        "description": "State ID",
+                        "description": "State Id",
                         "type": "string",
                         "required": true,
-                        "in": "query"
+                        "in": "query",
+                        "default": "ST36"
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "County lookup"
+                        "description": "list of area county lookup"
                     },
                     "403": {
                         "description": "apikey invalid/missing"
@@ -245,20 +240,19 @@
         "/state/lookup": {
             "get": {
                 "tags": [
-                    "Area"
+                    "5. Area State Lookup"
                 ],
                 "summary": "Returns all states and their IDs.",
-                "description": "Get state lookup.",
-                "operationId": "getStateLookup",
+                "description": "This lookup returns a list of all states. State ID and name will be returned.",
+                "operationId": "getState",
                 "parameters": [
                     {
                         "name": "apikey",
-                        "x-data-threescale-name": "user_keys",
-                        "description": "API Security Key",
+                        "description": "Application Key",
                         "type": "string",
-                        "required": true,
                         "in": "header",
-                        "default": "2b1e86b638620bf2404521e6e9e1b19e"
+                        "default": "",
+                        "x-data-threescale-name": "user_keys"
                     },
                     {
                         "name": "accept",
@@ -274,7 +268,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "State lookup"
+                        "description": "list of area state lookup"
                     },
                     "403": {
                         "description": "apikey invalid/missing"
@@ -288,20 +282,19 @@
         "/geoid/lookup/": {
             "get": {
                 "tags": [
-                    "Area"
+                    "6. Area Geo ID Lookup"
                 ],
-                "summary": "Returns specific Geo IDs that exist within a specified Geo ID.",
-                "description": "Get GeoID lookup.",
-                "operationId": "getGeoIDLookup",
+                "summary": "Returns specific Geo IDs that exist within a specified Geo ID",
+                "description": "This service allows you to enter a specified Geo ID and a Geo ID type. It will return the Geo IDs of the defined type that are related to the specified Geo ID.",
+                "operationId": "getGeoID",
                 "parameters": [
                     {
                         "name": "apikey",
-                        "x-data-threescale-name": "user_keys",
-                        "description": "API Security Key",
+                        "description": "Application Key",
                         "type": "string",
-                        "required": true,
                         "in": "header",
-                        "default": "2b1e86b638620bf2404521e6e9e1b19e"
+                        "default": "",
+                        "x-data-threescale-name": "user_keys"
                     },
                     {
                         "name": "accept",
@@ -315,16 +308,47 @@
                         ]
                     },
                     {
+                        "name": "geoId",
+                        "description": "known Geo ID",
+                        "type": "string",
+                        "required": false,
+                        "in": "query",
+                        "default": "ST34"
+                    },
+                    {
                         "name": "geoIdV4",
-                        "description": "ATTOM GeoID V4",
+                        "description": "known GeoIDV4",
+                        "type": "string",
+                        "required": false,
+                        "in": "query"
+                    },
+                    {
+                        "name": "GeoType",
+                        "description": "Related Geo Type Returned",
                         "type": "string",
                         "required": true,
-                        "in": "query"
+                        "in": "query",
+                        "enum": [
+                            "CI",
+                            "CS",
+                            "CO",
+                            "DB",
+                            "ND",
+                            "PL",
+                            "RS",
+                            "ST",
+                            "ZI",
+                            "N1",
+                            "N2",
+                            "N3",
+                            "N4"
+                        ],
+                        "default": "DB"
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "GeoID lookup"
+                        "description": "list of Geo IDs"
                     },
                     "403": {
                         "description": "apikey invalid/missing"
@@ -338,20 +362,19 @@
         "/geoid/legacyLookup/": {
             "get": {
                 "tags": [
-                    "Area"
+                    "7. Area Geo ID Legacy Lookup"
                 ],
-                "summary": "Returns a translation between legacy codes and new geography identifiers.",
-                "description": "Get legacy GeoID lookup.",
-                "operationId": "getGeoIDLegacyLookup",
+                "summary": "Returns a translation between legacy codes and new geography identifiers (GeoIDV4)",
+                "description": "This service allows you to find the new geography identifier (GeoIDV4) from a legacy geography code.",
+                "operationId": "getGeoIDLegacy",
                 "parameters": [
                     {
                         "name": "apikey",
-                        "x-data-threescale-name": "user_keys",
-                        "description": "API Security Key",
+                        "description": "Application Key",
                         "type": "string",
-                        "required": true,
                         "in": "header",
-                        "default": "2b1e86b638620bf2404521e6e9e1b19e"
+                        "default": "",
+                        "x-data-threescale-name": "user_keys"
                     },
                     {
                         "name": "accept",
@@ -365,16 +388,24 @@
                         ]
                     },
                     {
-                        "name": "geoIdV4",
-                        "description": "ATTOM GeoID V4",
+                        "name": "geoId",
+                        "description": "legacy geography code (separate multiple values with comma)",
                         "type": "string",
                         "required": true,
+                        "in": "query",
+                        "default": "ZI92618,CO06073"
+                    },
+                    {
+                        "name": "geoIdV4",
+                        "description": "New geography identifier",
+                        "type": "string",
+                        "required": false,
                         "in": "query"
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Legacy GeoID lookup"
+                        "description": "list of legacy geography code and the corresponding geography identifiers (GeoIDV4)"
                     },
                     "403": {
                         "description": "apikey invalid/missing"

@@ -6,13 +6,18 @@
         "description": ""
     },
     "host": "api.gateway.attomdata.com",
-    "basePath": "/v4/property",
+    "basePath": "/propertyapi/v4",
     "schemes": [
         "https"
     ],
     "tags": [
         {
-            "name": "Assessment History By Address"
+            "name": "School V4",
+            "description": "Profiles for schools and school districts"
+        },
+        {
+            "name": "Transaction V4",
+            "description": "Property transactions"
         }
     ],
     "consumes": [
@@ -24,22 +29,21 @@
         "application/json"
     ],
     "paths": {
-        "/assessmenthistory/detail": {
+        "/property/detailwithschools": {
             "get": {
                 "tags": [
-                    "Assessment History By Address"
+                    "School V4"
                 ],
-                "summary": "Returns assessment history and property details.",
-                "description": "Get a full detail of property characteristics and assessment history information for a specific property.",
-                "operationId": "assessmentHistoryDetailPostal",
+                "summary": "Property details that include a summary of matching schools",
+                "description": "In V4 the format of the school details has changed.",
+                "operationId": "propertyDetailsWithSchools",
                 "parameters": [
                     {
                         "name": "apikey",
                         "description": "Application Key",
                         "type": "string",
-                        "required": true,
                         "in": "header",
-                        "default": "48ed381483aabf5758717c7aa023980f",
+                        "default": "",
                         "x-data-threescale-name": "user_keys"
                     },
                     {
@@ -54,25 +58,17 @@
                         ]
                     },
                     {
-                        "name": "address1",
-                        "description": "The first line of the property address",
+                        "name": "attomid",
+                        "description": "attom id",
                         "type": "string",
-                        "required": false,
+                        "required": true,
                         "in": "query",
-                        "default": "468 SEQUOIA DR"
-                    },
-                    {
-                        "name": "address2",
-                        "description": "The second line of the property address",
-                        "type": "string",
-                        "required": false,
-                        "in": "query",
-                        "default": "SMYRNA, DE"
+                        "default": "184713191"
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "list of full assessment history details for a specific address"
+                        "description": "list of schools"
                     },
                     "403": {
                         "description": "apikey invalid/missing"

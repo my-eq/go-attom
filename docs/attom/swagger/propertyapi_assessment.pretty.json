@@ -1,12 +1,12 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "1.0.0",
+    "version": "4.0.0",
     "title": "",
     "description": ""
   },
   "host": "api.gateway.attomdata.com",
-  "basePath": "/propertyapi/v1.0.0",
+  "basePath": "/v4/property",
   "schemes": [
     "https"
   ],

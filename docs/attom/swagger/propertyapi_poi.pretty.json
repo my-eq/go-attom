@@ -2,7 +2,7 @@
     "swagger": "2.0",
     "basePath": "/v4/neighborhood/",
     "info": {
-        "version": "2.0.0",
+        "version": "4.0.0",
         "title": "",
         "description": ""
     },

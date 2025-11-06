@@ -1,18 +1,19 @@
 {
     "swagger": "2.0",
-    "basePath": "/propertyapi/v1.0.0",
     "info": {
-        "version": "v1.2",
+        "version": "4.0.0",
         "title": "",
         "description": ""
     },
     "host": "api.gateway.attomdata.com",
+    "basePath": "/v4",
     "schemes": [
         "https"
     ],
     "tags": [
         {
-            "name": "All Events Extended by Address"
+            "name": "Community V4",
+            "description": "Community-centric data for a specific geography type"
         }
     ],
     "consumes": [
@@ -24,23 +25,22 @@
         "application/json"
     ],
     "paths": {
-        "/allevents/detail": {
+        "/neighborhood/community": {
             "get": {
                 "tags": [
-                    "All Events Extended by Address"
+                    "Community V4"
                 ],
-                "summary": "Returns all the events that have occurred on a specific address.",
-                "description": "Get a detail of all the events on a specific property based on its address.",
-                "operationId": "getAllEventsDetailAddress",
+                "summary": "Community profile for a spcific geography (geoIdV4).",
+                "description": "Community profile including air quailty, climate, crime, demographics, and natural disatsers for a specific geoggraphy (geoIdV4).",
+                "operationId": "getCommunityAPIAreaFull",
                 "parameters": [
                     {
-                        "name": "apikey",
-                        "x-data-threescale-name": "user_keys",
-                        "description": "API Security Key",
+                        "name": "ApiKey",
+                        "description": "Application Key",
                         "type": "string",
-                        "required": true,
                         "in": "header",
-                        "default": "2b1e86b638620bf2404521e6e9e1b19e"
+                        "default": "",
+                        "x-data-threescale-name": "user_keys"
                     },
                     {
                         "name": "accept",
@@ -54,25 +54,17 @@
                         ]
                     },
                     {
-                        "name": "address1",
-                        "description": "The first line of the property address",
+                        "name": "geoIdv4",
+                        "description": "This is the GeoID to search",
                         "type": "string",
-                        "required": false,
+                        "required": true,
                         "in": "query",
-                        "default": "4529 Winona Court"
-                    },
-                    {
-                        "name": "address2",
-                        "description": "The second line of the property address",
-                        "type": "string",
-                        "required": false,
-                        "in": "query",
-                        "default": "Denver, CO 80212"
+                        "default": "dd4ec3218a89807fc1c63dd7265cc1bc"
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "detail record of all the events"
+                        "description": "list of community search geographies"
                     },
                     "403": {
                         "description": "apikey invalid/missing"
@@ -83,23 +75,22 @@
                 }
             }
         },
-        "/allevents/snapshot": {
+        "/location/lookup": {
             "get": {
                 "tags": [
-                    "All Events Extended by Address"
+                    "Community V4"
                 ],
-                "summary": "Returns a snapshot of events for a specific property.",
-                "description": "Get a snapshot of all events on a specific property based on its address.",
-                "operationId": "getAllEventsSnapshotAddress",
+                "summary": "Geography search.",
+                "description": "Text search of geographies. Used to identify applicatble geocodes (geoIdV4)",
+                "operationId": "LocationLookup",
                 "parameters": [
                     {
-                        "name": "apikey",
-                        "x-data-threescale-name": "user_keys",
-                        "description": "API Security Key",
+                        "name": "ApiKey",
+                        "description": "Application Key",
                         "type": "string",
-                        "required": true,
                         "in": "header",
-                        "default": "2b1e86b638620bf2404521e6e9e1b19e"
+                        "default": "",
+                        "x-data-threescale-name": "user_keys"
                     },
                     {
                         "name": "accept",
@@ -113,17 +104,39 @@
                         ]
                     },
                     {
-                        "name": "address",
-                        "description": "The property address",
+                        "name": "name",
+                        "description": "This is the location name to search",
                         "type": "string",
                         "required": true,
                         "in": "query",
-                        "default": "Denver, CO 80212"
+                        "default": "Las Vegas"
+                    },
+                    {
+                        "name": "geographyTypeAbbreviation",
+                        "description": "Geography type abbreviation",
+                        "type": "string",
+                        "required": true,
+                        "in": "query",
+                        "default": "PL",
+                        "enum": [
+                            "CI",
+                            "CO",
+                            "CS",
+                            "DB",
+                            "N1",
+                            "N2",
+                            "N3",
+                            "N4",
+                            "PL",
+                            "RS",
+                            "ST",
+                            "ZI"
+                        ]
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "snapshot of all events"
+                        "description": "list of geographies"
                     },
                     "403": {
                         "description": "apikey invalid/missing"
