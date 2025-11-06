@@ -38,7 +38,7 @@ const (
 	salesTrendBasePath       = "v4/transaction/"
 	transactionTrendBasePath = "v4/transaction/"
 	schoolBasePath           = "v4/school/"
-	allEventsBasePath        = "v4/property/"
+	allEventsBasePath        = "propertyapi/v1.0.0/allevents/"
 	saleComparablesBasePath  = "property/v2/salescomparables/"
 	hazardBasePath           = "propertyapi/v1.0.0/transportationnoise"
 	enumerationsBasePath     = "v4/enumerations/"
