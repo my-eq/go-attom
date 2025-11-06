@@ -537,7 +537,7 @@ type mockHTTPClientWithErrorBody struct {
 // errorReader implements io.ReadCloser and always returns an error
 type errorReader struct{}
 
-func (e errorReader) Read(p []byte) (int, error) {
+func (e errorReader) Read(_ []byte) (int, error) {
 	return 0, fmt.Errorf("mock read error")
 }
 func (e errorReader) Close() error { return nil }

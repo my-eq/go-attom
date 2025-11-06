@@ -646,8 +646,8 @@ func (s *Service) GetHomeEquity(ctx context.Context, address1, address2 string, 
 }
 
 // GetAVMSnapshotGeo retrieves AVM snapshot values for all properties within a specific geography.
-func (s *Service) GetAVMSnapshotGeo(ctx context.Context, geoIdV4, minAVMValue, maxAVMValue, propertyType string, opts ...Option) (*AVMSnapshotGeoResponse, error) {
-	allOpts := append([]Option{WithString("geoIdV4", geoIdV4)}, opts...)
+func (s *Service) GetAVMSnapshotGeo(ctx context.Context, geoIDV4, minAVMValue, maxAVMValue, propertyType string, opts ...Option) (*AVMSnapshotGeoResponse, error) {
+	allOpts := append([]Option{WithString("geoIdV4", geoIDV4)}, opts...)
 	if minAVMValue != "" {
 		allOpts = append(allOpts, WithString("minavmvalue", minAVMValue))
 	}
