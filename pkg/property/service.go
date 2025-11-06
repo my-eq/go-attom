@@ -894,10 +894,10 @@ func (s *Service) GetSaleComparablesByAPN(ctx context.Context, apn, county, stat
 	allOpts := append([]Option{WithAPN(apn)}, opts...)
 	var resp SaleComparablesResponse
 	err := s.get(ctx, fmt.Sprintf("%sapn/%s/%s/%s", saleComparablesBasePath, url.PathEscape(apn), url.PathEscape(county), url.PathEscape(state)), allOpts, func(values url.Values) error {
-		if apn != "" && county != "" && state != "" {
+		if values.Get("APN") != "" && county != "" && state != "" {
 			return nil
 		}
-		return fmt.Errorf("%w: apn, county, and state required", ErrMissingParameter)
+		return fmt.Errorf("%w: APN, county, and state required", ErrMissingParameter)
 	}, &resp)
 	if err != nil {
 		return nil, err
