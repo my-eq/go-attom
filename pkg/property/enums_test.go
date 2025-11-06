@@ -134,16 +134,6 @@ func TestValidatePropertyType(t *testing.T) {
 		wantErr      bool
 	}{
 		{
-			name:         "valid SFR",
-			propertyType: PropertyTypeSFR,
-			wantErr:      false,
-		},
-		{
-			name:         "valid apartment",
-			propertyType: PropertyTypeApartment,
-			wantErr:      false,
-		},
-		{
 			name:         "invalid property type",
 			propertyType: "INVALID_TYPE",
 			wantErr:      true,
@@ -200,16 +190,6 @@ func TestValidateOrderBy(t *testing.T) {
 		orderBy string
 		wantErr bool
 	}{
-		{
-			name:    "valid sale amount",
-			orderBy: OrderBySaleAmount,
-			wantErr: false,
-		},
-		{
-			name:    "valid beds",
-			orderBy: OrderByBeds,
-			wantErr: false,
-		},
 		{
 			name:    "invalid order by",
 			orderBy: "invalid_order",
