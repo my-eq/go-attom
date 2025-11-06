@@ -1,8 +1,8 @@
 {
     "swagger": "2.0",
-    "basePath": "/propertyapi/v1.0.0",
+    "basePath": "/v4/neighborhood/",
     "info": {
-        "version": "v1.2",
+        "version": "2.0.0",
         "title": "",
         "description": ""
     },
@@ -12,7 +12,7 @@
     ],
     "tags": [
         {
-            "name": "All Events Extended by Address"
+            "name": "Community"
         }
     ],
     "consumes": [
@@ -24,14 +24,14 @@
         "application/json"
     ],
     "paths": {
-        "/allevents/detail": {
+        "/neighborhood/community": {
             "get": {
                 "tags": [
-                    "All Events Extended by Address"
+                    "Community"
                 ],
-                "summary": "Returns all the events that have occurred on a specific address.",
-                "description": "Get a detail of all the events on a specific property based on its address.",
-                "operationId": "getAllEventsDetailAddress",
+                "summary": "Community details.",
+                "description": "Get community details.",
+                "operationId": "getCommunity",
                 "parameters": [
                     {
                         "name": "apikey",
@@ -54,25 +54,16 @@
                         ]
                     },
                     {
-                        "name": "address1",
-                        "description": "The first line of the property address",
-                        "type": "string",
+                        "name": "attomid",
+                        "description": "ATTOM ID",
+                        "type": "integer",
                         "required": false,
-                        "in": "query",
-                        "default": "4529 Winona Court"
-                    },
-                    {
-                        "name": "address2",
-                        "description": "The second line of the property address",
-                        "type": "string",
-                        "required": false,
-                        "in": "query",
-                        "default": "Denver, CO 80212"
+                        "in": "query"
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "detail record of all the events"
+                        "description": "Community details"
                     },
                     "403": {
                         "description": "apikey invalid/missing"
@@ -83,14 +74,14 @@
                 }
             }
         },
-        "/allevents/snapshot": {
+        "/location/lookup": {
             "get": {
                 "tags": [
-                    "All Events Extended by Address"
+                    "Community"
                 ],
-                "summary": "Returns a snapshot of events for a specific property.",
-                "description": "Get a snapshot of all events on a specific property based on its address.",
-                "operationId": "getAllEventsSnapshotAddress",
+                "summary": "Location lookup.",
+                "description": "Get location lookup.",
+                "operationId": "getLocationLookup",
                 "parameters": [
                     {
                         "name": "apikey",
@@ -113,17 +104,16 @@
                         ]
                     },
                     {
-                        "name": "address",
-                        "description": "The property address",
+                        "name": "search",
+                        "description": "Search term",
                         "type": "string",
-                        "required": true,
-                        "in": "query",
-                        "default": "Denver, CO 80212"
+                        "required": false,
+                        "in": "query"
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "snapshot of all events"
+                        "description": "Location lookup"
                     },
                     "403": {
                         "description": "apikey invalid/missing"

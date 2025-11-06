@@ -26,19 +26,27 @@ func NewService(c *client.Client) *Service {
 
 // endpoint constants for Property API resources.
 const (
-	propertyBasePath         = "propertyapi/v1.0.0/property/"
-	saleBasePath             = "propertyapi/v1.0.0/sale/"
-	assessmentBasePath       = "propertyapi/v1.0.0/assessment/"
-	assessmentHistoryPath    = "propertyapi/v1.0.0/assessmenthistory/"
-	avmBasePath              = "propertyapi/v1.0.0/avm/"
-	avmHistoryBasePath       = "propertyapi/v1.0.0/avmhistory/"
-	attomAVMPath             = "propertyapi/v1.0.0/attomavm/"
-	valuationBasePath        = "propertyapi/v1.0.0/valuation/"
-	salesHistoryBasePath     = "propertyapi/v1.0.0/saleshistory/"
-	salesTrendBasePath       = "propertyapi/v1.0.0/salestrend/"
-	transactionTrendBasePath = "propertyapi/v1.0.0/transaction/"
-	schoolBasePath           = "propertyapi/v1.0.0/school/"
-	allEventsBasePath        = "propertyapi/v1.0.0/allevents/"
+	propertyBasePath         = "v4/property/"
+	saleBasePath             = "v4/transaction/"
+	assessmentBasePath       = "v4/property/"
+	assessmentHistoryPath    = "v4/property/"
+	avmBasePath              = "v4/property/"
+	avmHistoryBasePath       = "v4/property/"
+	attomAVMPath             = "v4/property/"
+	valuationBasePath        = "v4/property/"
+	salesHistoryBasePath     = "v4/transaction/"
+	salesTrendBasePath       = "v4/transaction/"
+	transactionTrendBasePath = "v4/transaction/"
+	schoolBasePath           = "v4/school/"
+	allEventsBasePath        = "v4/property/"
+	saleComparablesBasePath  = "v2/salescomparables/"
+	hazardBasePath           = "transportationnoise"
+	enumerationsBasePath     = "v4/enumerations/"
+	areaBasePath             = "v4/area/"
+	poiBasePath              = "v4/neighborhood/poi"
+	communityBasePath        = "v4/neighborhood/neighborhood/community"
+	parcelTilesBasePath      = "v4/parceltiles/"
+	preforeclosureBasePath   = "v3/preforeclosuredetails"
 )
 
 func (s *Service) ensureClient() error {
@@ -687,6 +695,269 @@ func (s *Service) GetAVMHistoryByAddress(ctx context.Context, address1, address2
 func (s *Service) GetAllEventsDetail(ctx context.Context, opts ...Option) (*AllEventsDetailResponse, error) {
 	var resp AllEventsDetailResponse
 	err := s.get(ctx, allEventsBasePath+"detail", opts, requirePropertyIdentifier, &resp)
+	if err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// GetAllEventsSnapshot retrieves a snapshot of events for a property.
+func (s *Service) GetAllEventsSnapshot(ctx context.Context, address string, opts ...Option) (*AllEventsSnapshotResponse, error) {
+	allOpts := append([]Option{WithAddress(address)}, opts...)
+	var resp AllEventsSnapshotResponse
+	err := s.get(ctx, allEventsBasePath+"snapshot", allOpts, func(values url.Values) error {
+		if values.Get("address") == "" {
+			return fmt.Errorf("%w: address required", ErrMissingParameter)
+		}
+		return nil
+	}, &resp)
+	if err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// GetEnumerationsDetail retrieves enumerations detail information.
+func (s *Service) GetEnumerationsDetail(ctx context.Context, opts ...Option) (*EnumerationsDetailResponse, error) {
+	var resp EnumerationsDetailResponse
+	err := s.get(ctx, enumerationsBasePath+"detail", opts, nil, &resp)
+	if err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// GetBoundaryDetail retrieves boundary details for a geography.
+func (s *Service) GetBoundaryDetail(ctx context.Context, geoID string, opts ...Option) (*BoundaryResponse, error) {
+	allOpts := append([]Option{WithGeoID(geoID)}, opts...)
+	var resp BoundaryResponse
+	err := s.get(ctx, areaBasePath+"boundary/detail", allOpts, func(values url.Values) error {
+		if values.Get("geoIdV4") == "" {
+			return fmt.Errorf("%w: geoIdV4 required", ErrMissingParameter)
+		}
+		return nil
+	}, &resp)
+	if err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// GetHierarchyLookup retrieves all boundaries a point falls within.
+func (s *Service) GetHierarchyLookup(ctx context.Context, wktString string, opts ...Option) (*HierarchyResponse, error) {
+	allOpts := append([]Option{WithWKTString(wktString)}, opts...)
+	var resp HierarchyResponse
+	err := s.get(ctx, areaBasePath+"hierarchy/lookup", allOpts, func(values url.Values) error {
+		if values.Get("WKTString") == "" {
+			return fmt.Errorf("%w: WKTString required", ErrMissingParameter)
+		}
+		return nil
+	}, &resp)
+	if err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// GetCBSALookup retrieves all CBSAs within a state.
+func (s *Service) GetCBSALookup(ctx context.Context, stateID string, opts ...Option) (*CBSAResponse, error) {
+	allOpts := append([]Option{WithStateID(stateID)}, opts...)
+	var resp CBSAResponse
+	err := s.get(ctx, areaBasePath+"cbsa/lookup", allOpts, func(values url.Values) error {
+		if values.Get("StateId") == "" {
+			return fmt.Errorf("%w: StateId required", ErrMissingParameter)
+		}
+		return nil
+	}, &resp)
+	if err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// GetCountyLookup retrieves all counties within a state.
+func (s *Service) GetCountyLookup(ctx context.Context, stateID string, opts ...Option) (*CountyResponse, error) {
+	allOpts := append([]Option{WithStateID(stateID)}, opts...)
+	var resp CountyResponse
+	err := s.get(ctx, areaBasePath+"county/lookup", allOpts, func(values url.Values) error {
+		if values.Get("StateId") == "" {
+			return fmt.Errorf("%w: StateId required", ErrMissingParameter)
+		}
+		return nil
+	}, &resp)
+	if err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// GetStateLookup retrieves all states and their IDs.
+func (s *Service) GetStateLookup(ctx context.Context, opts ...Option) (*StateResponse, error) {
+	var resp StateResponse
+	err := s.get(ctx, areaBasePath+"state/lookup", opts, nil, &resp)
+	if err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// GetGeoIDLookup retrieves specific Geo IDs that exist within a specified Geo ID.
+func (s *Service) GetGeoIDLookup(ctx context.Context, geoID string, opts ...Option) (*GeoidResponse, error) {
+	allOpts := append([]Option{WithGeoID(geoID)}, opts...)
+	var resp GeoidResponse
+	err := s.get(ctx, areaBasePath+"geoid/lookup/", allOpts, func(values url.Values) error {
+		if values.Get("geoIdV4") == "" {
+			return fmt.Errorf("%w: geoIdV4 required", ErrMissingParameter)
+		}
+		return nil
+	}, &resp)
+	if err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// GetGeoIDLegacyLookup retrieves a translation between legacy codes and new geography identifiers.
+func (s *Service) GetGeoIDLegacyLookup(ctx context.Context, geoID string, opts ...Option) (*LegacyGeoidResponse, error) {
+	allOpts := append([]Option{WithGeoID(geoID)}, opts...)
+	var resp LegacyGeoidResponse
+	err := s.get(ctx, areaBasePath+"geoid/legacyLookup/", allOpts, func(values url.Values) error {
+		if values.Get("geoIdV4") == "" {
+			return fmt.Errorf("%w: geoIdV4 required", ErrMissingParameter)
+		}
+		return nil
+	}, &resp)
+	if err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// GetPOI retrieves points of interest near a location.
+func (s *Service) GetPOI(ctx context.Context, opts ...Option) (*POIResponse, error) {
+	var resp POIResponse
+	err := s.get(ctx, poiBasePath, opts, nil, &resp)
+	if err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// GetPOICategoryLookup retrieves values used for category, lob, industry.
+func (s *Service) GetPOICategoryLookup(ctx context.Context, opts ...Option) (*POICategoryResponse, error) {
+	var resp POICategoryResponse
+	err := s.get(ctx, poiBasePath+"categorylookup", opts, nil, &resp)
+	if err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// GetCommunity retrieves neighborhood community information.
+func (s *Service) GetCommunity(ctx context.Context, opts ...Option) (*CommunityResponse, error) {
+	var resp CommunityResponse
+	err := s.get(ctx, communityBasePath, opts, nil, &resp)
+	if err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// GetLocationLookup retrieves location lookup information.
+func (s *Service) GetLocationLookup(ctx context.Context, opts ...Option) (*LocationLookupResponse, error) {
+	var resp LocationLookupResponse
+	err := s.get(ctx, communityBasePath+"location/lookup", opts, nil, &resp)
+	if err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// GetSaleComparablesByAddress retrieves sale comparables by address.
+func (s *Service) GetSaleComparablesByAddress(ctx context.Context, address string, opts ...Option) (*SaleComparablesResponse, error) {
+	allOpts := append([]Option{WithAddress(address)}, opts...)
+	var resp SaleComparablesResponse
+	err := s.get(ctx, saleComparablesBasePath+"address/"+address, allOpts, func(values url.Values) error {
+		if values.Get("address") != "" {
+			return nil
+		}
+		return fmt.Errorf("%w: address required", ErrMissingParameter)
+	}, &resp)
+	if err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// GetSaleComparablesByAPN retrieves sale comparables by APN.
+func (s *Service) GetSaleComparablesByAPN(ctx context.Context, fips, apn string, opts ...Option) (*SaleComparablesResponse, error) {
+	allOpts := append([]Option{WithFIPS(fips), WithAPN(apn)}, opts...)
+	var resp SaleComparablesResponse
+	err := s.get(ctx, saleComparablesBasePath+"apn/"+fips+"/"+apn, allOpts, func(values url.Values) error {
+		if values.Get("fips") != "" && values.Get("apn") != "" {
+			return nil
+		}
+		return fmt.Errorf("%w: fips and apn required", ErrMissingParameter)
+	}, &resp)
+	if err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// GetSaleComparablesByPropID retrieves sale comparables by property ID.
+func (s *Service) GetSaleComparablesByPropID(ctx context.Context, propID string, opts ...Option) (*SaleComparablesResponse, error) {
+	allOpts := append([]Option{WithAttomID(propID)}, opts...)
+	var resp SaleComparablesResponse
+	err := s.get(ctx, saleComparablesBasePath+"propid/"+propID, allOpts, func(values url.Values) error {
+		if values.Get("attomId") != "" || values.Get("id") != "" {
+			return nil
+		}
+		return fmt.Errorf("%w: property ID required", ErrMissingParameter)
+	}, &resp)
+	if err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// GetTransportationNoise retrieves transportation noise information.
+func (s *Service) GetTransportationNoise(ctx context.Context, attomID string, opts ...Option) (*TransportationNoiseResponse, error) {
+	allOpts := append([]Option{WithAttomID(attomID)}, opts...)
+	var resp TransportationNoiseResponse
+	err := s.get(ctx, hazardBasePath, allOpts, func(values url.Values) error {
+		if values.Get("attomid") == "" {
+			return fmt.Errorf("%w: attomid required", ErrMissingParameter)
+		}
+		return nil
+	}, &resp)
+	if err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// GetParcelTiles retrieves parcel tiles data.
+func (s *Service) GetParcelTiles(ctx context.Context, z, x, y int, format string, opts ...Option) (*ParcelTilesResponse, error) {
+	var resp ParcelTilesResponse
+	endpoint := fmt.Sprintf("%s%d/%d/%d.%s", parcelTilesBasePath, z, x, y, format)
+	err := s.get(ctx, endpoint, opts, nil, &resp)
+	if err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// GetPreforeclosureDetails retrieves pre-foreclosure details for a property.
+func (s *Service) GetPreforeclosureDetails(ctx context.Context, attomID string, opts ...Option) (*PreforeclosureResponse, error) {
+	allOpts := append([]Option{WithAttomID(attomID)}, opts...)
+	var resp PreforeclosureResponse
+	err := s.get(ctx, preforeclosureBasePath, allOpts, func(values url.Values) error {
+		if values.Get("attomid") == "" {
+			return fmt.Errorf("%w: attomid required", ErrMissingParameter)
+		}
+		return nil
+	}, &resp)
 	if err != nil {
 		return nil, err
 	}

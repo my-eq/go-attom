@@ -509,3 +509,264 @@ type AllEventsDetailResponse struct {
 	Status *Status            `json:"status,omitempty"`
 	Events []*AllEventsRecord `json:"event,omitempty"`
 }
+
+// AllEventsSnapshotResponse wraps snapshot of all events data for a property.
+type AllEventsSnapshotResponse struct {
+	Status   *Status              `json:"status,omitempty"`
+	Snapshot []*AllEventsSnapshot `json:"snapshot,omitempty"`
+}
+
+// AllEventsSnapshot represents snapshot event data.
+type AllEventsSnapshot struct {
+	PropertyID *string `json:"propertyId,omitempty"`
+	Address    *string `json:"address,omitempty"`
+	EventCount *int    `json:"eventCount,omitempty"`
+	LastEvent  *string `json:"lastEvent,omitempty"`
+}
+
+// EnumerationsDetail represents enumeration detail data.
+type EnumerationsDetail struct {
+	Field *string `json:"field,omitempty"`
+	Value *string `json:"value,omitempty"`
+}
+
+// EnumerationsDetailResponse wraps enumerations detail data.
+type EnumerationsDetailResponse struct {
+	Status       *Status               `json:"status,omitempty"`
+	Enumerations []*EnumerationsDetail `json:"enumeration,omitempty"`
+}
+
+// BoundaryResponse wraps area boundary detail data.
+type BoundaryResponse struct {
+	Status   *Status   `json:"status,omitempty"`
+	Boundary *Boundary `json:"boundary,omitempty"`
+}
+
+// Boundary represents geographic boundary data.
+type Boundary struct {
+	GeoID    *string   `json:"geoId,omitempty"`
+	Name     *string   `json:"name,omitempty"`
+	Type     *string   `json:"type,omitempty"`
+	Geometry *Geometry `json:"geometry,omitempty"`
+}
+
+// Geometry represents geometric data for boundaries.
+type Geometry struct {
+	Type        *string     `json:"type,omitempty"`
+	Coordinates interface{} `json:"coordinates,omitempty"` // Can be various geometry types
+}
+
+// HierarchyResponse wraps hierarchy lookup data.
+type HierarchyResponse struct {
+	Status    *Status      `json:"status,omitempty"`
+	Hierarchy []*Hierarchy `json:"hierarchy,omitempty"`
+}
+
+// Hierarchy represents hierarchical geographic data.
+type Hierarchy struct {
+	GeoID *string `json:"geoId,omitempty"`
+	Name  *string `json:"name,omitempty"`
+	Type  *string `json:"type,omitempty"`
+	Level *string `json:"level,omitempty"`
+}
+
+// CBSAResponse wraps CBSA lookup data.
+type CBSAResponse struct {
+	Status *Status `json:"status,omitempty"`
+	CBSA   []*CBSA `json:"cbsa,omitempty"`
+}
+
+// CBSA represents Core Based Statistical Area data.
+type CBSA struct {
+	GeoID     *string `json:"geoId,omitempty"`
+	Name      *string `json:"name,omitempty"`
+	Type      *string `json:"type,omitempty"`
+	StateCode *string `json:"stateCode,omitempty"`
+}
+
+// CountyResponse wraps county lookup data.
+type CountyResponse struct {
+	Status   *Status   `json:"status,omitempty"`
+	Counties []*County `json:"county,omitempty"`
+}
+
+// County represents county data.
+type County struct {
+	GeoID     *string `json:"geoId,omitempty"`
+	Name      *string `json:"name,omitempty"`
+	StateCode *string `json:"stateCode,omitempty"`
+	FIPS      *string `json:"fips,omitempty"`
+}
+
+// StateResponse wraps state lookup data.
+type StateResponse struct {
+	Status *Status  `json:"status,omitempty"`
+	States []*State `json:"state,omitempty"`
+}
+
+// State represents state data.
+type State struct {
+	GeoID *string `json:"geoId,omitempty"`
+	Name  *string `json:"name,omitempty"`
+	Code  *string `json:"code,omitempty"`
+}
+
+// GeoidResponse wraps geoid lookup data.
+type GeoidResponse struct {
+	Status *Status  `json:"status,omitempty"`
+	Geoids []*Geoid `json:"geoid,omitempty"`
+}
+
+// Geoid represents geoid data.
+type Geoid struct {
+	ID    *string `json:"id,omitempty"`
+	Name  *string `json:"name,omitempty"`
+	Type  *string `json:"type,omitempty"`
+	Level *string `json:"level,omitempty"`
+}
+
+// LegacyGeoidResponse wraps legacy geoid lookup data.
+type LegacyGeoidResponse struct {
+	Status       *Status        `json:"status,omitempty"`
+	LegacyGeoids []*LegacyGeoid `json:"legacyGeoid,omitempty"`
+}
+
+// LegacyGeoid represents legacy geoid data.
+type LegacyGeoid struct {
+	ID   *string `json:"id,omitempty"`
+	Name *string `json:"name,omitempty"`
+	Type *string `json:"type,omitempty"`
+}
+
+// POIResponse wraps point of interest data.
+type POIResponse struct {
+	Status *Status `json:"status,omitempty"`
+	POIs   []*POI  `json:"poi,omitempty"`
+}
+
+// POI represents point of interest data.
+type POI struct {
+	ID          *string      `json:"id,omitempty"`
+	Name        *string      `json:"name,omitempty"`
+	Category    *string      `json:"category,omitempty"`
+	Address     *Address     `json:"address,omitempty"`
+	GeoLocation *GeoLocation `json:"geoLocation,omitempty"`
+	Distance    *float64     `json:"distance,omitempty"`
+}
+
+// POICategoryResponse wraps POI category lookup data.
+type POICategoryResponse struct {
+	Status     *Status        `json:"status,omitempty"`
+	Categories []*POICategory `json:"category,omitempty"`
+}
+
+// POICategory represents POI category data.
+type POICategory struct {
+	ID          *string `json:"id,omitempty"`
+	Name        *string `json:"name,omitempty"`
+	Description *string `json:"description,omitempty"`
+}
+
+// CommunityResponse wraps neighborhood community data.
+type CommunityResponse struct {
+	Status      *Status      `json:"status,omitempty"`
+	Communities []*Community `json:"community,omitempty"`
+}
+
+// Community represents neighborhood community data.
+type Community struct {
+	ID          *string      `json:"id,omitempty"`
+	Name        *string      `json:"name,omitempty"`
+	Type        *string      `json:"type,omitempty"`
+	Description *string      `json:"description,omitempty"`
+	GeoLocation *GeoLocation `json:"geoLocation,omitempty"`
+	Boundary    *Boundary    `json:"boundary,omitempty"`
+}
+
+// LocationLookupResponse wraps location lookup data.
+type LocationLookupResponse struct {
+	Status    *Status     `json:"status,omitempty"`
+	Locations []*Location `json:"location,omitempty"`
+}
+
+// Location represents location lookup data.
+type Location struct {
+	ID          *string      `json:"id,omitempty"`
+	Name        *string      `json:"name,omitempty"`
+	Type        *string      `json:"type,omitempty"`
+	GeoLocation *GeoLocation `json:"geoLocation,omitempty"`
+}
+
+// SaleComparablesResponse wraps sale comparables data.
+type SaleComparablesResponse struct {
+	Status          *Status           `json:"status,omitempty"`
+	SaleComparables []*SaleComparable `json:"saleComparable,omitempty"`
+}
+
+// SaleComparable represents sale comparable data.
+type SaleComparable struct {
+	PropertyID *string  `json:"propertyId,omitempty"`
+	Address    *Address `json:"address,omitempty"`
+	SaleAmount *float64 `json:"saleAmount,omitempty"`
+	SaleDate   *string  `json:"saleDate,omitempty"`
+	Distance   *float64 `json:"distance,omitempty"`
+	MatchCode  *string  `json:"matchCode,omitempty"`
+	Quality    *string  `json:"quality,omitempty"`
+}
+
+// TransportationNoiseResponse wraps transportation noise data.
+type TransportationNoiseResponse struct {
+	Status              *Status                `json:"status,omitempty"`
+	TransportationNoise []*TransportationNoise `json:"transportationNoise,omitempty"`
+}
+
+// TransportationNoise represents transportation noise data.
+type TransportationNoise struct {
+	PropertyID *string  `json:"propertyId,omitempty"`
+	NoiseLevel *string  `json:"noiseLevel,omitempty"`
+	Source     *string  `json:"source,omitempty"`
+	Distance   *float64 `json:"distance,omitempty"`
+}
+
+// ParcelTilesResponse wraps parcel tiles data.
+type ParcelTilesResponse struct {
+	Status      *Status       `json:"status,omitempty"`
+	ParcelTiles []*ParcelTile `json:"parcelTile,omitempty"`
+}
+
+// ParcelTile represents parcel tile data.
+type ParcelTile struct {
+	TileID *string `json:"tileId,omitempty"`
+	Format *string `json:"format,omitempty"`
+	Data   []byte  `json:"data,omitempty"`
+}
+
+// PreforeclosureResponse wraps pre-foreclosure details data.
+type PreforeclosureResponse struct {
+	Status         *Status           `json:"status,omitempty"`
+	Preforeclosure []*Preforeclosure `json:"preforeclosure,omitempty"`
+}
+
+// Preforeclosure represents pre-foreclosure data.
+type Preforeclosure struct {
+	PropertyID      *string  `json:"propertyId,omitempty"`
+	ForeclosureType *string  `json:"foreclosureType,omitempty"`
+	Status          *string  `json:"status,omitempty"`
+	Amount          *float64 `json:"amount,omitempty"`
+	DateFiled       *string  `json:"dateFiled,omitempty"`
+}
+
+// PreforeclosureDetailsResponse wraps pre-foreclosure details data.
+type PreforeclosureDetailsResponse struct {
+	Status                *Status                 `json:"status,omitempty"`
+	PreforeclosureDetails []*PreforeclosureDetail `json:"preforeclosureDetail,omitempty"`
+}
+
+// PreforeclosureDetail represents pre-foreclosure detail data.
+type PreforeclosureDetail struct {
+	PropertyID    *string `json:"propertyId,omitempty"`
+	ForeclosureID *string `json:"foreclosureId,omitempty"`
+	Status        *string `json:"status,omitempty"`
+	FilingDate    *string `json:"filingDate,omitempty"`
+	Amount        *string `json:"amount,omitempty"`
+}

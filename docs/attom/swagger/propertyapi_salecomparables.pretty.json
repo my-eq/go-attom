@@ -1,0 +1,220 @@
+{
+    "swagger": "2.0",
+    "basePath": "/property/v2",
+    "info": {
+        "version": "v2",
+        "title": "",
+        "description": ""
+    },
+    "host": "api.gateway.attomdata.com",
+    "schemes": [
+        "https"
+    ],
+    "tags": [
+        {
+            "name": "Sale Comparables"
+        }
+    ],
+    "consumes": [
+        "application/json",
+        "application/xml"
+    ],
+    "produces": [
+        "application/xml",
+        "application/json"
+    ],
+    "paths": {
+        "/salescomparables/address/{street}/{city}/{county}/{state}/{zip}": {
+            "get": {
+                "tags": [
+                    "Sale Comparables"
+                ],
+                "summary": "Returns comparable sales for a property address.",
+                "description": "Get comparable sales for a property based on address.",
+                "operationId": "getSaleComparablesByAddress",
+                "parameters": [
+                    {
+                        "name": "apikey",
+                        "x-data-threescale-name": "user_keys",
+                        "description": "API Security Key",
+                        "type": "string",
+                        "required": true,
+                        "in": "header",
+                        "default": "2b1e86b638620bf2404521e6e9e1b19e"
+                    },
+                    {
+                        "name": "accept",
+                        "description": "application/xml or application/json (default)",
+                        "type": "string",
+                        "required": false,
+                        "in": "header",
+                        "enum": [
+                            "application/xml",
+                            "application/json"
+                        ]
+                    },
+                    {
+                        "name": "street",
+                        "description": "Street address",
+                        "type": "string",
+                        "required": true,
+                        "in": "path"
+                    },
+                    {
+                        "name": "city",
+                        "description": "City",
+                        "type": "string",
+                        "required": true,
+                        "in": "path"
+                    },
+                    {
+                        "name": "county",
+                        "description": "County",
+                        "type": "string",
+                        "required": true,
+                        "in": "path"
+                    },
+                    {
+                        "name": "state",
+                        "description": "State",
+                        "type": "string",
+                        "required": true,
+                        "in": "path"
+                    },
+                    {
+                        "name": "zip",
+                        "description": "ZIP code",
+                        "type": "string",
+                        "required": true,
+                        "in": "path"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Comparable sales by address"
+                    },
+                    "403": {
+                        "description": "apikey invalid/missing"
+                    },
+                    "default": {
+                        "description": "unexpected error"
+                    }
+                }
+            }
+        },
+        "/salescomparables/apn/{apn}/{county}/{state}": {
+            "get": {
+                "tags": [
+                    "Sale Comparables"
+                ],
+                "summary": "Returns comparable sales for a property identified by APN.",
+                "description": "Get comparable sales for a property based on APN.",
+                "operationId": "getSaleComparablesByAPN",
+                "parameters": [
+                    {
+                        "name": "apikey",
+                        "x-data-threescale-name": "user_keys",
+                        "description": "API Security Key",
+                        "type": "string",
+                        "required": true,
+                        "in": "header",
+                        "default": "2b1e86b638620bf2404521e6e9e1b19e"
+                    },
+                    {
+                        "name": "accept",
+                        "description": "application/xml or application/json (default)",
+                        "type": "string",
+                        "required": false,
+                        "in": "header",
+                        "enum": [
+                            "application/xml",
+                            "application/json"
+                        ]
+                    },
+                    {
+                        "name": "apn",
+                        "description": "Assessor's Parcel Number",
+                        "type": "string",
+                        "required": true,
+                        "in": "path"
+                    },
+                    {
+                        "name": "county",
+                        "description": "County",
+                        "type": "string",
+                        "required": true,
+                        "in": "path"
+                    },
+                    {
+                        "name": "state",
+                        "description": "State",
+                        "type": "string",
+                        "required": true,
+                        "in": "path"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Comparable sales by APN"
+                    },
+                    "403": {
+                        "description": "apikey invalid/missing"
+                    },
+                    "default": {
+                        "description": "unexpected error"
+                    }
+                }
+            }
+        },
+        "/salescomparables/propid/{propId}": {
+            "get": {
+                "tags": [
+                    "Sale Comparables"
+                ],
+                "summary": "Returns comparable sales for a property identified by PropId.",
+                "description": "Get comparable sales for a property based on PropId.",
+                "operationId": "getSaleComparablesByPropId",
+                "parameters": [
+                    {
+                        "name": "apikey",
+                        "x-data-threescale-name": "user_keys",
+                        "description": "API Security Key",
+                        "type": "string",
+                        "required": true,
+                        "in": "header",
+                        "default": "2b1e86b638620bf2404521e6e9e1b19e"
+                    },
+                    {
+                        "name": "accept",
+                        "description": "application/xml or application/json (default)",
+                        "type": "string",
+                        "required": false,
+                        "in": "header",
+                        "enum": [
+                            "application/xml",
+                            "application/json"
+                        ]
+                    },
+                    {
+                        "name": "propId",
+                        "description": "ATTOM Property ID",
+                        "type": "string",
+                        "required": true,
+                        "in": "path"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Comparable sales by PropId"
+                    },
+                    "403": {
+                        "description": "apikey invalid/missing"
+                    },
+                    "default": {
+                        "description": "unexpected error"
+                    }
+                }
+            }
+        }
+    }
+}

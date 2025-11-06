@@ -22,7 +22,7 @@ func TestSchoolEndpoints(t *testing.T) {
 	}{
 		{
 			name:          "SearchSchools",
-			expectedPath:  "/propertyapi/v1.0.0/school/search",
+			expectedPath:  "/v4/school/search",
 			expectedQuery: url.Values{"address": {"123 Main St"}},
 			responseBody:  `{"status":{},"school":[{}]}`,
 			call: func(ctx context.Context, svc *Service) (interface{}, error) {
@@ -31,7 +31,7 @@ func TestSchoolEndpoints(t *testing.T) {
 		},
 		{
 			name:          "GetSchoolProfile",
-			expectedPath:  "/propertyapi/v1.0.0/school/profile",
+			expectedPath:  "/v4/school/profile",
 			expectedQuery: url.Values{"schoolId": {"200"}},
 			responseBody:  `{"status":{},"school":[{}]}`,
 			call: func(ctx context.Context, svc *Service) (interface{}, error) {
@@ -40,7 +40,7 @@ func TestSchoolEndpoints(t *testing.T) {
 		},
 		{
 			name:          "GetSchoolDistrict",
-			expectedPath:  "/propertyapi/v1.0.0/school/district",
+			expectedPath:  "/v4/school/district",
 			expectedQuery: url.Values{"address": {"123 Main St"}},
 			responseBody:  `{"status":{},"district":[{}]}`,
 			call: func(ctx context.Context, svc *Service) (interface{}, error) {
@@ -49,7 +49,7 @@ func TestSchoolEndpoints(t *testing.T) {
 		},
 		{
 			name:          "GetSchoolDetailWithSchools",
-			expectedPath:  "/propertyapi/v1.0.0/school/detailwithschools",
+			expectedPath:  "/v4/school/detailwithschools",
 			expectedQuery: url.Values{"address": {"123 Main St"}},
 			responseBody:  `{"status":{},"property":[{}],"school":[{}]}`,
 			call: func(ctx context.Context, svc *Service) (interface{}, error) {
@@ -59,7 +59,7 @@ func TestSchoolEndpoints(t *testing.T) {
 		// --- NEW ENDPOINT TESTS ---
 		{
 			name:          "GetSchoolSnapshot",
-			expectedPath:  "/propertyapi/v1.0.0/school/snapshot",
+			expectedPath:  "/v4/school/snapshot",
 			expectedQuery: url.Values{"latitude": {"40.0"}, "longitude": {"-75.0"}, "radius": {"10"}},
 			responseBody:  `{"status":{},"school":[{}]}`,
 			call: func(ctx context.Context, svc *Service) (interface{}, error) {
@@ -68,7 +68,7 @@ func TestSchoolEndpoints(t *testing.T) {
 		},
 		{
 			name:          "GetSchoolDetail",
-			expectedPath:  "/propertyapi/v1.0.0/school/detail",
+			expectedPath:  "/v4/school/detail",
 			expectedQuery: url.Values{"id": {"200"}},
 			responseBody:  `{"status":{},"school":[{}]}`,
 			call: func(ctx context.Context, svc *Service) (interface{}, error) {
@@ -77,7 +77,7 @@ func TestSchoolEndpoints(t *testing.T) {
 		},
 		{
 			name:          "GetSchoolDistrictDetail",
-			expectedPath:  "/propertyapi/v1.0.0/school/districtdetail",
+			expectedPath:  "/v4/school/districtdetail",
 			expectedQuery: url.Values{"id": {"300"}},
 			responseBody:  `{"status":{},"district":[{}]}`,
 			call: func(ctx context.Context, svc *Service) (interface{}, error) {
