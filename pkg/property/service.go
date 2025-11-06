@@ -909,12 +909,7 @@ func (s *Service) GetSaleComparablesByAPN(ctx context.Context, fips, apn string,
 func (s *Service) GetSaleComparablesByPropID(ctx context.Context, propID string, opts ...Option) (*SaleComparablesResponse, error) {
 	allOpts := append([]Option{WithAttomID(propID)}, opts...)
 	var resp SaleComparablesResponse
-	err := s.get(ctx, saleComparablesBasePath+"propid/"+propID, allOpts, func(values url.Values) error {
-		if values.Get("attomId") != "" || values.Get("id") != "" {
-			return nil
-		}
-		return fmt.Errorf("%w: property ID required", ErrMissingParameter)
-	}, &resp)
+	err := s.get(ctx, saleComparablesBasePath+"propid/"+propID, allOpts, requirePropertyIdentifier, &resp)
 	if err != nil {
 		return nil, err
 	}
