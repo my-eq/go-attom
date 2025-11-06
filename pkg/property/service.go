@@ -729,7 +729,7 @@ func (s *Service) GetEnumerationsDetail(ctx context.Context, opts ...Option) (*E
 
 // GetBoundaryDetail retrieves boundary details for a geography.
 func (s *Service) GetBoundaryDetail(ctx context.Context, geoID string, opts ...Option) (*BoundaryResponse, error) {
-	allOpts := append([]Option{WithGeoID(geoID)}, opts...)
+	allOpts := append([]Option{WithGeoIDV4(geoID)}, opts...)
 	var resp BoundaryResponse
 	err := s.get(ctx, areaBasePath+"boundary/detail", allOpts, func(values url.Values) error {
 		if values.Get("geoIdV4") == "" {
@@ -803,7 +803,7 @@ func (s *Service) GetStateLookup(ctx context.Context, opts ...Option) (*StateRes
 
 // GetGeoIDLookup retrieves specific Geo IDs that exist within a specified Geo ID.
 func (s *Service) GetGeoIDLookup(ctx context.Context, geoID string, opts ...Option) (*GeoidResponse, error) {
-	allOpts := append([]Option{WithGeoID(geoID)}, opts...)
+	allOpts := append([]Option{WithGeoIDV4(geoID)}, opts...)
 	var resp GeoidResponse
 	err := s.get(ctx, areaBasePath+"geoid/lookup/", allOpts, func(values url.Values) error {
 		if values.Get("geoIdV4") == "" {
@@ -819,7 +819,7 @@ func (s *Service) GetGeoIDLookup(ctx context.Context, geoID string, opts ...Opti
 
 // GetGeoIDLegacyLookup retrieves a translation between legacy codes and new geography identifiers.
 func (s *Service) GetGeoIDLegacyLookup(ctx context.Context, geoID string, opts ...Option) (*LegacyGeoidResponse, error) {
-	allOpts := append([]Option{WithGeoID(geoID)}, opts...)
+	allOpts := append([]Option{WithGeoIDV4(geoID)}, opts...)
 	var resp LegacyGeoidResponse
 	err := s.get(ctx, areaBasePath+"geoid/legacyLookup/", allOpts, func(values url.Values) error {
 		if values.Get("geoIdV4") == "" {
