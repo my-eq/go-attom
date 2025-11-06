@@ -92,6 +92,60 @@ This document summarizes the complete ATTOM API structure extracted from the off
 - `/parceltiles/{z}/{x}/{y}.png` - Parcel tiles
 - `property/v3/preforeclosuredetails` - Preforeclosure details
 
+## Controlled Vocabularies & Enumerations
+
+The ATTOM API uses controlled vocabularies (enumerations) for many parameters to ensure data consistency. The client provides Go constants and validation functions for these enumerations.
+
+### Dynamic Enumerations (`/v4/enumerations/detail`)
+
+The enumerations endpoint provides runtime access to valid values for any field:
+
+```go
+enums, err := propertyService.GetEnumerationsDetail(ctx, property.WithString("field", "propertytype"))
+```
+
+### Static Constants (Go)
+
+The client includes Go constants for commonly used enumerations:
+
+#### Accept Headers
+- `AcceptHeaderJSON` - "application/json"
+- `AcceptHeaderXML` - "application/xml"
+
+#### Geographic Formats
+- `FormatGeoJSON` - "geojson"
+- `FormatWKT` - "wkt"
+
+#### Property Types (35 values)
+- `PropertyTypeSFR` - Single Family Residential
+- `PropertyTypeCondominium` - Condominium
+- `PropertyTypeTownhouseRowhouse` - Townhouse/Rowhouse
+- `PropertyTypeDuplex` - Duplex
+- `PropertyTypeTriplex` - Triplex
+- `PropertyTypeMultiFamilyDwelling` - Multi Family Dwelling
+- `PropertyTypeApartment` - Apartment
+- `PropertyTypeCommercialBuilding` - Commercial Building
+- `PropertyTypeOfficeBuilding` - Office Building
+- `PropertyTypeRetailTrade` - Retail Trade
+- And 25+ additional property classifications
+
+#### Sort Options (13 values)
+- `OrderBySaleAmount` - "saleamt"
+- `OrderByAVMValue` - "avmvalue"
+- `OrderByPropertyType` - "propertytype"
+- `OrderByBeds` - "beds"
+- `OrderByBathsTotal` - "bathstotal"
+- And 8+ additional sorting options
+
+### Validation Functions
+
+All enumerations include validation functions:
+
+```go
+err := property.ValidatePropertyType("INVALID_TYPE") // Returns error
+err := property.ValidateOrderBy("saleamt")           // Returns nil
+```
+
 ## AreaAPI Breakdown (6 endpoints)
 
 - `/county/lookup` - County lookup by state
