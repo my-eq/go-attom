@@ -4,6 +4,7 @@ import (
 	"context"
 	"net/http"
 	"net/url"
+	"strings"
 	"testing"
 
 	"github.com/my-eq/go-attom/pkg/client"
@@ -14,11 +15,13 @@ func TestSchoolEndpoints(t *testing.T) {
 	ctx := context.Background()
 
 	tests := []struct {
-		call          func(context.Context, *Service) (interface{}, error)
-		expectedQuery url.Values
-		name          string
-		expectedPath  string
-		responseBody  string
+		call                  func(context.Context, *Service) (interface{}, error)
+		expectedQuery         url.Values
+		name                  string
+		expectedPath          string
+		responseBody          string
+		expectError           bool
+		expectedErrorContains string
 	}{
 		{
 			name:          "SearchSchools",
@@ -27,6 +30,17 @@ func TestSchoolEndpoints(t *testing.T) {
 			responseBody:  `{"status":{},"school":[{}]}`,
 			call: func(ctx context.Context, svc *Service) (interface{}, error) {
 				return svc.SearchSchools(ctx, WithAddress("123 Main St"))
+			},
+		},
+		{
+			name:                  "SearchSchools_Error_NoGeoContext",
+			expectedPath:          "",
+			expectedQuery:         url.Values{},
+			responseBody:          "",
+			expectError:           true,
+			expectedErrorContains: "provide address or latitude/longitude",
+			call: func(ctx context.Context, svc *Service) (interface{}, error) {
+				return svc.SearchSchools(ctx)
 			},
 		},
 		{
@@ -88,18 +102,31 @@ func TestSchoolEndpoints(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			mock := &mockHTTPClient{
-				t:              t,
-				expectedMethod: http.MethodGet,
-				expectedPath:   tt.expectedPath,
-				expectedQuery:  tt.expectedQuery,
-				responseBody:   tt.responseBody,
-			}
-			c := client.New("test-key", mock, client.WithBaseURL("https://example.com/"))
-			svc := NewService(c)
-			_, err := tt.call(ctx, svc)
-			if err != nil {
-				t.Fatalf("unexpected error: %v", err)
+			if tt.expectError {
+				// For error cases, we don't set up the mock client since the error occurs before the HTTP call
+				c := client.New("test-key", nil, client.WithBaseURL("https://example.com/"))
+				svc := NewService(c)
+				_, err := tt.call(ctx, svc)
+				if err == nil {
+					t.Fatalf("expected error containing %q, got nil", tt.expectedErrorContains)
+				}
+				if !strings.Contains(err.Error(), tt.expectedErrorContains) {
+					t.Fatalf("expected error containing %q, got %q", tt.expectedErrorContains, err.Error())
+				}
+			} else {
+				mock := &mockHTTPClient{
+					t:              t,
+					expectedMethod: http.MethodGet,
+					expectedPath:   tt.expectedPath,
+					expectedQuery:  tt.expectedQuery,
+					responseBody:   tt.responseBody,
+				}
+				c := client.New("test-key", mock, client.WithBaseURL("https://example.com/"))
+				svc := NewService(c)
+				_, err := tt.call(ctx, svc)
+				if err != nil {
+					t.Fatalf("unexpected error: %v", err)
+				}
 			}
 		})
 	}

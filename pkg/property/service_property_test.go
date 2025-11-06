@@ -65,11 +65,13 @@ func TestPropertyEndpoints(t *testing.T) {
 	ctx := context.Background()
 
 	tests := []struct {
-		call          func(context.Context, *Service) (interface{}, error)
-		expectedQuery url.Values
-		name          string
-		expectedPath  string
-		responseBody  string
+		call                  func(context.Context, *Service) (interface{}, error)
+		expectedQuery         url.Values
+		name                  string
+		expectedPath          string
+		responseBody          string
+		expectError           bool
+		expectedErrorContains string
 	}{
 		{
 			name:          "GetPropertyDetail",
@@ -87,6 +89,17 @@ func TestPropertyEndpoints(t *testing.T) {
 			responseBody:  `{"status":{},"property":[{}]}`,
 			call: func(ctx context.Context, svc *Service) (interface{}, error) {
 				return svc.GetPropertyAddress(ctx, WithAttomID("100"))
+			},
+		},
+		{
+			name:                  "GetPropertyAddress_Error_NoIdentifier",
+			expectedPath:          "",
+			expectedQuery:         url.Values{},
+			responseBody:          "",
+			expectError:           true,
+			expectedErrorContains: "provide attomid, id, address, address1, or fips+APN",
+			call: func(ctx context.Context, svc *Service) (interface{}, error) {
+				return svc.GetPropertyAddress(ctx)
 			},
 		},
 		{
@@ -161,22 +174,53 @@ func TestPropertyEndpoints(t *testing.T) {
 				return svc.GetBuildingPermits(ctx, "123 Main St")
 			},
 		},
+		{
+			name:          "GetParcelTiles",
+			expectedPath:  "/v4/parceltiles/10/512/341.png",
+			expectedQuery: url.Values{},
+			responseBody:  `{"status":{},"parcelTiles":[{}]}`,
+			call: func(ctx context.Context, svc *Service) (interface{}, error) {
+				return svc.GetParcelTiles(ctx, 10, 512, 341, "png")
+			},
+		},
+		{
+			name:          "GetPreforeclosureDetails",
+			expectedPath:  "/property/v3/preforeclosuredetails",
+			expectedQuery: url.Values{"attomid": {"100"}},
+			responseBody:  `{"status":{},"preforeclosure":[{}]}`,
+			call: func(ctx context.Context, svc *Service) (interface{}, error) {
+				return svc.GetPreforeclosureDetails(ctx, "100")
+			},
+		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			mock := &mockHTTPClient{
-				t:              t,
-				expectedMethod: http.MethodGet,
-				expectedPath:   tt.expectedPath,
-				expectedQuery:  tt.expectedQuery,
-				responseBody:   tt.responseBody,
-			}
-			c := client.New("test-key", mock, client.WithBaseURL("https://example.com/"))
-			svc := NewService(c)
-			_, err := tt.call(ctx, svc)
-			if err != nil {
-				t.Fatalf("unexpected error: %v", err)
+			if tt.expectError {
+				// For error cases, we don't set up the mock client since the error occurs before the HTTP call
+				c := client.New("test-key", nil, client.WithBaseURL("https://example.com/"))
+				svc := NewService(c)
+				_, err := tt.call(ctx, svc)
+				if err == nil {
+					t.Fatalf("expected error containing %q, got nil", tt.expectedErrorContains)
+				}
+				if !strings.Contains(err.Error(), tt.expectedErrorContains) {
+					t.Fatalf("expected error containing %q, got %q", tt.expectedErrorContains, err.Error())
+				}
+			} else {
+				mock := &mockHTTPClient{
+					t:              t,
+					expectedMethod: http.MethodGet,
+					expectedPath:   tt.expectedPath,
+					expectedQuery:  tt.expectedQuery,
+					responseBody:   tt.responseBody,
+				}
+				c := client.New("test-key", mock, client.WithBaseURL("https://example.com/"))
+				svc := NewService(c)
+				_, err := tt.call(ctx, svc)
+				if err != nil {
+					t.Fatalf("unexpected error: %v", err)
+				}
 			}
 		})
 	}
