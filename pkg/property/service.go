@@ -878,10 +878,10 @@ func (s *Service) GetSaleComparablesByAddress(ctx context.Context, street, city,
 	allOpts := append([]Option{WithAddress(fmt.Sprintf("%s, %s, %s, %s %s", street, city, county, state, zip))}, opts...)
 	var resp SaleComparablesResponse
 	err := s.get(ctx, fmt.Sprintf("%saddress/%s/%s/%s/%s/%s", saleComparablesBasePath, url.PathEscape(street), url.PathEscape(city), url.PathEscape(county), url.PathEscape(state), url.PathEscape(zip)), allOpts, func(values url.Values) error {
-		if street != "" && city != "" && county != "" && state != "" && zip != "" {
+		if values.Get("address") != "" && street != "" && city != "" && county != "" && state != "" && zip != "" {
 			return nil
 		}
-		return fmt.Errorf("%w: street, city, county, state, and zip required", ErrMissingParameter)
+		return fmt.Errorf("%w: address components required", ErrMissingParameter)
 	}, &resp)
 	if err != nil {
 		return nil, err
