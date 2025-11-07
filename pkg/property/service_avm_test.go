@@ -155,7 +155,7 @@ func TestAVMEndpoints(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		runServiceTest(t, ctx, tt)
+		runServiceTest(ctx, t, tt)
 	}
 }
 

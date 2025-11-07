@@ -15,14 +15,14 @@ func TestLookupEndpoints(t *testing.T) {
 	ctx := context.Background()
 
 	tests := []struct {
-		call                  func(context.Context, *Service) (interface{}, error)
-		expectedQuery         url.Values
+		expectError           bool
+		statusCode            int
 		name                  string
 		expectedPath          string
+		expectedQuery         url.Values
 		responseBody          string
-		statusCode            int
-		expectError           bool
 		expectedErrorContains string
+		call                  func(context.Context, *Service) (interface{}, error)
 	}{
 		{
 			name:          "GetStateLookup",
