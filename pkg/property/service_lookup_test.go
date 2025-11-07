@@ -4,26 +4,14 @@ import (
 	"context"
 	"net/http"
 	"net/url"
-	"strings"
 	"testing"
-
-	"github.com/my-eq/go-attom/pkg/client"
 )
 
 func TestLookupEndpoints(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 
-	tests := []struct {
-		expectError           bool
-		statusCode            int
-		name                  string
-		expectedPath          string
-		expectedQuery         url.Values
-		responseBody          string
-		expectedErrorContains string
-		call                  func(context.Context, *Service) (interface{}, error)
-	}{
+	tests := []TestCase{
 		{
 			name:          "GetStateLookup",
 			expectedPath:  "/v4/area/state/lookup",
@@ -123,29 +111,6 @@ func TestLookupEndpoints(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			mockClient := &mockHTTPClient{
-				t:             t,
-				expectedPath:  tt.expectedPath,
-				expectedQuery: tt.expectedQuery,
-				responseBody:  tt.responseBody,
-				statusCode:    tt.statusCode,
-			}
-			c := client.New("test-key", mockClient, client.WithBaseURL("https://example.com/"))
-			svc := NewService(c)
-
-			_, err := tt.call(ctx, svc)
-			if tt.expectError {
-				if err == nil {
-					t.Errorf("expected error containing %q, got nil", tt.expectedErrorContains)
-				} else if !strings.Contains(err.Error(), tt.expectedErrorContains) {
-					t.Errorf("expected error containing %q, got %q", tt.expectedErrorContains, err.Error())
-				}
-			} else {
-				if err != nil {
-					t.Errorf("unexpected error: %v", err)
-				}
-			}
-		})
+		runServiceTest(ctx, t, tt)
 	}
 }
