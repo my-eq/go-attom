@@ -118,3 +118,15 @@ func runServiceTest(ctx context.Context, t *testing.T, tt TestCase) {
 		}
 	})
 }
+
+// runEndpointTests runs a collection of endpoint tests with common setup and teardown.
+func runEndpointTests(t *testing.T, testName string, tests []TestCase) {
+	t.Run(testName, func(t *testing.T) {
+		t.Parallel()
+		ctx := context.Background()
+
+		for _, tt := range tests {
+			runServiceTest(ctx, t, tt)
+		}
+	})
+}
