@@ -227,10 +227,10 @@ func TestValidateOrderBy(t *testing.T) {
 
 func TestValidateFIPSAndAPN(t *testing.T) {
 	tests := []struct {
+		wantErr bool
 		name    string
 		fips    string
 		apn     string
-		wantErr bool
 		errMsg  string
 	}{
 		{

@@ -529,12 +529,12 @@ func TestDoGetErrorHandling(t *testing.T) {
 	})
 }
 
-// mockHTTPClientWithErrorBody returns responses with bodies that fail to read
+// mockHTTPClientWithErrorBody returns responses with bodies that fail to read.
 type mockHTTPClientWithErrorBody struct {
 	statusCode int
 }
 
-// errorReader implements io.ReadCloser and always returns an error
+// errorReader implements io.ReadCloser and always returns an error.
 type errorReader struct{}
 
 func (e errorReader) Read(_ []byte) (int, error) {

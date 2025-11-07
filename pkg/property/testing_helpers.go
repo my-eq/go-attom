@@ -11,7 +11,7 @@ import (
 	"github.com/my-eq/go-attom/pkg/client"
 )
 
-// mockHTTPClient is used to mock HTTP requests for endpoint tests
+// MockHTTPClient is used to mock HTTP requests for endpoint tests.
 type mockHTTPClient struct {
 	t              *testing.T
 	expectedMethod string
@@ -59,18 +59,20 @@ func diffQuery(expected, actual url.Values) string {
 }
 
 // TestCase represents a common test case structure for service endpoint tests
+//
+//nolint:govet // fieldalignment optimization not critical for test structs
 type TestCase struct {
-	call                  func(context.Context, *Service) (interface{}, error)
-	expectedQuery         url.Values
+	expectError           bool
 	name                  string
 	expectedPath          string
 	responseBody          string
-	expectError           bool
 	expectedErrorContains string
+	call                  func(context.Context, *Service) (interface{}, error)
+	expectedQuery         url.Values
 }
 
-// runServiceTest executes a service test case with proper error handling and mock setup
-func runServiceTest(t *testing.T, ctx context.Context, tt TestCase) {
+// RunServiceTest executes a service test case with proper error handling and mock setup.
+func runServiceTest(ctx context.Context, t *testing.T, tt TestCase) {
 	t.Run(tt.name, func(t *testing.T) {
 		if tt.expectError {
 			// For error cases, we don't set up the mock client since the error occurs before the HTTP call
