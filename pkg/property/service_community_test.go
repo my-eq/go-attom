@@ -7,9 +7,6 @@ import (
 )
 
 func TestCommunityEndpoints(t *testing.T) {
-	t.Parallel()
-	ctx := context.Background()
-
 	tests := []TestCase{
 		{
 			name:                  "GetCommunity",
@@ -35,7 +32,5 @@ func TestCommunityEndpoints(t *testing.T) {
 		},
 	}
 
-	for _, tt := range tests {
-		runServiceTest(ctx, t, tt)
-	}
+	runEndpointTests(t, "CommunityEndpoints", tests)
 }

@@ -7,9 +7,6 @@ import (
 )
 
 func TestPOIEndpoints(t *testing.T) {
-	t.Parallel()
-	ctx := context.Background()
-
 	tests := []TestCase{
 		{
 			name:                  "GetPOI",
@@ -35,7 +32,5 @@ func TestPOIEndpoints(t *testing.T) {
 		},
 	}
 
-	for _, tt := range tests {
-		runServiceTest(ctx, t, tt)
-	}
+	runEndpointTests(t, "POIEndpoints", tests)
 }
