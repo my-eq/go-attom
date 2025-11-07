@@ -53,7 +53,7 @@ func TestAssessmentEndpoints(t *testing.T) {
 		},
 		{
 			name:          "GetAssessmentHistory",
-			expectedPath:  "/v4/property/detail",
+			expectedPath:  "/v4/property/history/",
 			expectedQuery: url.Values{"attomid": {"100"}},
 			responseBody:  `{"status":{},"property":[{}]}`,
 			call: func(ctx context.Context, svc *Service) (interface{}, error) {

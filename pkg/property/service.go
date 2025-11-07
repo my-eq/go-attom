@@ -29,7 +29,7 @@ const (
 	propertyBasePath         = "v4/property/"
 	saleBasePath             = "v4/transaction/"
 	assessmentBasePath       = "v4/property/"
-	assessmentHistoryPath    = "v4/property/"
+	assessmentHistoryPath    = "v4/property/history/"
 	avmBasePath              = "v4/property/"
 	avmHistoryBasePath       = "v4/property/"
 	attomAVMPath             = "v4/property/"
@@ -390,7 +390,7 @@ func (s *Service) GetAssessmentSnapshot(ctx context.Context, opts ...Option) (*A
 // GetAssessmentHistory retrieves historical assessment records.
 func (s *Service) GetAssessmentHistory(ctx context.Context, opts ...Option) (*AssessmentHistoryResponse, error) {
 	var resp AssessmentHistoryResponse
-	err := s.get(ctx, assessmentHistoryPath+"detail", opts, requirePropertyIdentifier, &resp)
+	err := s.get(ctx, assessmentHistoryPath, opts, requirePropertyIdentifier, &resp)
 	if err != nil {
 		return nil, err
 	}
