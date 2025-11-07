@@ -69,14 +69,29 @@ type TestCase struct {
 	expectedErrorContains string
 	call                  func(context.Context, *Service) (interface{}, error)
 	expectedQuery         url.Values
+	statusCode            int
 }
 
 // RunServiceTest executes a service test case with proper error handling and mock setup.
 func runServiceTest(ctx context.Context, t *testing.T, tt TestCase) {
 	t.Run(tt.name, func(t *testing.T) {
 		if tt.expectError {
-			// For error cases, we don't set up the mock client since the error occurs before the HTTP call
-			c := client.New("test-key", nil, client.WithBaseURL("https://example.com/"))
+			// For error cases, set up mock client if status code is specified (HTTP errors)
+			// or use nil client for validation errors
+			var c *client.Client
+			if tt.statusCode != 0 {
+				mockClient := &mockHTTPClient{
+					t:              t,
+					expectedMethod: http.MethodGet,
+					expectedPath:   tt.expectedPath,
+					expectedQuery:  tt.expectedQuery,
+					responseBody:   tt.responseBody,
+					statusCode:     tt.statusCode,
+				}
+				c = client.New("test-key", mockClient, client.WithBaseURL("https://example.com/"))
+			} else {
+				c = client.New("test-key", nil, client.WithBaseURL("https://example.com/"))
+			}
 			svc := NewService(c)
 			_, err := tt.call(ctx, svc)
 			if err == nil {
@@ -92,6 +107,7 @@ func runServiceTest(ctx context.Context, t *testing.T, tt TestCase) {
 				expectedPath:   tt.expectedPath,
 				expectedQuery:  tt.expectedQuery,
 				responseBody:   tt.responseBody,
+				statusCode:     tt.statusCode,
 			}
 			c := client.New("test-key", mockClient, client.WithBaseURL("https://example.com/"))
 			svc := NewService(c)
